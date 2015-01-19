@@ -20,147 +20,319 @@
  *
  */
 /**
- * Klasse fuer Datenbankabstraktion
+ * Datenbank Abstraktionsklasse fuer Postgresql Datenbank
  */
 
-require_once(dirname(__FILE__).'/basis.class.php');
-
-abstract class db extends basis
+class basis_db extends db
 {
-	protected static $db_conn=null;
-	protected $db_result=null;
-	protected $debug=false;
-
-	function __construct()
+	public function db_connect()
 	{
-		if(!defined('FHC_INTEGER'))
+		$conn_str='host='.DB_HOST.' port='.DB_PORT.' dbname='.DB_NAME.' user='.DB_USER.' password='.DB_PASSWORD;
+		//Connection Herstellen
+		if (DB_CONNECT_PERSISTENT)
 		{
-			define('FHC_INTEGER',1);
-			define('FHC_STRING',2);
-			define('FHC_BOOLEAN',3);
-		}
-		if (is_null(db::$db_conn))
-			$this->db_connect();
-	}
-
-	abstract function db_connect();
-	abstract function db_query($sql);
-	abstract function db_fetch_object($result=null, $i=null);
-	abstract function db_fetch_array($result=null);
-	abstract function db_fetch_row($result=null, $i=null);
-	abstract function db_fetch_assoc($result=null, $i=null);
-	abstract function db_result($result = null, $i,$item);
-	abstract function db_num_rows($result=null);
-	abstract function db_num_fields($result=null);
-	abstract function db_field_name($result=null, $i);
-	abstract function db_affected_rows($result=null);
-	abstract function db_last_error();
-	abstract function db_free_result($result=null);	
-	abstract function db_version();
-	abstract function db_escape($var);
-	abstract function db_null_value($var, $qoute=true);
-	abstract function db_qoute($var);
-	abstract function db_add_param($var, $type=FHC_STRING, $nullable=true);
-	abstract function db_parse_bool($var);
-	abstract function db_implode4SQL($var);
-	abstract function db_getResultJSON($result = null);
-
-	
-	/**
-	 * Erzeugt aus den Funktionsparameter eine SQL Abfrage
-	 * --- Wird in der Art Sonderzeichen gefunden wird dieses als FunktionsParmeter verarbeitet
-	 * @param art die SQL Abfrage die erzeugt werden soll Default ist 'select'
-	 * @param distinct - nur wenn art ist 'select' ist
-	 * @param fields welche Datenbankfelder sind betroffen
-	 * @param table Datenbanktabelle die betroffen ist/sind
-	 * @param where Bedingung zum lesen in der Datenbank
-	 * @param order Sortierung der Anfrage - nur wenn art ist 'select' ist
-	 * @param limit Anzahl der Datenmenge die geliefert werden soll - nur wenn art ist 'select' ist
-	 * @param sql der Kpl. SQL String zur Datenbearbeitung der DB
-
-	 * @return false und errormsg wenn ein Fehler aufgetreten ist, Datenbankobjekt wenn alles OK
-	 */
-	public function SQL($pArt='select',$pDistinct=false,$pFields='',$pTable='',$pWhere='',$pOrder='',$pLimit='',$pSql='')
-	{
-		$this->errormsg='';
-		$result=false;
-
-		$sql=(!is_null($pSql)?trim($pSql):'');
-		$art=(!is_null($pArt)?trim($pArt):'');
-		$distinct=($pDistinct?true:false);
-		$fields=(!is_null($pFields)?trim($pFields):'');
-		$table=(!is_null($pTable)?trim($pTable):'');
-		$where=(!is_null($pWhere)?trim($pWhere):'');
-		$order=(!is_null($pOrder)?trim($pOrder):'');
-		$limit=(is_numeric($pLimit)?$pLimit:'');
-		
-		if (empty($sql) && empty($art))
-		{
-			$this->errormsg='die SQL Art fehlt!';
-			return $result;
-		}
-		else if (empty($sql) && empty($table))
-		{
-			$this->errormsg='die SQL Tabelle fehlt!';
-			return $result;
-		}
-
-		// DB Abfrage zusammenbauen
-		if (!empty($pSql))
-		{
-			$sql=$pSql;
+			if(!basis_db::$db_conn = pg_pconnect($conn_str))
+				die('Fehler beim Oeffnen der Datenbankverbindung');
 		}
 		else
 		{
-			$sql.=$art. ' ';
-			if ($art=='select')
-				$sql.=($distinct?' distinct ':'');
-			$sql.=($fields?$fields:' * ');
-			$sql.=($table?' from '.trim($table).' ':'');
-			if (strstr('where',strtolower($where)))
-				$sql.=($where?' '.trim($where).' ':'');
-			else
-				$sql.=($where?' where '.trim($where).' ':'');
-			if ($art=='select')		
-			{
-			    // FIXME: If $where is e.g. 'orderstatus' because there's a column named orderstatus, this would
-			    // fail horribly? Same for the 'where'-stuff above. -MP
-				if (strstr('order',strtolower($where)))
-					$sql.=($order?trim($order).' ':'');
-				else
-					$sql.=($order?' order by '.trim($order).' ':'');
-			}	
-			if ($art=='select')	
-			{
-				if (strstr('limit',strtolower($where)))
-					$sql.=($limit?trim($limit).' ':'');
-				else		
-					$sql.=($limit?' limit '.trim($limit).' ':'');
-			}
+			if(!basis_db::$db_conn = pg_connect($conn_str))
+				die('Fehler beim Oeffnen der Datenbankverbindung');
 		}
-		
-		if (!$results=$this->db_query($sql))
-		{
-			$this->errormsg=$this->db_last_error();
-			return false;
-		}
-		
-		if ($art!='select' && empty($pSql))
-			return true;
+	}
 
-		if (!$num=$this->db_num_rows($results))
+	public function db_query($sql)
+	{
+		if ($this->db_result=pg_query(basis_db::$db_conn,$sql))
+			return $this->db_result;
+		else
 		{
-			$this->errormsg='keine Daten gefunden';
+			$this->errormsg.='Abfrage in Datenbank fehlgeschlagen! '.$this->db_last_error();
 			return false;
 		}
-		// Lesen aller DB Daten
+	}
+
+	public function db_num_rows($result=null)
+	{
+		if(is_null($result))
+			return pg_num_rows($this->db_result);
+		else
+			return pg_num_rows($result);
+	}
+
+	public function db_fetch_object($result = null, $i=null)
+	{
+		if(is_null($result))
+		{
+			if(is_null($i))
+				return pg_fetch_object($this->db_result);
+			else 
+				return pg_fetch_object($this->db_result, $i);
+		}
+		else 
+		{
+			if(is_null($i))
+				return pg_fetch_object($result);
+			else 
+				return pg_fetch_object($result, $i);
+		}			
+	}
+	
+	public function db_fetch_row($result = null, $i=null)
+	{
+		if(is_null($result))
+		{
+			if(is_null($i))
+				return pg_fetch_row($this->db_result);
+			else 
+				return pg_fetch_row($this->db_result, $i);
+		}
+		else 
+		{
+			if(is_null($i))
+				return pg_fetch_row($result);
+			else 
+				return pg_fetch_row($result, $i);
+		}			
+	}
+	
+	public function db_fetch_assoc($result = null, $i=null)
+	{
+		if(is_null($result))
+		{
+			if(is_null($i))
+				return pg_fetch_assoc($this->db_result);
+			else 
+				return pg_fetch_assoc($this->db_result, $i);
+		}
+		else 
+		{
+			if(is_null($i))
+				return pg_fetch_row($result);
+			else 
+				return pg_fetch_row($result, $i);
+		}			
+	}
+	
+	public function db_result($result = null, $i,$item)
+	{
+		if(is_null($result))
+		{
+			return pg_result($this->db_result, $i,$item);
+		}
+		else 
+		{
+			return pg_result($result, $i,$item);
+		}			
+	}
+	
+	public function db_getResultJSON($result = null)
+	{
 		$rows=array();
-		while($row = $this->db_fetch_object($results))
-			$rows[]=$row;
-		return $rows;	
+		if(is_null($result))
+		{
+			while($r = pg_fetch_assoc($this->db_result)) 
+				$rows[] = $r;
+			
+			//print json_encode($rows);
+		}
+		else 
+		{
+			pg_result_seek($result, 0);
+			//var_dump($result);
+			while($r = pg_fetch_assoc($result)) 
+			{
+				$rows[] = $r;
+			}
+			
+			//print json_encode($rows);
+		}		
+		return json_encode($rows);	
+	}
+	
+	public function db_last_error()
+	{
+		return pg_last_error();
+	}
+	
+	public function db_affected_rows($result=null)
+	{
+		if(is_null($result))
+			return pg_affected_rows($this->db_result);
+		else
+			return pg_affected_rows($result);
+	}
+	
+	public function db_fetch_array($result=null)
+	{
+		if(is_null($result))
+			return pg_fetch_array($this->db_result);
+		else
+			return pg_fetch_array($result);
+	}
+	
+	public function db_num_fields($result=null)
+	{
+		if(is_null($result))
+			return pg_num_fields($this->db_result);
+		else
+			return pg_num_fields($result);
+	}
+	
+	/**
+	 * Liefert den Feldnamen mit index i
+	 */
+	public function db_field_name($result=null, $i)
+	{
+		if(is_null($result))
+			return pg_field_name($this->db_result, $i);
+		else
+			return pg_field_name($result, $i);
+	}
+
+	/**
+	 * Gibt den Speicher wieder Frei.
+	 * (ist das sinnvoll wenn es per Value uebergeben wird??)
+	 */
+	public function db_free_result($result = null)
+	{
+		if(is_null($result))
+		{
+			return pg_free_result($this->db_result);
+		}
+		else 
+		{
+			return pg_free_result($result);
+		}			
 	}	
 	
-}
-require_once(dirname(__FILE__).'/'.DB_SYSTEM.'.class.php');
+	/**
+	 * Liefert die aktuelle Datenbankversion
+	 */
+	public function db_version()
+	{
+		return pg_version(basis_db::$db_conn);
+	}
 
+	/**
+	 * Escaped Sonderzeichen in Variablen vor der Verwendung in SQL Statements
+	 * um SQL Injections zu verhindern
+	 * 
+	 */
+	public function db_escape($var)
+	{
+		return pg_escape_string($var);
+	}
+
+	/**
+	 * Null Value Handling und Hochkomma für Inserts / Updates
+	 * Wenn die Uebergebe Variable leer ist, wird ein String mit null
+	 * zurueckgeliefert, wenn nicht dann wird der string unter Hochkomma zurueckgeliefert
+	 * es sei denn qoute=false dann wird nur der String zurueckgeliefert
+	 *
+	 * @param $var String-Value fuer SQL Request
+	 * @return string
+	 */
+	public function db_null_value($var, $qoute=true)
+	{
+		if($qoute)
+			return ($var!==''?$this->db_qoute($var):'null');
+		else
+			return ($var!==''?$var:'null');	
+	}
+
+	/**
+	 * Setzt einen String unter Hochkomma
+	 * @param $var Value fuer Insert/Update
+	 * @return value unter Hochkomma
+	 */
+	public function db_qoute($var)
+	{
+		return "'".$var."'";
+	}
+
+	/**
+	 * Escaped einen Parameter fuer die Verwendung in Insert/Update SQL Befehlen
+     * Es werden abhaengig vom Typ Hochkomma oder Null hinzugefuegt
+	 * @param $var Value der gesetzt werden soll
+	 * @param $type Typ des Values (FHC_STRING | FHC_BOOLEAN | FHC_INTEGER | ...)
+	 * @param $nullable boolean gibt an ob das Feld NULL sein darf. Wenn true wird 
+	 *                  NULL statt einem Leerstring zurueckgeliefert
+	 * @return Escapter Value inklusive Hochkomma wenn noetig
+	 * 
+     * Verwendungsbeispiel:
+	 *	Update tbl_person set nachname=$this->db_add_param($var)
+	 *  Update tbl_person set aktiv=$this->db_add_param($var, FHC_BOOL, false)
+     *	Update tbl_person set anzahlkinder=$this->db_add_param($var, FHC_INT)
+	 */
+	public function db_add_param($var, $type=FHC_STRING, $nullable=true)
+	{
+		if($var==='' && $type!=FHC_BOOLEAN)
+		{
+			if($nullable)
+				return 'null';
+			else
+				return "''";
+		}
+
+		switch($type)
+		{
+			case FHC_INTEGER: 
+				$var = $this->db_escape($var);
+				if(!is_numeric($var) && $var!=='')
+					die('Invalid Integer Parameter detected:'.$var);
+				$var = $this->db_null_value($var, false);
+				break;
+
+			case FHC_BOOLEAN:
+				if($var===true)
+					$var='true';
+				elseif($var===false)
+					$var='false';
+				elseif($var=='' && $nullable)
+					$var = 'null';
+				else
+					die('Invalid Boolean Parameter detected');
+				break;
+
+			case FHC_STRING:
+			default: 
+				$var = $this->db_escape($var);
+				$var = $this->db_null_value($var);
+				break;
+		}
+		return $var;		
+	}
+
+	/**
+	 * Erzeugt aus einem DB-Result-Boolean einen PHP Boolean
+	 */
+	public function db_parse_bool($var)
+	{
+		if($var=='t')
+			return true;
+		elseif($var=='f')
+			return false;
+		elseif($var=='')
+			return '';
+		else
+			die('Invalid DB Boolean. Wrong DB-Engine?');
+	}
+	
+	/**
+	 * Bereitet ein Array von Elementen auf, damit es in der IN-Klausel eines 
+	 * Select Befehls verwendet werden kann.
+	 */
+	public function db_implode4SQL($array)
+	{
+		$string = '';
+		foreach($array as $row)
+		{
+			if($string!='')
+				$string.=',';
+			$string.=$this->db_add_param($row);
+		}
+		return $string;
+	}
+}
 ?>
