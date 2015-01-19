@@ -20,7 +20,6 @@
 /**
  * Dies ist eine Vorlage fuer die Verwendung von Menue Addons
  */
-require_once(dirname(__FILE__).'/menu_addon.class.php');
 
 class menu_addon_test extends menu_addon
 {

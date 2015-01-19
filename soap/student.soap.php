@@ -20,10 +20,6 @@
  */
 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/student.class.php');
-require_once('../include/prestudent.class.php');
-require_once('../include/webservicerecht.class.php');
-require_once('../include/studiensemester.class.php');
 ini_set("soap.wsdl_cache_enabled", "0");
 
 $SOAPServer = new SoapServer(APP_ROOT."/soap/student.wsdl.php?".microtime());

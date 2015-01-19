@@ -34,11 +34,6 @@ header("Content-type: application/xhtml+xml");
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/datum.class.php');
-require_once('../include/lehrstunde.class.php');
-require_once('../include/lehrverband.class.php');
-require_once('../include/gruppe.class.php');
 
 $datumObj=new datum();
 

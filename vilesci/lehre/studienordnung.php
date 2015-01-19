@@ -22,13 +22,6 @@
  * 			Stefan Puraner	<puraner@technikum-wien.at>
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/studienordnung.class.php');
-require_once('../../include/studienplan.class.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/lehrveranstaltung.class.php');
-
 
 $uid = get_uid();
 $db = new basis_db();

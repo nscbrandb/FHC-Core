@@ -28,10 +28,6 @@
  * @warning	Eine Warnung
  */
 
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/studiensemester.class.php');
-require_once(dirname(__FILE__).'/variable.class.php');
-
 class lehrstunde extends basis_db
 {
 	public $stundenplan_id;	/// @brief ID in der Datenbank

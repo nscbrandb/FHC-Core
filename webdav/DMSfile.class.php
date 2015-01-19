@@ -20,9 +20,6 @@
 /**
  * Webdav File fuer DMS
  */
-require_once(dirname(__FILE__).'/../include/dms.class.php');
-require_once(dirname(__FILE__).'/../include/datum.class.php');
-require_once(dirname(__FILE__).'/../include/benutzerberechtigung.class.php');
 
 class DMSFile extends Sabre_DAV_File
 {

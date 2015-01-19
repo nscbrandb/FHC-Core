@@ -24,13 +24,6 @@ header("Content-type: application/vnd.mozilla.xul+xml");
 
 require_once('../../config/vilesci.config.inc.php');
 require_once('../../include/globals.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/lehreinheit.class.php');
-require_once('../../include/zeitwunsch.class.php');
-require_once('../../include/wochenplan.class.php');
-require_once('../../include/reservierung.class.php'); 
-require_once('../../include/log.class.php'); 
 
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 echo '<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>';

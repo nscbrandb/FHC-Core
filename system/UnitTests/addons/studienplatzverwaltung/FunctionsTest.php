@@ -18,8 +18,6 @@
  * Authors: Werner Masik <werner@gefi.at>,
  */
 
-require_once('../../../../addons/studienplatzverwaltung/include/functions.inc.php');
-
 class FunctionsTest extends PHPUnit_Framework_TestCase
 {
 	

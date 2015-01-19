@@ -20,8 +20,6 @@
 /**
  * Webdav Directory fuer DMS
  */
-require_once(dirname(__FILE__).'/../include/dms.class.php');
-require_once(dirname(__FILE__).'/../include/benutzerberechtigung.class.php');
 
 class DMSDirectory extends Sabre_DAV_Collection 
 {

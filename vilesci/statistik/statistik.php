@@ -27,9 +27,6 @@
  * - Eventuelle Parametereingabe für die Statistik 
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/statistik.class.php');
-require_once('../../include/filter.class.php');
-require_once('../../include/functions.inc.php');
 
 $statistik_kurzbz = filter_input(INPUT_GET, 'statistik_kurzbz');
 

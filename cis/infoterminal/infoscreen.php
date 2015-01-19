@@ -20,9 +20,6 @@
  */
 
 require_once('../../config/cis.config.inc.php');
-require_once('../../include/news.class.php');
-require_once('../../include/content.class.php');
-require_once('../../include/infoscreen.class.php');
 
 header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past

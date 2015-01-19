@@ -1,7 +1,7 @@
 <?php
 /*
  * studienplatz.class.php
- * 
+ *
  * Copyright 2013 Technikum-Wien
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,6 @@
  * Authors: Christian Paminger <christian.paminger@technikum-wien.at>
  *          Werner Masik <werner@gefi.at>
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(__DIR__ .'/functions.inc.php');
 
 class studienplatz extends basis_db
 {

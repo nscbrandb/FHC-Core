@@ -18,12 +18,6 @@
  * Authors: Karl Burkhart <burkhart@technikum-wien.at>,
  */
 require_once("../../../config/cis.config.inc.php");
-require_once('../../../include/basis_db.class.php');
-require_once("../../../include/gebiet.class.php");
-require_once("../../../include/frage.class.php");
-require_once("../../../include/vorschlag.class.php");
-require_once('../../../include/functions.inc.php');
-require_once("../../../include/benutzerberechtigung.class.php");
 
 if (!$db = new basis_db())
       die('Fehler beim Oeffnen der Datenbankverbindung');

@@ -24,7 +24,6 @@
  * Klasse schluesseltyp (FAS-Online)
  * @create 03-01-2006
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class schluesseltyp extends basis_db 
 {

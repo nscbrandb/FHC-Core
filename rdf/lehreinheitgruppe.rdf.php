@@ -30,10 +30,6 @@ header("Content-type: application/xhtml+xml");
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/lehreinheitgruppe.class.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/gruppe.class.php');
-require_once('../include/lehrverband.class.php');
 
 if(isset($_GET['lehreinheit_id']) && is_numeric($_GET['lehreinheit_id']))
 	$lehreinheit_id = $_GET['lehreinheit_id'];

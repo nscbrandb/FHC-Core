@@ -20,16 +20,6 @@
  * 			Andreas Österreicher <oesi@technikum-wien.at>
  */
 require_once('../../config/cis.config.inc.php');
-require_once('../../include/phrasen.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/coodle.class.php');
-require_once('../../include/datum.class.php');
-require_once('../../include/mail.class.php'); 
-require_once('../../include/benutzer.class.php'); 
-require_once('../../include/reservierung.class.php'); 
-require_once('../../include/stunde.class.php');
-require_once('../../include/stundenplan.class.php');
-require_once('../../include/mitarbeiter.class.php'); 
 
 header("Content-Type: text/html; charset=utf-8");
 

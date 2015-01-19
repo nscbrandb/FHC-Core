@@ -24,11 +24,6 @@ header( 'Pragma: no-cache' );
 header('Content-Type: text/html;charset=UTF-8');
 
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/person.class.php');
-require_once('../../include/mitarbeiter.class.php');
 
 if (!$uid = get_uid())
 	die('Username ungueltig');

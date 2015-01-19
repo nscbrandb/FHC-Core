@@ -22,9 +22,6 @@
  * Klasse fuer Authentifizierung
  */
 
-require_once(dirname(__FILE__).'/basis.class.php');
-require_once(dirname(__FILE__).'/../addons/ldap/vilesci/ldap.class.php');
-
 class authentication extends auth
 {
 	public $ldap_config;

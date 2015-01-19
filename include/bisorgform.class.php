@@ -17,7 +17,6 @@
  *
  * Authors: Werner Masik <werner@gefi.at>
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class bisorgform extends basis_db 
 {

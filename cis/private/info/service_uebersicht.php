@@ -19,10 +19,6 @@
  * 			Manfred Kindl			< manfred.kindl@technikum-wien.at >
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/service.class.php');
-require_once('../../../include/benutzerberechtigung.class.php');
-require_once('../../../include/datum.class.php');
-require_once('../../../include/phrasen.class.php');
 
 $user = get_uid();
 $sprache = getSprache(); 

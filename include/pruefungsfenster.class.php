@@ -22,8 +22,6 @@
  * Authors: Stefan Puraner	<puraner@technikum-wien.at>
  */
 
-require_once(dirname(__FILE__) . '/basis_db.class.php');
-
 class pruefungsfenster extends basis_db {
 
     public $new;                        // boolean

@@ -29,16 +29,6 @@
 */
 
 require_once('../../../../config/cis.config.inc.php');
-require_once('../../../../include/studiensemester.class.php');
-require_once('../../../../include/lehrveranstaltung.class.php');
-require_once('../../../../include/lvinfo.class.php');
-require_once('../../../../include/studiengang.class.php');
-require_once('../../../../include/safehtml/safehtml.class.php');
-require_once '../../../../include/phrasen.class.php';
-require_once '../../../../include/lehreinheit.class.php';
-require_once '../../../../include/lehrstunde.class.php';
-require_once '../../../../include/datum.class.php';
-require_once '../../../../include/stunde.class.php';
 
 if (!$db = new basis_db())
 			die('Fehler beim Herstellen der Datenbankverbindung');

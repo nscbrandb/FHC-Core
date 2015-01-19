@@ -19,13 +19,6 @@
  */
 header("Content-type: application/xhtml+xml");
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/lehrveranstaltung.class.php');
-require_once('../include/studiensemester.class.php');
-require_once('../include/lvinfo.class.php');
-require_once('../include/lehreinheit.class.php');
-require_once('../include/lehrfach.class.php');
 
 $lvid = (isset($_REQUEST['lvid'])?$_REQUEST['lvid']:NULL);
 $studiensemester = new studiensemester();

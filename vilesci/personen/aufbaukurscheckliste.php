@@ -28,15 +28,9 @@
  */
 
 		require_once('../../config/vilesci.config.inc.php');
-		require_once('../../include/basis_db.class.php');
 		if (!$db = new basis_db())
 				die('Es konnte keine Verbindung zum Server aufgebaut werden.');
 			
-			
-	require_once('../../include/studiensemester.class.php');
-	require_once('../../include/datum.class.php');
-
-
 $datum_obj = new datum();
 $stsem_obj = new studiensemester();
 $stsem = $stsem_obj->getaktorNext();

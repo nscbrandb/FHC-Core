@@ -25,9 +25,6 @@
  * http://www.example.com/cis/public/freebusy.php/oesi
  */
 require_once('../../config/cis.config.inc.php');
-require_once('../../include/freebusy.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/ical.class.php');
 
 if(!isset($_SERVER['PATH_INFO']))
 	die('Username fehlt. Aufruf ueber '.APP_ROOT.'cis/public/freebusy.php/username/');

@@ -24,7 +24,6 @@
  * Klasse Note
  * @create 2007-06-06
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class note extends basis_db
 {

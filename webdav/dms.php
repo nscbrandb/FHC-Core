@@ -23,9 +23,6 @@
 require_once('../config/cis.config.inc.php');
 require_once('../include/sabredav/lib/Sabre/autoload.php');
 //require_once('../../../sabredav161/SabreDAV/lib/Sabre/autoload.php');
-require_once('DMSdirectory.class.php');
-require_once('DMSfile.class.php');
-require_once('auth.class.php');
 
 $authBackend = new MyAuth();
 // Creating the plugin. We're assuming that the realm

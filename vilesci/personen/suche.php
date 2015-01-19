@@ -22,15 +22,6 @@
  */
 
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/basis_db.class.php');	
-require_once('../../include/functions.inc.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/person.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/student.class.php');
-require_once('../../include/prestudent.class.php');
-require_once('../../include/datum.class.php');
-require_once('../../include/authentication.class.php');
 
 if (!$db = new basis_db())
 	die('Es konnte keine Verbindung zum Server aufgebaut werden.');

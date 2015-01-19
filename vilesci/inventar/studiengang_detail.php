@@ -25,10 +25,6 @@
 	$path='../../';
 	
 	require_once($path.'config/vilesci.config.inc.php');
-	require_once($path.'include/functions.inc.php');
-	require_once($path.'include/benutzerberechtigung.class.php');
-	require_once($path.'include/mitarbeiter.class.php');
- 	require_once($path.'include/wawi.class.php');
  	
  	if (!$uid = get_uid())
 	  	die('Keine UID gefunden !  <a href="javascript:history.back()">Zur&uuml;ck</a>');

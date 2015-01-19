@@ -25,9 +25,6 @@
  */
 
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/gebiet.class.php');
-require_once('../../../include/benutzerberechtigung.class.php');
 
 if (!$user=get_uid())
 	die('Sie sind nicht angemeldet. Es wurde keine Benutzer UID gefunden ! <a href="javascript:history.back()">Zur&uuml;ck</a>');

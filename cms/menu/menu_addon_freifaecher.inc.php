@@ -22,9 +22,6 @@
  * 
  * Es wird eine Link-Liste mit allen aktuellen Freifaechern erstellt 
  */
-require_once(dirname(__FILE__).'/menu_addon.class.php');
-require_once(dirname(__FILE__).'/../../include/functions.inc.php');
-require_once(dirname(__FILE__).'/../../include/lehrveranstaltung.class.php');
 
 class menu_addon_freifaecher extends menu_addon
 {

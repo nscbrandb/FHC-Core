@@ -21,8 +21,6 @@
  * Test Client fuer Mitarbeiter Webservice
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php'); 
-require_once('../include/basis_db.class.php');
 
 $db = new basis_db();
 $method = (isset($_GET['method'])?$_GET['method']:'getMitarbeiterFromUID');

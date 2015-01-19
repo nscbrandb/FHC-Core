@@ -30,16 +30,6 @@
 // ****************************************
 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
-require_once('../include/log.class.php');
-require_once('../include/adresse.class.php');
-require_once('../include/kontakt.class.php');
-require_once('../include/bankverbindung.class.php');
-require_once('../include/variable.class.php');
-require_once('../include/benutzerfunktion.class.php');
-require_once('../include/studiensemester.class.php');
-require_once('../include/fotostatus.class.php');
 
 $user = get_uid();
 

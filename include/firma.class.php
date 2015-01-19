@@ -24,8 +24,6 @@
  * Klasse firma
  * @create 18-12-2006
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/organisationseinheit.class.php');
 
 class firma extends basis_db
 {

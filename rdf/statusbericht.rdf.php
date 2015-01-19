@@ -19,12 +19,6 @@
  */
 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/rdf.class.php');
-require_once('../include/wawi_bestellung.class.php');
-require_once('../include/projekt.class.php');
-require_once('../include/projektphase.class.php');
-require_once('../include/projekttask.class.php');
-require_once('../include/ressource.class.php'); 
 
 if (isset($_REQUEST["xmlformat"]) && $_REQUEST["xmlformat"] == "xml")
 {

@@ -24,7 +24,6 @@
  * Klasse betriebsmittelstatus (FAS-Online)
  * @create 13-01-2007
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class betriebsmittelstatus extends basis_db
 {

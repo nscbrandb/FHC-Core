@@ -18,10 +18,6 @@
  * Authors: Andreas Oesterreicher 	<andreas.oesterreicher@technikum-wien.at>
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/ort.class.php');
-require_once('../../../include/benutzer.class.php');
-require_once('../../../include/ical.class.php');
-require_once('../../../include/wochenplan.class.php');
 
 if(isset($_POST['id']))
 	$id = $_POST['id'];

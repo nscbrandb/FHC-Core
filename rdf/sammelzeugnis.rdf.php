@@ -22,14 +22,6 @@
  
 header("Content-type: application/xhtml+xml");
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/zeugnisnote.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/note.class.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/mitarbeiter.class.php');
-require_once('../include/prestudent.class.php');
-require_once('../include/projektarbeit.class.php');
 
 $db = new basis_db(); 
 $fussnotenzeichen=array('¹)','²)','³)');

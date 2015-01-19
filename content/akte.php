@@ -24,10 +24,6 @@
  * oder im Filesystem in diesem Fall ist die Akte mit einer DMS ID verknuepft in welcher der Dateiname steht.
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/akte.class.php');
-require_once('../include/dms.class.php'); 
-require_once('../include/benutzerberechtigung.class.php');
-require_once('../include/functions.inc.php');
 
 $user = get_uid();
 $rechte = new benutzerberechtigung();

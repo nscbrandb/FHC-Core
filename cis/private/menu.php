@@ -23,15 +23,6 @@
  */
 require_once('../../config/cis.config.inc.php');
 require_once('../../include/globals.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/funktion.class.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/lehrveranstaltung.class.php');
-require_once('../../include/mitarbeiter.class.php');
-require_once('../../include/student.class.php');
-require_once('../../include/datum.class.php');
 
 if (!$db = new basis_db())
 	die('Es konnte keine Verbindung zum Server aufgebaut werden.');

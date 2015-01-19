@@ -25,11 +25,6 @@
 // Include Daten
 // -------------------------------------------------------------------------------
 	require_once('../../../config/cis.config.inc.php');
-	require_once('../../../include/organisationseinheit.class.php');
-	require_once('../../../include/mitarbeiter.class.php');
-	require_once('../../../include/benutzerfunktion.class.php');
-	require_once('../../../include/studiengang.class.php');
-	require_once('../../../include/fachbereich.class.php');
 // -------------------------------------------------------------------------------
 // Parameterdaten 
 // -------------------------------------------------------------------------------

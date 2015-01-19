@@ -23,7 +23,6 @@
  * Klasse funktion (FAS-Online)
  * @create 14-03-2006
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class funktion extends basis_db
 {

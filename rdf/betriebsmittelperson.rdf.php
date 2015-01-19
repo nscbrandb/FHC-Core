@@ -29,11 +29,6 @@ header("Content-type: application/xhtml+xml");
 
 // DAO
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/betriebsmittelperson.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/organisationseinheit.class.php');
-require_once('../include/person.class.php');
-require_once('../include/betriebsmitteltyp.class.php');
 
 if(isset($_GET['person_id']))
 	$person_id = $_GET['person_id'];

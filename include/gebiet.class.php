@@ -24,7 +24,6 @@
  * Klasse fuer die Gebiete des Testtools (Reihungstesttool)
  *
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class gebiet extends basis_db 
 {

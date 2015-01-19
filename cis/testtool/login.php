@@ -23,14 +23,6 @@
 
 require_once('../../config/cis.config.inc.php');
 require_once('../../config/global.config.inc.php');
-require_once('../../include/person.class.php');
-require_once('../../include/prestudent.class.php');
-require_once('../../include/pruefling.class.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/reihungstest.class.php');
-require_once('../../include/sprache.class.php');
-require_once '../../include/phrasen.class.php';
-require_once '../../include/datum.class.php';
 
 if (!$db = new basis_db())
 	die('Fehler beim Oeffnen der Datenbankverbindung');

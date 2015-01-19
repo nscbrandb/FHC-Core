@@ -35,9 +35,6 @@ header("Pragma: no-cache");
 header("Content-type: application/xhtml+xml");
 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/ressource.class.php');
-require_once('../include/basis_db.class.php');
 
 $mitarbeiter = '';
 $student='';

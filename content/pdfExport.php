@@ -28,18 +28,7 @@
 session_cache_limiter('none'); //muss gesetzt werden sonst funktioniert der Download mit IE8 nicht
 session_start();
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
 require_once('../include/xslfo2pdf/xslfo2pdf.php');
-require_once('../include/fop.class.php');
-require_once('../include/akte.class.php');
-require_once('../include/vorlage.class.php');
-require_once('../include/student.class.php');
-require_once('../include/prestudent.class.php');
-require_once('../include/variable.class.php');
-require_once('../include/addon.class.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/studiensemester.class.php');
 
 $user = get_uid();
 $db = new basis_db();

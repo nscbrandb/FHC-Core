@@ -21,13 +21,10 @@
  *          Gerald Simane-Sequens 	< gerald.simane-sequens@technikum-wien.at >
  */
 		require_once('../../../config/vilesci.config.inc.php');
-		require_once('../../../include/basis_db.class.php');
+
 		if (!$db = new basis_db())
 			die('Es konnte keine Verbindung zum Server aufgebaut werden.');
 		
-		include('../../../include/functions.inc.php');
-
-
 	header("Content-disposition: filename=studenten.txt");
 	header("Content-type: application/octetstream");
 	header("Pragma: no-cache");

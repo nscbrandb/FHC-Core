@@ -21,15 +21,6 @@
  */
 require_once('../config/wawi.config.inc.php');
 require_once('auth.php');
-require_once('../include/firma.class.php');
-require_once('../include/organisationseinheit.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/wawi_konto.class.php');
-require_once('../include/wawi_rechnung.class.php');
-require_once('../include/wawi_kostenstelle.class.php');
-require_once('../include/wawi_bestellung.class.php');
-require_once('../include/wawi_zahlungstyp.class.php');
-require_once('../include/benutzerberechtigung.class.php');
 
 $aktion ='';
 if (isset($_GET['method']))

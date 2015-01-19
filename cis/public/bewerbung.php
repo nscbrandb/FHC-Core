@@ -31,28 +31,6 @@ if (!isset($_SESSION['bewerbung/user']) || $_SESSION['bewerbung/user']=='')
     exit;
 }
 
-//require_once('../../include/functions.inc.php');
-require_once('../../include/konto.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/phrasen.class.php');
-require_once('../../include/benutzerberechtigung.class.php'); 
-require_once('../../include/nation.class.php'); 
-require_once('../../include/person.class.php'); 
-require_once('../../include/datum.class.php'); 
-require_once('../../include/kontakt.class.php'); 
-require_once('../../include/adresse.class.php'); 
-require_once('../../include/prestudent.class.php');
-require_once('../../include/studiengang.class.php'); 
-require_once('../../include/zgv.class.php'); 
-require_once('../../include/dms.class.php'); 
-require_once('../../include/dokument.class.php'); 
-require_once('../../include/akte.class.php');
-require_once('../../include/mail.class.php'); 
-require_once('../../include/studiensemester.class.php'); 
-require_once('../../include/studienplan.class.php');
-require_once('../../include/basis_db.class.php'); 
-require_once('../../include/reihungstest.class.php'); 
-
 $person_id = $_SESSION['bewerbung/personId'];
 $akte_id = isset($_GET['akte_id'])?$_GET['akte_id']:'';
 $method=isset($_GET['method'])?$_GET['method']:'';

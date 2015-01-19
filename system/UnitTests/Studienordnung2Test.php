@@ -23,7 +23,6 @@
  * 
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/studienordnung.class.php');
 
 class Studienordnung2Test extends PHPUnit_Framework_TestCase
 {

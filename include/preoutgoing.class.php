@@ -22,7 +22,6 @@
  * Klasse PreOutgoing
  * @create 13-04-2012
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class preoutgoing extends basis_db
 {

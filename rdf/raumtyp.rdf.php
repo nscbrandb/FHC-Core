@@ -34,7 +34,6 @@ header("Content-type: application/xhtml+xml");
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 // DAO
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/raumtyp.class.php');
 
 // raumtypen holen
 $raumtypDAO=new raumtyp();

@@ -18,8 +18,6 @@
  * Authors: Andreas Oesterreicher 	<andreas.oesterreicher@technikum-wien.at>
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/ort.class.php');
-require_once('../../../include/benutzer.class.php');
 
 if(!isset($_REQUEST['work']))
 	die('Parameter Work missing');

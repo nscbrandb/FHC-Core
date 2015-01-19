@@ -24,10 +24,6 @@
  * Webservice Funktion 'fhcomplete_courses_by_shortname' 
  *                     'fhcomplete_get_course_grades'
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/moodle.class.php');
-require_once(dirname(__FILE__).'/datum.class.php');
-require_once(dirname(__FILE__).'/studiensemester.class.php');
 require_once(dirname(__FILE__).'/../config/global.config.inc.php');
 
 class moodle24_course extends basis_db

@@ -26,7 +26,7 @@
  * Changes:	23.10.2004: Anpassung an neues DB-Schema (WM)
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/basis_db.class.php');
+
 if (!$db = new basis_db())
 	die('Es konnte keine Verbindung zum Server aufgebaut werden.');
 

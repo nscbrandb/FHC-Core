@@ -21,16 +21,6 @@
  */
 require_once '../config/wawi.config.inc.php';
 require_once('auth.php');
-
-require_once '../include/wawi_konto.class.php';
-require_once '../include/wawi_bestellung.class.php';
-require_once '../include/wawi_kostenstelle.class.php';
-require_once '../include/wawi_bestelldetail.class.php';
-require_once '../include/wawi_aufteilung.class.php'; 
-require_once '../include/wawi_bestellstatus.class.php';
-require_once '../include/wawi_zahlungstyp.class.php';
-require_once '../include/datum.class.php';
-require_once '../include/firma.class.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">

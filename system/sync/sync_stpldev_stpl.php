@@ -27,9 +27,6 @@
  */
 require_once('../../config/vilesci.config.inc.php');
 require_once('../../config/global.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/mail.class.php');
 
 echo '<html>
 <head>

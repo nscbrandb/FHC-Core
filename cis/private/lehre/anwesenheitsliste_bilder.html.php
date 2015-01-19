@@ -29,14 +29,9 @@
 // ------------------------------------------------------------------------------------------
 //	Datenbankanbindung 
 // ------------------------------------------------------------------------------------------
-	require_once('../../../include/basis_db.class.php');
 	if (!$db = new basis_db())
       die('Fehler beim Herstellen der Datenbankverbindung');
 
-   require_once('../../../include/person.class.php');
-   require_once('../../../include/studiengang.class.php');
-   require_once('../../../include/studiensemester.class.php');
-   require_once('../../../include/lehrveranstaltung.class.php');
    error_reporting(E_ALL);
    ini_set('display_errors','1');
    

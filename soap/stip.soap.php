@@ -19,16 +19,6 @@
  */
  
 require_once('../config/vilesci.config.inc.php'); 
-require_once('../include/basis_db.class.php');
-require_once('../include/prestudent.class.php');
-require_once('../include/student.class.php'); 
-require_once('../include/konto.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/benutzer.class.php');
-require_once('../include/webservicelog.class.php'); 
-require_once('../include/mail.class.php');
-require_once('../include/abschlusspruefung.class.php');
-require_once('stip.class.php'); 
 
 ini_set("soap.wsdl_cache_enabled", "0");
 

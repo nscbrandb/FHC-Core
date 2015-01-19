@@ -23,8 +23,6 @@
  * Klasse WaWi Zahlungstyp
  */
  
-require_once(dirname(__FILE__).'/basis_db.class.php');
-
 class wawi_zahlungstyp extends basis_db
 {
 	public $new; 				// boolean

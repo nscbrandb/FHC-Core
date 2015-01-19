@@ -30,10 +30,6 @@ header("Content-type: application/xhtml+xml");
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 // DAO
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/funktion.class.php');
-require_once('../include/organisationseinheit.class.php');
-require_once('../include/datum.class.php');
 
 $rdf_url='http://www.technikum-wien.at/bnfunktion';
 

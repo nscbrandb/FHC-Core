@@ -23,8 +23,6 @@
  * Authors: Martin Tatzber <tatzberm@technikum-wien.at
  */
 
-require_once(dirname(__FILE__).'/basis_db.class.php');
-
 class lvangebot extends basis_db
 {
 	private $new = true;			// boolean

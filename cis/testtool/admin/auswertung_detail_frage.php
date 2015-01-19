@@ -24,10 +24,6 @@
  * Detailierte Auswertung der Reihungstests
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/studiengang.class.php');
-require_once('../../../include/gebiet.class.php');
-require_once('../../../include/benutzerberechtigung.class.php');
 
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>

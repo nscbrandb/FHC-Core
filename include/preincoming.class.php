@@ -23,7 +23,6 @@
  * Klasse PreIncoming
  * @create 20-04-2011
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class preincoming extends basis_db
 {

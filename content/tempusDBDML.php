@@ -25,13 +25,6 @@
 // *********************************************
 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
-require_once('../include/log.class.php');
-require_once('../include/benutzerfunktion.class.php');
-require_once('../include/stundenplan.class.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/reservierung.class.php');
 
 $user = get_uid();
 

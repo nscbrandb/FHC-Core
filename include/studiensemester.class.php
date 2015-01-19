@@ -20,7 +20,6 @@
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at> and
  *			Gerald Simane-Sequens <gerald.simane-sequens@technikum-wien.at>
  */
-require_once('basis_db.class.php');
 
 class studiensemester extends basis_db
 {

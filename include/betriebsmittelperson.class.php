@@ -23,7 +23,6 @@
  * Klasse Betriebsmittelperson 
  * @create 13-01-2007
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class betriebsmittelperson extends basis_db
 {

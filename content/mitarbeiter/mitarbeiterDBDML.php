@@ -24,22 +24,6 @@
  */
 require_once('../../config/vilesci.config.inc.php');
 require_once('../../config/global.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/log.class.php');
-require_once('../../include/person.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/mitarbeiter.class.php');
-require_once('../../include/bisverwendung.class.php');
-require_once('../../include/bisfunktion.class.php');
-require_once('../../include/entwicklungsteam.class.php');
-require_once('../../include/resturlaub.class.php');
-require_once('../../include/buchung.class.php');
-require_once('../../include/pruefung.class.php');
-require_once('../../include/projektbetreuer.class.php');
-require_once('../../include/vertrag.class.php');
-require_once('../../include/lehreinheitmitarbeiter.class.php');
-require_once('../../include/wawi_konto.class.php');
 
 $user = get_uid();
 

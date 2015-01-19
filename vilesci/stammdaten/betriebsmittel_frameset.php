@@ -18,7 +18,7 @@
  * Authors: Andreas Oesterreicher 	<andreas.oesterreicher@technikum-wien.at>
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/basis_db.class.php');
+
 $db = new basis_db();
 
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Frameset//EN">

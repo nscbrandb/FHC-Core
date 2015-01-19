@@ -23,10 +23,6 @@
  * Liefert "true" wenn der Vorgang OK war, sonst die Fehlermeldung
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/ort.class.php');
-require_once('../../../include/benutzer.class.php');
-require_once('../../../include/coodle.class.php');
 
 $user = get_uid();
 

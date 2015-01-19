@@ -31,7 +31,6 @@
 // ------------------------------------------------------------------------------------------
 //	Datenbankanbindung 
 // ------------------------------------------------------------------------------------------
-	require_once('../../../include/basis_db.class.php');
 	if (!$db = new basis_db())
 			die('Fehler beim Herstellen der Datenbankverbindung');
 			
@@ -39,10 +38,6 @@
    define('FPDF_FONTPATH','../../../include/pdf/font/');
    // library einbinden
    require_once('../../../include/pdf/fpdf.php');
-   require_once('../../../include/person.class.php');
-   require_once('../../../include/studiengang.class.php');
-   require_once('../../../include/studiensemester.class.php');
-   require_once('../../../include/lehrveranstaltung.class.php');
    require_once('../../../include/pdf.inc.php');
 
    //Uebergabeparameter abpruefen

@@ -27,19 +27,6 @@ header("Pragma: no-cache");
 // content type setzen
 // DAO
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/datum.class.php');
-require_once('../include/basis_db.class.php');
-require_once('../include/wawi_bestellung.class.php');
-require_once('../include/wawi_bestelldetail.class.php');
-require_once('../include/benutzer.class.php');
-require_once('../include/wawi_konto.class.php');
-require_once('../include/wawi_kostenstelle.class.php');
-require_once('../include/adresse.class.php');
-require_once('../include/firma.class.php');
-require_once('../include/standort.class.php');
-require_once('../include/kontakt.class.php');
-require_once('../include/wawi_aufteilung.class.php'); 
-require_once('../include/studiengang.class.php'); 
 
 if (isset($_REQUEST["xmlformat"]) && $_REQUEST["xmlformat"] == "xml")
 {

@@ -24,7 +24,7 @@
 // Aufruf mit <img src='bild.php?src=frage&frage_id=1
 
   require_once('../../config/cis.config.inc.php');
-  require_once('../../include/basis_db.class.php');
+
   if (!$db = new basis_db())
   		die('Fehler beim Oeffnen der Datenbankverbindung');
 

@@ -28,13 +28,6 @@
 // ---------------- CIS Include Dateien einbinden
 	require_once('../../../config/cis.config.inc.php');
 	
- // ---------------- Datenbank-Verbindung 
-	include_once('../../../include/person.class.php');
-	include_once('../../../include/benutzer.class.php');
-
-// ---------------- Jahresplan Classe und Allg.Funktionen		
-	include_once('../../../include/jahresplan.class.php');
-	
 	$heximg ='';
 	// Es wurde bereits der Hex-String ueber geben	
 	if (isset($_REQUEST['heximg']))

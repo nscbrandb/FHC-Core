@@ -31,11 +31,7 @@
 
 // ---------------- Standart Include Dateien einbinden
 require_once('../../config/vilesci.config.inc.php');	
-require_once('../../include/basis_db.class.php');
-require_once('../../include/functions.inc.php');
 require_once('../../include/globals.inc.php');
-require_once('../../include/moodle19_user.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
 
 $user = get_uid();
 

@@ -32,19 +32,6 @@
  * 
  */
 require_once('../config/cis.config.inc.php');
-require_once('../include/content.class.php');
-require_once('../include/template.class.php');
-require_once('../include/functions.inc.php');
-require_once('../include/news.class.php');
-require_once('../include/kontakt.class.php');
-require_once('../include/benutzerfunktion.class.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/mitarbeiter.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/phrasen.class.php');
-require_once('../include/student.class.php');
-require_once('../include/benutzer.class.php');
-require_once('../include/ort.class.php');
 
 $sprache = getSprache();
 

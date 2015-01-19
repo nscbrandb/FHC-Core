@@ -23,15 +23,10 @@
 
 require_once('../../config/cis.config.inc.php');
 require_once('../../config/global.config.inc.php');
-require_once('../../include/basis_db.class.php');
-require_once('../../include/sprache.class.php');
-require_once '../../include/phrasen.class.php';
 
-  if (!$db = new basis_db())
-      die('Fehler beim Oeffnen der Datenbankverbindung');
+if (!$db = new basis_db())
+	die('Fehler beim Oeffnen der Datenbankverbindung');
   
-require_once('../../include/gebiet.class.php');
-
 function getSpracheUser()
 {
 	if(isset($_SESSION['sprache_user']))

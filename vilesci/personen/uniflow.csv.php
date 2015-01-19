@@ -25,8 +25,6 @@
  */
 
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/basis_db.class.php');
-require_once('../../include/functions.inc.php');
 
 header("Content-Type: text/csv");
 header("Content-Disposition: attachment; filename=uniflow.csv");

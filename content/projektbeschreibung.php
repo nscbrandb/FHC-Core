@@ -22,10 +22,6 @@
 session_cache_limiter('none'); //muss gesetzt werden sonst funktioniert der Download mit IE8 nicht
 session_start();
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/vorlage.class.php');
-require_once('../include/gantt.class.php');
-require_once('../include/benutzerberechtigung.class.php');
 
 $user = get_uid();
 

@@ -18,8 +18,6 @@
  * Authors: Christian Paminger <christian.paminger@technikum-wien.at>
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/rdf.class.php');
-require_once('../include/wawi_bestellung.class.php');
 
 if(isset($_GET['projektKurzbz']))
 {

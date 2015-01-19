@@ -32,15 +32,6 @@
  * excel ... wenn gesetzt, dann wird die Anwesenheitsliste als Excel exportiert
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/reihungstest.class.php');
-require_once('../../include/ort.class.php');
-require_once('../../include/datum.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/pruefling.class.php');
-require_once('../../include/person.class.php');
-require_once('../../include/prestudent.class.php');
 require_once('../../include/Excel/excel.php');
 
 if (!$db = new basis_db())

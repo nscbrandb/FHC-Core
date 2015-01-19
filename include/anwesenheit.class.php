@@ -20,7 +20,6 @@
 /**
  * Klasse zur Verwaltung der Anwesenheiten der Studierenden
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class anwesenheit extends basis_db
 {

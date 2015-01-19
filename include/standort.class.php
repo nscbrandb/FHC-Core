@@ -24,7 +24,6 @@
  * Klasse standort
  * @create 02-03-2010
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class standort extends basis_db
 {

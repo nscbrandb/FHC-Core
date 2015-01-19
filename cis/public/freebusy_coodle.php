@@ -25,10 +25,6 @@
  * http://www.example.com/cis/public/freebusy_coodle.php/oesi
  */
 require_once('../../config/cis.config.inc.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/coodle.class.php');
-require_once('../../include/ical.class.php');
 
 $uid = mb_substr($_SERVER['PATH_INFO'],1);
 

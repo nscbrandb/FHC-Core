@@ -29,20 +29,6 @@
  * Abhaengig:	 	von functions.inc.php
  *****************************************************************************/
 
-require_once(dirname(__FILE__).'/../config/global.config.inc.php');
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/lehrstunde.class.php');
-require_once(dirname(__FILE__).'/ferien.class.php');
-require_once(dirname(__FILE__).'/benutzerberechtigung.class.php');
-require_once(dirname(__FILE__).'/studiengang.class.php');
-require_once(dirname(__FILE__).'/mitarbeiter.class.php');
-require_once(dirname(__FILE__).'/datum.class.php');
-require_once(dirname(__FILE__).'/zeitsperre.class.php');
-require_once(dirname(__FILE__).'/phrasen.class.php'); 
-require_once(dirname(__FILE__).'/globals.inc.php'); 
-require_once(dirname(__FILE__).'/sprache.class.php');
-require_once(dirname(__FILE__).'/functions.inc.php');
-
 class wochenplan extends basis_db
 {
 	public $conn;			// @brief Connection zur Datenbank

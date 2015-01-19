@@ -21,8 +21,6 @@
  */
  
 require_once '../../../config/cis.config.inc.php';
-require_once '../../../include/phrasen.class.php';
-require_once '../../../include/person.class.php'; 
 
 if(isset($_GET['lang']))
 	setSprache($_GET['lang']);

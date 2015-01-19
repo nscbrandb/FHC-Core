@@ -22,8 +22,6 @@
  * 
  * mit drawSubmenu($id) wird das enstprechende Menue gezeichnet.
  */
-require_once(dirname(__FILE__).'/../include/functions.inc.php');
-require_once(dirname(__FILE__).'/../include/content.class.php');
 
 //Parameter fuer Redirect URLS
 $params = array();

@@ -19,10 +19,6 @@
  */
 
 require_once('../config/vilesci.config.inc.php'); 
-require_once('../include/basis_db.class.php');
-require_once('../include/studiensemester.class.php');
-require_once('../include/zeugnisnote.class.php');
-require_once('../include/prestudent.class.php'); 
 
 class stip extends basis_db
 {

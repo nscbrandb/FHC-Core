@@ -22,8 +22,6 @@
  * Klasse fuer Authentifizierung
  */
 
-require_once(dirname(__FILE__).'/basis.class.php');
-
 abstract class auth extends basis
 {
 	abstract function getUser();
@@ -36,6 +34,3 @@ abstract class auth extends basis
 	abstract function loginAsUser($username);
 	abstract function logout();
 }
-require_once(dirname(__FILE__).'/'.AUTH_SYSTEM.'.class.php');
-
-?>

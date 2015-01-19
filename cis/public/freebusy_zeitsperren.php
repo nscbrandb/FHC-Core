@@ -25,11 +25,6 @@
  * http://www.example.com/cis/public/freebusy_zeitsperren.php/oesi
  */
 require_once('../../config/cis.config.inc.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/zeitsperre.class.php');
-require_once('../../include/ical.class.php');
-require_once('../../include/stunde.class.php');
 
 $uid = mb_substr($_SERVER['PATH_INFO'],1);
 

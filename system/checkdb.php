@@ -29,8 +29,6 @@
 
 require_once('../config/system.config.inc.php');
 require_once('database.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
 
 $db = new basis_db();
 $uid=get_uid();

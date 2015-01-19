@@ -22,26 +22,6 @@
 require_once '../config/wawi.config.inc.php';
 require_once('auth.php');
 
-require_once '../include/firma.class.php';
-require_once '../include/organisationseinheit.class.php';
-require_once '../include/mitarbeiter.class.php';
-require_once '../include/datum.class.php';
-require_once '../include/benutzerberechtigung.class.php';
-require_once '../include/standort.class.php';
-require_once '../include/adresse.class.php';
-require_once '../include/studiengang.class.php';
-require_once '../include/mail.class.php';
-require_once '../include/geschaeftsjahr.class.php';
-require_once '../include/wawi_konto.class.php';
-require_once '../include/wawi_bestellung.class.php';
-require_once '../include/wawi_kostenstelle.class.php';
-require_once '../include/wawi_bestelldetail.class.php';
-require_once '../include/wawi_aufteilung.class.php'; 
-require_once '../include/wawi_bestellstatus.class.php';
-require_once '../include/wawi_zahlungstyp.class.php';
-require_once '../include/tags.class.php';
-require_once '../include/projekt.class.php';
-
 $aktion ='';
 $test = 0;			// Bestelldetail Anzahl
 $date = new datum(); 

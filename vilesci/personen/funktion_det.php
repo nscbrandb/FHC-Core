@@ -30,11 +30,6 @@
 	Erstellt am: 25.05.2003 von Christian Paminger, Werner Masik
 ********************************************************************************/
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/person.class.php');
-require_once('../../include/funktion.class.php');
-require_once('../../include/benutzerfunktion.class.php');
-require_once('../../include/fachbereich.class.php');
 
 if (!$db = new basis_db())
 	die('Es konnte keine Verbindung zum Server aufgebaut werden.');

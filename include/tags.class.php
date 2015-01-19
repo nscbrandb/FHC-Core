@@ -23,9 +23,6 @@
  * Klasse Tags
  */
 
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/sprache.class.php');
-
 class tags extends basis_db
 {
 	public $result = array();		//  Konto Objekt

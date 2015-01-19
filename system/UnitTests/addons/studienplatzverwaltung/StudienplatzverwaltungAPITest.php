@@ -23,9 +23,6 @@
  * 
  */
 require_once('../../../../config/system.config.inc.php');
-require_once('../../../../include/appdaten.class.php');
-require_once('../../../../include/benutzer.class.php');
-require_once('../../../../addons/studienplatzverwaltung/vilesci/StudienplatzverwaltungAPI.class.php');
 
 class StudienplatzverwaltungAPITest extends PHPUnit_Framework_TestCase
 {

@@ -25,9 +25,6 @@ header("Pragma: no-cache");
 header("Content-type: application/vnd.mozilla.xul+xml");
 
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/person.class.php');
-require_once('../../include/prestudent.class.php');
-require_once('../../include/akte.class.php');
 
 echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
 

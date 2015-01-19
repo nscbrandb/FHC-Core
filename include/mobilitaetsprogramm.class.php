@@ -24,8 +24,6 @@
  * Klasse Mobilitaetsprogramm
  */
  
-require_once(dirname(__FILE__).'/basis_db.class.php');
-
 class mobilitaetsprogramm extends basis_db 
 {
 	public $new;      			//  boolean

@@ -22,8 +22,6 @@
 /**
  * Verwaltet die Vorlagen fuer die Dokumentenerstellung
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/organisationseinheit.class.php');
 
 class vorlage extends basis_db
 {

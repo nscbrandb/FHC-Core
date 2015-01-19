@@ -22,9 +22,6 @@
  *
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/vertrag.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
 
 $vertragstyp_kurzbz=isset($_REQUEST['vertragstyp_kurzbz'])?$_REQUEST['vertragstyp_kurzbz']:'';
 $vertragstyp_bezeichnung=isset($_REQUEST['vertragstyp_bezeichnung'])?$_REQUEST['vertragstyp_bezeichnung']:'';

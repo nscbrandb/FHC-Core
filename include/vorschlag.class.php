@@ -23,7 +23,6 @@
  * Vorschlag Klasse
  * Verwaltet die Antwortmoeglichkeiten zu den Testtool Fragen
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class vorschlag extends basis_db
 {

@@ -27,7 +27,6 @@
  * @brief  			Klasse fuer die Schnittstelle zum Mantis BTS
  * Abhaengig:	 	von basis_db.class.php
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class mantis extends basis_db
 {

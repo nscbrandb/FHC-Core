@@ -24,7 +24,6 @@
  */
 echo 'UnitTest - Studienordnung - ';
 require_once(dirname(__FILE__).'/../../config/system.config.inc.php');
-require_once(dirname(__FILE__).'/../../include/studienordnung.class.php');
 $errormsg='';
 
 class ut_studienordnung //extends PHPUnit_Framework_TestCase

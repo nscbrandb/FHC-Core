@@ -26,8 +26,6 @@
  *******************************************************************************************************/
 
 require_once('../config/cis.config.inc.php');
-require_once('../include/datum.class.php');
-require_once('../include/mail.class.php');
 require_once("../opus/lib/stringValidation.php");
 require_once('../opus/lib/opus.class.php');
 

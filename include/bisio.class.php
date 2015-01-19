@@ -23,7 +23,6 @@
  * Klasse bisio - Incomming/Outgoing
  * @create 2007-05-14
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class bisio extends basis_db
 {

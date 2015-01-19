@@ -19,9 +19,6 @@
  */
 
 	require_once('../../config/vilesci.config.inc.php');
-//	require_once('../../include/functions.inc.php');
-//	require_once('../../include/benutzerberechtigung.class.php');
-	require_once('../../include/gruppe.class.php');
 
 /* 	if (!$uid = get_uid())
 		die('Keine UID gefunden !  <a href="javascript:history.back()">Zur&uuml;ck</a>');

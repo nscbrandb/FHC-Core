@@ -22,24 +22,7 @@
  */
 require_once('../../../config/cis.config.inc.php');
 require_once('../../../config/global.config.inc.php');
-require_once('../../../include/functions.inc.php');
 require_once('../../../include/globals.inc.php');
-require_once('../../../include/studiengang.class.php');
-require_once('../../../include/person.class.php');
-require_once('../../../include/datum.class.php');
-require_once('../../../include/betriebsmittel.class.php');
-require_once('../../../include/betriebsmittelperson.class.php');
-require_once('../../../include/betriebsmitteltyp.class.php');  
-require_once('../../../include/phrasen.class.php');
-require_once('../../../include/betriebsmittel_betriebsmittelstatus.class.php');
-require_once('../../../include/benutzer.class.php');
-require_once('../../../include/mitarbeiter.class.php');
-require_once('../../../include/student.class.php');
-require_once('../../../include/kontakt.class.php');
-require_once('../../../include/fotostatus.class.php');
-require_once('../../../include/addon.class.php'); 
-require_once('../../../include/gruppe.class.php');
-require_once('../../../include/adresse.class.php');
 
 $sprache = getSprache(); 
 $p=new phrasen($sprache);

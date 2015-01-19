@@ -25,12 +25,6 @@
  * Die Adressen werden immer dazugehaengt
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/person.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/student.class.php');
-require_once('../../include/prestudent.class.php');
-require_once('../../include/datum.class.php');
 require_once('../../include/Excel/excel.php');
 
 $db = new basis_db();

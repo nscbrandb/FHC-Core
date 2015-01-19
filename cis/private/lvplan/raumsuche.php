@@ -21,10 +21,6 @@
  */
 
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/ort.class.php');
-require_once('../../../include/raumtyp.class.php');
-require_once('../../../include/datum.class.php');
-require_once('../../../include/phrasen.class.php'); 
 
 $datum = (isset($_POST['datum'])?$_POST['datum']:date('d.m.Y'));
 $vonzeit = (isset($_POST['vonzeit'])?$_POST['vonzeit']:date('H:i'));

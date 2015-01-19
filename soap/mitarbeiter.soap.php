@@ -22,10 +22,6 @@
  * 
  */
 require_once('../config/vilesci.config.inc.php'); 
-require_once('../include/basis_db.class.php');
-require_once('../include/functions.inc.php');
-require_once('../include/webservicerecht.class.php');
-require_once('../include/mitarbeiter.class.php');
 
 ini_set("soap.wsdl_cache_enabled", "0");
 

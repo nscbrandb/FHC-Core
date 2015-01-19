@@ -24,7 +24,6 @@
  * Klasse Nation (FAS-Online)
  * @create 06-04-2006
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class nation extends basis_db 
 {

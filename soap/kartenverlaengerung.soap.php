@@ -20,12 +20,6 @@
  */
 
 require_once('../config/cis.config.inc.php'); 
-require_once('../include/konto.class.php'); 
-require_once('../include/betriebsmittelperson.class.php'); 
-require_once('../include/studiensemester.class.php'); 
-require_once('../include/benutzer.class.php'); 
-require_once('../include/webservicelog.class.php'); 
-require_once('../include/datum.class.php'); 
 require_once('../include/'.EXT_FKT_PATH.'/serviceterminal.inc.php');
 
 ini_set("soap.wsdl_cache_enabled", "0");

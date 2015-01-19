@@ -22,12 +22,6 @@
 /**
  * Klasse WaWi Bestellung
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once (dirname(__FILE__).'/wawi_bestelldetail.class.php');
-require_once (dirname(__FILE__).'/wawi_aufteilung.class.php');
-require_once (dirname(__FILE__).'/organisationseinheit.class.php');
-require_once (dirname(__FILE__).'/wawi_kostenstelle.class.php');
-require_once (dirname(__FILE__).'/geschaeftsjahr.class.php');
 
 class wawi_bestellung extends basis_db
 {

@@ -34,7 +34,6 @@ header("Content-type: application/xhtml+xml");
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 // DAO
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/basis_db.class.php');
 
 // Orte holen
 $sql_query="SELECT * FROM (public.tbl_ort JOIN public.tbl_ortraumtyp USING (ort_kurzbz)) JOIN public.tbl_raumtyp USING (raumtyp_kurzbz)

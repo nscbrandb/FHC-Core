@@ -23,11 +23,6 @@
  *			Manfred Kindl		< manfred.kindl@technikum-wien.at >
  */
 	require_once('../../config/vilesci.config.inc.php');
-	require_once('../../include/functions.inc.php');
-	require_once('../../include/lehrveranstaltung.class.php');
-	require_once('../../include/studiengang.class.php');
-	require_once('../../include/lehrtyp.class.php');
-	require_once('../../include/benutzerberechtigung.class.php');
 
 	if (!$db = new basis_db())
 		die('Es konnte keine Verbindung zum Server aufgebaut werden.');

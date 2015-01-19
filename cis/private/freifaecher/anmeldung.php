@@ -24,11 +24,6 @@
  * Ermoeglicht das Anmelden zu Freifaechern
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/studiensemester.class.php');
-require_once('../../../include/lehrveranstaltung.class.php');
-require_once('../../../include/phrasen.class.php');
-require_once('../../../include/basis_db.class.php');
 
 $sprache = getSprache(); 
 $p = new phrasen($sprache);

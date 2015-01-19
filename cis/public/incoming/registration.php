@@ -21,15 +21,6 @@
  */
 
 require_once '../../../config/cis.config.inc.php';
-require_once '../../../include/person.class.php';
-require_once '../../../include/nation.class.php';
-require_once '../../../include/functions.inc.php';
-require_once '../../../include/phrasen.class.php';
-require_once '../../../include/adresse.class.php';
-require_once '../../../include/kontakt.class.php'; 
-require_once '../../../include/preincoming.class.php'; 
-require_once '../../../include/mail.class.php';
-
 
 if(isset($_GET['lang']))
 	setSprache($_GET['lang']);

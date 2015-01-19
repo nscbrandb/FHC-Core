@@ -19,9 +19,6 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
-require_once(dirname(__FILE__).'/person.class.php');
-require_once(dirname(__FILE__).'/benutzer.class.php');
-require_once(dirname(__FILE__).'/functions.inc.php');
 
 class mitarbeiter extends benutzer
 {

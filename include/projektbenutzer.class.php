@@ -21,7 +21,6 @@
  * Klasse projektbenutzer
  * @create 08-08-2011
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class projektbenutzer extends basis_db
 {

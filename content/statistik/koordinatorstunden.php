@@ -24,8 +24,6 @@
  * die er in den jeweiligen Studiengaengen unterrichtet
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/studiengang.class.php');
 
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>

@@ -25,7 +25,6 @@
  *
  * Klasse zur Kommunikation mit Moodle 1.9 
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class moodle19_user extends basis_db
 {

@@ -2,9 +2,8 @@
 
 // Files we need
 require_once '../include/sabredav/lib/Sabre/autoload.php';
-require_once 'auth.class.php';
 require_once 'Caldav_Backend.php';
-require_once('Principal.php');
+require_once 'Principal.php';
 /*
 //PHP Error To Exception
 function exception_error_handler($errno, $errstr, $errfile, $errline ) {

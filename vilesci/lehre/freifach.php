@@ -21,13 +21,6 @@
  *          Gerald Simane-Sequens 	< gerald.simane-sequens@technikum-wien.at >
  */
 require_once('../../config/vilesci.config.inc.php');		
-require_once('../../include/lehrveranstaltung.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerlvstudiensemester.class.php');
-require_once('../../include/gruppe.class.php');
-require_once('../../include/benutzergruppe.class.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
 
 if (!$user = get_uid())
 	die('Keine UID gefunden !  <a href="javascript:history.back()">Zur&uuml;ck</a>');

@@ -22,7 +22,6 @@
 /**
  * DMS Dokumenten Management System
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class dms extends basis_db
 {

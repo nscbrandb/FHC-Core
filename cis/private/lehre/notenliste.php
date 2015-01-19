@@ -25,13 +25,6 @@
  * das betreffende Studiensemester kann ausgewaehlt werden
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/studiensemester.class.php');
-require_once('../../../include/datum.class.php');
-require_once('../../../include/note.class.php');
-require_once('../../../include/phrasen.class.php');
-require_once('../../../include/studiengang.class.php');
-require_once('../../../include/lehrveranstaltung.class.php');
 
 $sprache = getSprache();
 $p = new phrasen($sprache);

@@ -18,8 +18,6 @@
  * Authors: Andreas Österreicher <andreas.oesterreicher@technikum-wien.at>
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/rdf.class.php');
-require_once('../include/mantis.class.php');
 
 if(!isset($_GET['project_id']))
 	die('Missing Parameter: Project_id');

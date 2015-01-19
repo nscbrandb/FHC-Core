@@ -19,7 +19,6 @@
  */
 
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
 
 class FunctionsTest extends PHPUnit_Framework_TestCase
 {

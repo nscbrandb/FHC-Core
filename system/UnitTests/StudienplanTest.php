@@ -23,7 +23,6 @@
  * 
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/studienplan.class.php');
 
 class StudienplanTest extends PHPUnit_Framework_TestCase
 {

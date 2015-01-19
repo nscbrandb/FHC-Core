@@ -22,12 +22,6 @@
  */
 
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/wochenplan.class.php');
-require_once('../../../include/reservierung.class.php');
-require_once('../../../include/benutzerberechtigung.class.php');
-require_once('../../../include/ort.class.php');
-require_once('../../../include/phrasen.class.php');
 
 $sprache = getSprache(); 
 $p=new phrasen($sprache); 

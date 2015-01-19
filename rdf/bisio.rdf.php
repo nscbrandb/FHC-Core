@@ -28,8 +28,6 @@ header("Pragma: no-cache");
 // content type setzen
 header("Content-type: application/xhtml+xml");
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/bisio.class.php');
-require_once('../include/datum.class.php');
 
 	if (!$db = new basis_db())
     	  die('Fehler beim Oeffnen der Datenbankverbindung');

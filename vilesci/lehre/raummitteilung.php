@@ -28,11 +28,6 @@
  * Dies dient dazu, die Personen im Falle eines Problemes in diesem Raum zu informieren
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/ort.class.php');
-require_once('../../include/datum.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/variable.class.php');
-
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>

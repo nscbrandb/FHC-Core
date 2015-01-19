@@ -20,10 +20,6 @@
  */
 require_once('../../../config/cis.config.inc.php');
 require_once 'auth.php';
-require_once('../../../include/studiensemester.class.php');
-require_once('../../../include/lehrveranstaltung.class.php');
-require_once('../../../include/lvinfo.class.php');
-require_once('../../../include/studiengang.class.php');
 
 if (!$db = new basis_db())
 			die('Fehler beim Herstellen der Datenbankverbindung');

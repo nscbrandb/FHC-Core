@@ -23,10 +23,6 @@
 header("Content-type: application/xhtml+xml");
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
-require_once('../include/studiensemester.class.php');
-require_once('../include/studiengang.class.php');
 
 $rdf_url='http://www.technikum-wien.at/lehrverbandsgruppe/';
 

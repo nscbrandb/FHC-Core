@@ -21,7 +21,6 @@
  * Klasse ical
  * @create 27-01-2012
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class ical extends basis_db
 {

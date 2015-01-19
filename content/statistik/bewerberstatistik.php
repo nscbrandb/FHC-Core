@@ -42,13 +42,6 @@
  */
 
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/mail.class.php');
-require_once('../../include/datum.class.php');
-require_once('../../include/aufmerksamdurch.class.php');
-require_once('../../include/studiengang.class.php');
 require_once('../../include/Excel/excel.php');
 
 $ausgeschieden=array();

@@ -22,10 +22,6 @@
  */
 require_once('../config/vilesci.config.inc.php');
 require_once('../config/global.config.inc.php');
-require_once('../include/rdf.class.php');
-require_once('../include/vertrag.class.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
 
 $uid = get_uid();
 $rechte = new benutzerberechtigung();

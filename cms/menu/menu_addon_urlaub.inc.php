@@ -22,11 +22,6 @@
  * 
  * Zeigt eine Liste der untergebenen Mitarbeiter mit deren Urlaube
  */
-require_once(dirname(__FILE__).'/menu_addon.class.php');
-require_once(dirname(__FILE__).'/../../include/functions.inc.php');
-require_once(dirname(__FILE__).'/../../include/phrasen.class.php');
-require_once(dirname(__FILE__).'/../../include/mitarbeiter.class.php');
-require_once(dirname(__FILE__).'/../../include/benutzerberechtigung.class.php');
 
 class menu_addon_urlaub extends menu_addon
 {

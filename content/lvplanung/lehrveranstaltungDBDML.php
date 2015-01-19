@@ -34,20 +34,6 @@
 // ****************************************
 
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/lehreinheit.class.php');
-require_once('../../include/lehreinheitmitarbeiter.class.php');
-require_once('../../include/lehreinheitgruppe.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/log.class.php');
-require_once('../../include/person.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/mitarbeiter.class.php');
-require_once('../../include/lehrstunde.class.php');
-require_once('../../include/lvangebot.class.php');
-require_once('../../include/gruppe.class.php');
-require_once('../../include/lehrveranstaltung.class.php');
-require_once('../../include/datum.class.php');
 
 $user = get_uid();
 $db = new basis_db();

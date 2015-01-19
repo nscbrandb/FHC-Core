@@ -1,7 +1,4 @@
 <?php
-require_once(dirname(__FILE__).'/../include/wochenplan.class.php');
-require_once(dirname(__FILE__).'/../include/functions.inc.php');
-require_once(dirname(__FILE__).'/../include/mitarbeiter.class.php');
 /**
  * CalDAV backend
  */

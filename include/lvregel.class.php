@@ -23,12 +23,6 @@
  *  - Anmeldung zu Lehrveranstaltungen
  *  - Vollstaendigkeit von Modulen etc
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/student.class.php');
-require_once(dirname(__FILE__).'/prestudent.class.php');
-require_once(dirname(__FILE__).'/studiensemester.class.php');
-require_once(dirname(__FILE__).'/studienplan.class.php');
-require_once(dirname(__FILE__).'/lehrveranstaltung.class.php');
 
 class lvregel extends basis_db
 {

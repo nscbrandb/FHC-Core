@@ -20,7 +20,6 @@
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at> and
  *          Gerald Raab <gerald.raab@technikum-wien.at>.
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class studiengang extends basis_db
 {

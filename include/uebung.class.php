@@ -22,7 +22,6 @@
 /**
  * Verwaltet die Uebungen des Kreuzerltools
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class uebung extends basis_db
 {

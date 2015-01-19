@@ -23,7 +23,6 @@
  * Klasse Konto
  * @create 2007-05-14
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 require_once(dirname(__FILE__).'/'.EXT_FKT_PATH.'/generateZahlungsreferenz.inc.php');
 
 class konto extends basis_db
@@ -857,4 +856,3 @@ class konto extends basis_db
 	}
 
 }
-?>

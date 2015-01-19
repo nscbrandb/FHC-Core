@@ -21,16 +21,6 @@
  * Authors: Andreas Österreicher <andreas.oesterreicher@technikum-wien.at>
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/studienordnung.class.php');
-require_once('../../include/studienplan.class.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/organisationsform.class.php');
-require_once('../../include/sprache.class.php');
-require_once('../../include/akadgrad.class.php');
-require_once('../../include/lvregel.class.php');
 
 $uid = get_uid();
 $db = new basis_db();

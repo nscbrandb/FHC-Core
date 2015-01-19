@@ -29,18 +29,6 @@
 		$SESSIONID=@session_id();	
 
 	require_once('../../config/cis.config.inc.php');
-	require_once('../../include/wochenplan.class.php');
-	require_once('../../include/benutzerberechtigung.class.php');
-    require_once('../../include/betriebsmittel.class.php');
-  	require_once('../../include/betriebsmittelperson.class.php');		
-  	require_once('../../include/betriebsmitteltyp.class.php');	
-  	require_once('../../include/mail.class.php');
-  	require_once('../../include/news.class.php');
-  	require_once('../../include/content.class.php');
-    require_once('../../include/studiensemester.class.php'); 
-    require_once('../../include/konto.class.php'); 
-    require_once('../../include/functions.inc.php'); 
-    require_once('../../include/authentication.class.php'); 
 	require_once('../../include/'.EXT_FKT_PATH.'/serviceterminal.inc.php');
 
 	if (!$db = new basis_db())

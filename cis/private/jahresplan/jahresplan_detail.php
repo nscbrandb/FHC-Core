@@ -37,17 +37,7 @@
  
 // ---------------- CIS Include Dateien einbinden
 	require_once('../../../config/cis.config.inc.php');
-// ---------------- Allg.Funktionen
-	require_once('../../../include/functions.inc.php');
-// ---------------- Datenbank-Verbindung 
-	include_once('../../../include/person.class.php');
-	include_once('../../../include/benutzer.class.php');
-	include_once('../../../include/benutzerberechtigung.class.php');
 	
-// ------------------------------------------------------------------------------------------
-//	Jahresplan Classe 
-// ------------------------------------------------------------------------------------------
-	include_once('../../../include/jahresplan.class.php');
 // ---------------- Check User und Jahresplan-Classe Init
 	include_once('jahresplan_funktionen.inc.php');
  	

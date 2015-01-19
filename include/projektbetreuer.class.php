@@ -23,7 +23,6 @@
  * Klasse projektbetreuer
  * @create 08-02-2007
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class projektbetreuer extends basis_db
 {

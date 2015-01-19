@@ -23,8 +23,6 @@
  * Fuer Testzugänge ohne LDAP Server
  */
 
-require_once(dirname(__FILE__).'/basis.class.php');
-
 class authentication extends auth
 {
 

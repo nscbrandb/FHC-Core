@@ -21,7 +21,7 @@
  * Wird vor dem Zutrittskartenimport aufgerufen und aktualisert bei den zu loeschenden Personen das Ende Datum
  */
 require_once('../../../../config/vilesci.config.inc.php');
-require_once('../../../../include/basis_db.class.php');
+
 if (!$db = new basis_db())
 	die('Es konnte keine Verbindung zum Server aufgebaut werden.');
 
@@ -309,5 +309,3 @@ for($j=0;$j<$i;$j++)
 header("Content-Type: text/text");
 header("Content-Disposition: attachment; filename=\"SiPassZutrittskartenUpdatePreDelete". "_" . date("d_m_Y") . ".txt\"");
 echo $ausdruck;
-
-?>

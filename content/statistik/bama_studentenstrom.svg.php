@@ -21,7 +21,6 @@
  *			Gerald Simane-Sequens <gerald.simane-sequens@technikum-wien.at>
  */
 	require_once('../../config/vilesci.config.inc.php');
-	require_once('../../include/basis_db.class.php');
 	require_once('../../include/ezcomponents/Base/src/ezc_bootstrap.php');
 
 	
@@ -92,7 +91,7 @@ if(trim($typ)=="m")
 			}
 		}
 	}
-	//'0'-er erg‰nzen
+	//'0'-er erg√§nzen
 	FOR ($i=0;$i<5;$i++)
 	{
 
@@ -157,7 +156,7 @@ if(trim($typ)=="b")
 			}
 		}
 	}
-	//'0'-er erg‰nzen
+	//'0'-er erg√§nzen
 	FOR ($i=0;$i<5;$i++)
 	{
 
@@ -188,4 +187,3 @@ if(trim($typ)=="b")
 		$graph->data[$status] = new ezcGraphArrayDataSet( $data );
 	} 
 	$graph->renderToOutput( 500, 500);
-?>

@@ -18,13 +18,6 @@
  * Authors: Martin Tatzber <tatzberm@technikum-wien.at>, 
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/konto.class.php');
-require_once('../../../include/bankverbindung.class.php');
-require_once('../../../include/studiengang.class.php');
-require_once('../../../include/organisationseinheit.class.php');
-require_once('../../../include/addon.class.php');
-require_once('../../../include/benutzer.class.php');
 	
 $uid = get_uid();
 	

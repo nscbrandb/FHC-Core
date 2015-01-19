@@ -23,8 +23,6 @@
 // content type setzen
 header("Content-type: application/xhtml+xml");
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/basis_db.class.php');
 require_once('../include/ean13.function.php');
 
 // Optionen abfragen

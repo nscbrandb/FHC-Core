@@ -33,15 +33,8 @@
  
 // ---------------- CIS Include Dateien einbinden
 	require_once('../../../config/cis.config.inc.php');
-	require_once('../../../include/functions.inc.php');
-	
-// ---------------- Datenbank-Verbindung 
-	include_once('../../../include/person.class.php');
-	include_once('../../../include/benutzer.class.php');
-	include_once('../../../include/benutzerberechtigung.class.php');
 	
 // ---------------- Jahresplan Classe und Allg.Funktionen		
-	include_once('../../../include/jahresplan.class.php');
  	include_once('jahresplan_funktionen.inc.php');
 	if (!$is_wartungsberechtigt)
 		die($p->t("global/keineBerechtigungFuerDieseSeite")).('<a href="javascript:history.back()">'.$p->t("global/zurueck").'</a>');

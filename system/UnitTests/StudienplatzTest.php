@@ -23,9 +23,6 @@
  * 
  */
 require_once('../../config/system.config.inc.php');
-require_once('../../include/studienplatz.class.php');
-require_once('../../include/benutzer.class.php');
-
 
 class StudienplatzTest extends PHPUnit_Framework_TestCase
 {

@@ -29,8 +29,6 @@
  * Ansonsten wird das Mail an MAIL_AMDIN geschickt.
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/mail.class.php');
-require_once('../../include/cronjob.class.php');
 
 //ID des Cronjobs holen
 $cj = new cronjob();

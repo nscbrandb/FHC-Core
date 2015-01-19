@@ -27,10 +27,6 @@
  * Lektoren Namentlich aufscheinen.
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/fachbereich.class.php');
 
 $ws='';
 $ss='';

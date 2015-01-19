@@ -30,14 +30,6 @@
 		exit;
 	}
 
-	require_once('../../include/functions.inc.php');
-	require_once('../../include/benutzer.class.php');
-	require_once('../../include/benutzerberechtigung.class.php');
-	require_once('../../include/konto.class.php');
-	require_once('../../include/bankverbindung.class.php');
-	require_once('../../include/studiengang.class.php');
-	require_once('../../include/organisationseinheit.class.php');
-	
 	$person_id = $_SESSION['bewerbung/personId'];
 
 	if(isset($_GET['buchungsnr']))

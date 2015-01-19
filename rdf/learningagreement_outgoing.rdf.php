@@ -20,15 +20,6 @@
  */
 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/preoutgoing.class.php');
-require_once('../include/benutzer.class.php');
-require_once('../include/student.class.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/firma.class.php');
-require_once('../include/standort.class.php');
-require_once('../include/adresse.class.php');
-require_once('../include/nation.class.php');
-require_once('../include/prestudent.class.php');
 
 header("Content-type: application/xhtml+xml");
 

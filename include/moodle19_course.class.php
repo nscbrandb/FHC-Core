@@ -22,8 +22,6 @@
 /*
  * Moodle 1.9 Kurs Verwaltung
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/moodle.class.php');
 
 if (!function_exists('xu_load_extension'))
 	include_once(dirname(__FILE__)."/xmlrpcutils/utils.php");

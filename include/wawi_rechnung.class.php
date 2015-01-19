@@ -22,8 +22,6 @@
 /**
  * Klasse WaWi Rechnung
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/geschaeftsjahr.class.php');
 
 class wawi_rechnung extends basis_db
 {

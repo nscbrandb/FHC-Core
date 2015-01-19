@@ -24,9 +24,7 @@
  * der Gruppen und das Textfile fuer die Aliase
  */
 	require_once('../../config/vilesci.config.inc.php');
-	require_once('../../include/functions.inc.php');
 	require_once('../../include/globals.inc.php');
-	require_once('../../include/studiensemester.class.php');
 
 	$db = new basis_db();
 	

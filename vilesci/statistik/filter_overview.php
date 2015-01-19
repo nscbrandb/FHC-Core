@@ -18,9 +18,6 @@
  * Authors: Christian Paminger 	< christian.paminger@technikum-wien.at >
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/filter.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
 
 $nl="\n";
 

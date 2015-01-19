@@ -24,14 +24,6 @@
  * Danach wird die Karte über den Mifare Leser gezogen und die neue Mifare Nummer gespeichert
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/person.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/student.class.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/betriebsmittel.class.php');
-require_once('../../include/betriebsmittelperson.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
 
 $uid = get_uid();
 

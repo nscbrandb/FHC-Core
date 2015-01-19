@@ -17,7 +17,6 @@
  *
  * Authors: Nikolaus Krondraf <nikolaus.krondraf@technikum-wien.at>
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class buchung extends basis_db
 {

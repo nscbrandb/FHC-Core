@@ -25,10 +25,6 @@
  * Diese Klasse liefert Phrasen fuer dynamische Seiten in der ausgewaehlten Sprache.
  * Die Phrasen werden im Filesystem nach Modulen getrennt abgelegt und bei Bedarf geladen.
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/functions.inc.php');
-require_once(dirname(__FILE__).'/sprache.class.php');
-require_once(dirname(__FILE__).'/addon.class.php');
 
 class phrasen extends basis_db
 {

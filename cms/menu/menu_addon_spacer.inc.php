@@ -20,7 +20,6 @@
 /**
  * Addon fuer Abstandhalter im Menuebaum
  */
-require_once(dirname(__FILE__).'/menu_addon.class.php');
 
 class menu_addon_spacer extends menu_addon
 {

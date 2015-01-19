@@ -1,7 +1,7 @@
 <?php
 /*
  * studienordnung.class.php
- * 
+ *
  * Copyright 2013 fhcomplete.org
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,6 @@
  * Authors: Christian Paminger <christian.paminger@technikum-wien.at>
  *			Andreas Österreicher <andreas.oesterreicher@technikum-wien.at>
  */
-
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once 'studiensemester.class.php';
 
 class studienordnung extends basis_db
 {

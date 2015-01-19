@@ -22,12 +22,6 @@
  * 
  * Zeigt eine Liste mit den Lehrfächern an zu denen der Lektor oder Student zugeordnet ist.
  */
-require_once(dirname(__FILE__).'/menu_addon.class.php');
-require_once(dirname(__FILE__).'/../../include/functions.inc.php');
-require_once(dirname(__FILE__).'/../../include/phrasen.class.php');
-require_once(dirname(__FILE__).'/../../include/studiensemester.class.php');
-require_once(dirname(__FILE__).'/../../include/studiengang.class.php');
-require_once(dirname(__FILE__).'/../../include/lehrveranstaltung.class.php');
 
 class menu_addon_meinelvkompatibel extends menu_addon
 {

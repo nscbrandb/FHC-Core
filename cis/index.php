@@ -22,11 +22,6 @@
  *
  */
 require_once('../config/cis.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/sprache.class.php');
-require_once('../include/phrasen.class.php');
-require_once('../include/mail.class.php');
-require_once('../include/student.class.php');
 
 /**
  * Prueft die URL damit keine boesen URLS uebergeben werden koennen

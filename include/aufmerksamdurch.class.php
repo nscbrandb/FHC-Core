@@ -23,7 +23,6 @@
  * Klasse aufmerksamdurch 
  * @create 02-01-2007
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class aufmerksamdurch extends basis_db
 {

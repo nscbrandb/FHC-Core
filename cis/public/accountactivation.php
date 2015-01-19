@@ -18,9 +18,6 @@
  * Authors: Andreas Österreicher <oesi@technikum-wien.at>
  */
 require_once('../../config/cis.config.inc.php');
-require_once('../../include/phrasen.class.php');
-require_once('../../include/sprache.class.php');
-require_once('../../include/benutzer.class.php');
 require_once('../../include/securimage/securimage.php');
 require_once('../../include/'.EXT_FKT_PATH.'/passwort.inc.php');
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * appdaten.class.php
- * 
+ *
  * Copyright 2013 fhcomplete.org
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,6 @@
  * Authors: Martin Tatzber <tatzberm@technikum-wien.at
  *          Werner Masik <werner@gefi.at>
  */
-
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class appdaten extends basis_db
 {

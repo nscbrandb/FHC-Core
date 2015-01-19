@@ -21,12 +21,6 @@
  * Dabis Bibliotheksverwaltung - CSV Export
  */
 require_once('../../../config/vilesci.config.inc.php');
-require_once('../../../include/basis_db.class.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/adresse.class.php'); 
-require_once('../../../include/kontakt.class.php');
-require_once('../../../include/benutzerberechtigung.class.php');
-
 
 header('Content-type: application/octetstream');
 header('Content-Disposition: inline; filename="dabis.csv"');

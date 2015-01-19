@@ -23,7 +23,6 @@
  * Klasse Zeugnisnote
  * @create 2007-06-06
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class zeugnisnote extends basis_db
 {

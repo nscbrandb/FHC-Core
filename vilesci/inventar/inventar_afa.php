@@ -24,19 +24,6 @@
  * Liefert eine Liste aller abgeschriebenen Betriebsmittel im ausgewähltem Monat/Jahr
  */
 	include_once('../../config/vilesci.config.inc.php');
-	include_once('../../include/basis_db.class.php');
- 	require_once('../../include/functions.inc.php');
- 	require_once('../../include/benutzerberechtigung.class.php');
-	require_once('../../include/benutzer.class.php');
-	require_once('../../include/mitarbeiter.class.php');
-	require_once('../../include/ort.class.php');
- 	require_once('../../include/organisationseinheit.class.php');
- 	require_once('../../include/betriebsmittel.class.php');
- 	require_once('../../include/betriebsmittelperson.class.php');
- 	require_once('../../include/betriebsmitteltyp.class.php');
- 	require_once('../../include/betriebsmittelstatus.class.php');
- 	require_once('../../include/betriebsmittel_betriebsmittelstatus.class.php');
- 	require_once('../../include/datum.class.php');
 
 	if (!$uid = get_uid())
 			die('Keine UID gefunden !  <a href="javascript:history.back()">Zur&uuml;ck</a>');

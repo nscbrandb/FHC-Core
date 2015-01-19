@@ -23,13 +23,6 @@
  * Erfasst die Anwesenheiten der Studierenden
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/datum.class.php');
-require_once('../../include/lehreinheit.class.php');
-require_once('../../include/lehrveranstaltung.class.php');
-require_once('../../include/anwesenheit.class.php');
 
 if (!$uid = get_uid())
 	die('Keine UID gefunden!');

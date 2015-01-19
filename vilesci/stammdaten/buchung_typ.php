@@ -22,9 +22,6 @@
  *
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/buchung.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
 
 $buchungstyp_kurzbz=isset($_REQUEST['buchungstyp_kurzbz'])?$_REQUEST['buchungstyp_kurzbz']:'';
 $buchungstyp_bezeichnung=isset($_REQUEST['buchungstyp_bezeichnung'])?$_REQUEST['buchungstyp_bezeichnung']:'';

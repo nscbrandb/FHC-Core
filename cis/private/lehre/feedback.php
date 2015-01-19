@@ -32,16 +32,9 @@
 // ------------------------------------------------------------------------------------------
 //	Datenbankanbindung 
 // ------------------------------------------------------------------------------------------
-	require_once('../../../include/basis_db.class.php');
 	if (!$db = new basis_db())
 			die('Fehler beim Herstellen der Datenbankverbindung');
 			
-	require_once('../../../include/functions.inc.php');
-	require_once('../../../include/studiensemester.class.php');
-	require_once('../../../include/lehrveranstaltung.class.php');
-	require_once('../../../include/feedback.class.php');
-	require_once('../../../include/phrasen.class.php');
-
 	$sprache = getSprache();
 	$p = new phrasen($sprache);
 	

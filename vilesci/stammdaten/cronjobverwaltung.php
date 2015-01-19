@@ -25,10 +25,6 @@
  */
 require_once('../../config/vilesci.config.inc.php');
 require_once('../../include/globals.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/cronjob.class.php');
-require_once('../../include/datum.class.php');
 
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>

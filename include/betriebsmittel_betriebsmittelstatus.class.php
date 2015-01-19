@@ -24,7 +24,6 @@
 /**
  * Klasse Betriebsmittelstatus
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class betriebsmittel_betriebsmittelstatus extends basis_db
 {

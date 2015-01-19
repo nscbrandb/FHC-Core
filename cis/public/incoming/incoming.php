@@ -23,21 +23,6 @@
 
 require_once '../../../config/cis.config.inc.php';
 require_once 'auth.php';
-require_once '../../../include/mobilitaetsprogramm.class.php';
-require_once '../../../include/person.class.php'; 
-require_once '../../../include/functions.inc.php';
-require_once '../../../include/phrasen.class.php';
-require_once '../../../include/preincoming.class.php';
-require_once '../../../include/nation.class.php'; 
-require_once '../../../include/adresse.class.php';
-require_once '../../../include/kontakt.class.php';
-require_once '../../../include/studiensemester.class.php';
-require_once '../../../include/studiengang.class.php';
-require_once '../../../include/lehrveranstaltung.class.php';
-require_once '../../../include/studiengang.class.php';
-require_once '../../../include/akte.class.php';
-require_once '../../../include/datum.class.php'; 
-require_once '../../../include/firma.class.php'; 
 
 if(isset($_GET['lang']))
 	setSprache($_GET['lang']);

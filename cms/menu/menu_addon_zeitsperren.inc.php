@@ -20,11 +20,6 @@
 /**
  * Menu Addon fuer Zeitsperren
  */
-require_once(dirname(__FILE__).'/menu_addon.class.php');
-require_once(dirname(__FILE__).'/../../include/functions.inc.php');
-require_once(dirname(__FILE__).'/../../include/phrasen.class.php');
-require_once(dirname(__FILE__).'/../../include/benutzerberechtigung.class.php');
-require_once(dirname(__FILE__).'/../../include/funktion.class.php');
 
 class menu_addon_zeitsperren extends menu_addon
 {

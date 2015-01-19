@@ -22,13 +22,6 @@
 
 // Oberflaeche zum Upload von Dokumenten aus dem FAS
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/person.class.php');
-require_once('../include/benutzerberechtigung.class.php');
-require_once('../include/akte.class.php');
-require_once('../include/dokument.class.php');
-require_once('../include/dms.class.php'); 
-require_once('../include/phrasen.class.php'); 
 
 header("Content-Type: text/html; charset=utf-8");
 

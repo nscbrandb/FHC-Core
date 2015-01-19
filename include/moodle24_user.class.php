@@ -23,8 +23,6 @@
  * FHComplete Moodle Plugin muss installiert sein fuer
  * Webservice Funktion 'fhcomplete_user_get_users' 
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/moodle.class.php');
 
 class moodle24_user extends basis_db
 {

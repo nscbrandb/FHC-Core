@@ -26,22 +26,6 @@
  */
 require_once('../../../config/cis.config.inc.php');
 require_once('../../../config/global.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/studienordnung.class.php');
-require_once('../../../include/studienplan.class.php');
-require_once('../../../include/lvregel.class.php');
-require_once('../../../include/studiensemester.class.php');
-require_once('../../../include/lehrveranstaltung.class.php');
-require_once('../../../include/prestudent.class.php');
-require_once('../../../include/zeugnisnote.class.php');
-require_once('../../../include/lvangebot.class.php');
-require_once('../../../include/datum.class.php');
-require_once('../../../include/phrasen.class.php');
-require_once('../../../include/note.class.php');
-require_once('../../../include/benutzerberechtigung.class.php');
-require_once('../../../include/benutzergruppe.class.php');
-require_once('../../../include/konto.class.php');
-require_once('../../../include/lvinfo.class.php');
 
 $uid = get_uid();
 

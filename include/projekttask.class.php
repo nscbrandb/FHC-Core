@@ -22,7 +22,6 @@
  * Klasse projekttask
  * @create 2011-05-23
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class projekttask extends basis_db
 {

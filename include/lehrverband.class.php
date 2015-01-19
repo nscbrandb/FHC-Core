@@ -20,7 +20,6 @@
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>,
  *			Stefan Puraner <puraner@technikum-wien.at>
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class lehrverband extends basis_db 
 {

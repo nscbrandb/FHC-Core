@@ -21,13 +21,6 @@
  *          Gerald Simane-Sequens <gerald.simane@technikum-wien.at>.
  */
 	require_once('../../../config/cis.config.inc.php');
-	require_once('../../../include/functions.inc.php');
-	require_once('../../../include/datum.class.php');
-	require_once('../../../include/benutzer.class.php');
-	require_once('../../../include/student.class.php');
-	require_once('../../../include/studiengang.class.php');
-	require_once('../../../include/benutzerberechtigung.class.php');
-	require_once('../../../include/studiensemester.class.php');
 	
 	if (!$db = new basis_db())
 		die('Fehler beim Oeffnen der Datenbankverbindung');

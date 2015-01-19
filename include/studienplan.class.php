@@ -1,7 +1,7 @@
 <?php
 /*
  * studienplan.class.php
- * 
+ *
  * Copyright 2013 fhcomplete.org 
 * 
  * This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,6 @@
  * Authors: Andreas Österreicher <andreas.oesterreicher@technikum-wien.at>
  * 			Stefan Puraner	<puraner@technikum-wien.at>
  */
-
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class studienplan extends basis_db
 {

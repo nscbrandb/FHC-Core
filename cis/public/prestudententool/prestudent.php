@@ -22,11 +22,6 @@
 
 require_once('../../../config/cis.config.inc.php');
 require_once('auth.php');
-require_once('../../../include/phrasen.class.php');
-require_once('../../../include/person.class.php');
-require_once('../../../include/datum.class.php');
-require_once('../../../include/prestudent.class.php');
-require_once('../../../include/studiengang.class.php');
 
 // Sprache setzen
 if(isset($_GET['lang']))

@@ -20,9 +20,6 @@
  *          Karl Burkhart <karl.burkhart@technikum-wien.at>.
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/statistik.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
 
 $statistik_kurzbz = filter_input(INPUT_GET, 'statistik_kurzbz');
 $outputformat = filter_input(INPUT_GET, 'outputformat');

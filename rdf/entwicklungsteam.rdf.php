@@ -30,9 +30,6 @@ header("Content-type: application/xhtml+xml");
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 // DAO
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/entwicklungsteam.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/studiengang.class.php');
 
 if(isset($_GET['mitarbeiter_uid']))
 	$mitarbeiter_uid = $_GET['mitarbeiter_uid'];

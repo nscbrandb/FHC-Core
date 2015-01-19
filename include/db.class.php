@@ -23,8 +23,6 @@
  * Klasse fuer Datenbankabstraktion
  */
 
-require_once(dirname(__FILE__).'/basis.class.php');
-
 abstract class db extends basis
 {
 	protected static $db_conn=null;
@@ -161,6 +159,3 @@ abstract class db extends basis
 	}	
 	
 }
-require_once(dirname(__FILE__).'/'.DB_SYSTEM.'.class.php');
-
-?>

@@ -23,16 +23,6 @@
  */
 
 require_once('../../../../config/cis.config.inc.php');
-require_once('../../../../include/functions.inc.php');
-require_once('../../../../include/benutzerberechtigung.class.php');
-require_once('../../../../include/studiensemester.class.php');
-require_once('../../../../include/datum.class.php');
-require_once('../../../../include/pruefungsfenster.class.php');
-require_once('../../../../include/lehrveranstaltung.class.php');
-require_once('../../../../include/pruefungstermin.class.php');
-require_once('../../../../include/studiengang.class.php');
-require_once('../../../../include/pruefungCis.class.php');
-require_once('../../../../include/mitarbeiter.class.php');
 
 $uid = get_uid();
 $db = new basis_db();

@@ -29,13 +29,6 @@ header("Content-type: application/xhtml+xml");
 
 require_once('../../config/cis.config.inc.php');
 require_once('../../config/global.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/frage.class.php');
-require_once('../../include/vorschlag.class.php');
-require_once('../../include/antwort.class.php');
-require_once('../../include/gebiet.class.php');
-require_once('../../include/sprache.class.php');
-require_once '../../include/phrasen.class.php';
 
 if (!$db = new basis_db())
 	die('Fehler beim Oeffnen der Datenbankverbindung');

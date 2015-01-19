@@ -30,8 +30,6 @@ header("Content-type: application/xhtml+xml");
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/log.class.php');
-require_once('../include/functions.inc.php');
 
 $log = new log();
 $log->load_undo(get_uid());

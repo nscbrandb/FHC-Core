@@ -27,9 +27,6 @@ header("Content-type: application/vnd.mozilla.xul+xml");
 
 require_once('../../config/vilesci.config.inc.php');
 require_once('../../config/global.config.inc.php');
-require_once('../../include/person.class.php');
-require_once('../../include/prestudent.class.php');
-require_once('../../include/studienplan.class.php');
 
 echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
 

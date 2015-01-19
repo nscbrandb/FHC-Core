@@ -28,8 +28,6 @@
  */
 
 	 require_once('../../../config/cis.config.inc.php');
-   require_once('../../../include/studiengang.class.php');
-   require_once('../../../include/functions.inc.php');
       
    //Gueltigkeit der Parameter pruefen		
    if(!isset($_GET['stg']) || !is_numeric($_GET['stg']))

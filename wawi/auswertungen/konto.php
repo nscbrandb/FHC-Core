@@ -23,16 +23,6 @@
  */
 require_once('../../config/wawi.config.inc.php');
 require_once('../auth.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/wawi_rechnung.class.php');
-require_once('../../include/wawi_bestellung.class.php');
-require_once('../../include/wawi_kostenstelle.class.php');
-require_once('../../include/wawi_konto.class.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/tags.class.php');
-require_once('../../include/geschaeftsjahr.class.php');
-require_once('../../include/datum.class.php');
 
 $user = get_uid();
 $rechte = new benutzerberechtigung();

@@ -7,6 +7,9 @@
 	setlocale (LC_ALL, 'de_DE.UTF8','de_DE@euro', 'de_DE', 'de','DE', 'ge','German');
 	date_default_timezone_set('Europe/Vienna');
 	
+	// Autoloader
+	include('autoloader.php');
+
 	// Connection Strings zur Datenbank
 	define("DB_SYSTEM","pgsql");
 	define("DB_HOST","localhost");

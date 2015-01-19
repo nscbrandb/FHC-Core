@@ -25,15 +25,7 @@
 *	Jeder der angezeigten Moodle IDs kann geloescht werden nach bestaetigung eines PopUp Fenster.
 */
 require_once('../../config/vilesci.config.inc.php');	
-require_once('../../include/functions.inc.php');
 require_once('../../include/globals.inc.php');
-include_once('../../include/moodle.class.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/studiengang.class.php');	
-require_once('../../include/lehrveranstaltung.class.php'); 
-require_once('../../include/lehreinheit.class.php'); 
-require_once('../../include/moodle24_course.class.php'); 
-require_once('../../include/benutzerberechtigung.class.php');
 
 $user = get_uid();
 

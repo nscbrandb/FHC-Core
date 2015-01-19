@@ -30,11 +30,6 @@
  *****************************************************************************/
 
 require_once(dirname(__FILE__).'/../../../config/cis.config.inc.php');
-require_once(dirname(__FILE__).'/../../../include/functions.inc.php');
-require_once(dirname(__FILE__).'/../../../include/wochenplan.class.php');
-require_once(dirname(__FILE__).'/../../../include/datum.class.php');
-require_once(dirname(__FILE__).'/../../../include/studiensemester.class.php');
-require_once(dirname(__FILE__).'/../../../include/phrasen.class.php'); 
 
 if(!$db = new basis_db())
 	die($p->t('global/fehlerBeimOeffnenDerDatenbankverbindung'));

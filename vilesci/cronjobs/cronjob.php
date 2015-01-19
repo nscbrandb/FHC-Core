@@ -27,8 +27,6 @@
  * die entsprechenden anderen Scripte aufgerufen.
  */
 require_once(dirname(__FILE__).'/../../config/vilesci.config.inc.php');
-require_once(dirname(__FILE__).'/../../include/cronjob.class.php');
-require_once(dirname(__FILE__).'/../../include/datum.class.php');
 
 $datum = new datum();
 $cj = new cronjob();

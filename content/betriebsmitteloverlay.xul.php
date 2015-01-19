@@ -26,7 +26,6 @@ header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
 header("Pragma: no-cache");
 header("Content-type: application/vnd.mozilla.xul+xml");
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/basis.class.php');
 
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
 

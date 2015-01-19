@@ -18,9 +18,6 @@
  * Authors: Andreas Oesterreicher 	< andreas.oesterreicher@technikum-wien.at >
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/ampel.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/datum.class.php');
 
 $user = get_uid();
 

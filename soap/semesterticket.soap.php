@@ -19,11 +19,6 @@
  */
  
 require_once('../config/vilesci.config.inc.php'); 
-require_once('../include/student.class.php'); 
-require_once('../include/benutzer.class.php');
-require_once('../include/adresse.class.php'); 
-require_once('../include/person.class.php'); 
-require_once('../include/webservicelog.class.php'); 
 
 ini_set("soap.wsdl_cache_enabled", "0");
 	

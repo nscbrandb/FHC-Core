@@ -22,11 +22,6 @@
  * wenn kein aktuelles Studiensemester vorhanden ist, wird NICHT Synchronisiert
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/moodle24_course.class.php');
-require_once('../../include/moodle24_user.class.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/mail.class.php');
 	
 $db = new basis_db();
 $sync_lektoren_gesamt=0;

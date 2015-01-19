@@ -29,10 +29,6 @@
  *****************************************************************************/
 
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/organisationseinheit.class.php');
-require_once('../../include/gruppe.class.php');
 
 $error_msg='';
 ?>

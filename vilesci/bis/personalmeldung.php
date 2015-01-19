@@ -22,10 +22,6 @@
  */
 
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/datum.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/functions.inc.php');
 
 $uid = get_uid();
 

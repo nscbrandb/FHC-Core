@@ -23,8 +23,6 @@
  * 
  */
 require_once('../../config/system.config.inc.php');
-require_once('../../include/appdaten.class.php');
-require_once('../../include/benutzer.class.php');
 
 class AppdatenTest extends PHPUnit_Framework_TestCase
 {

@@ -2,9 +2,6 @@
 header("Content-type: application/vnd.mozilla.xul+xml");
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
-require_once('../include/studiensemester.class.php');
 
 $uid=get_uid();
 $error_msg='';

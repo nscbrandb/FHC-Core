@@ -19,8 +19,6 @@
  * Authors: Karl Burkhart 	<burkhart@technikum-wien.at>
  */
 
-require_once(dirname(__FILE__).'/basis_db.class.php');
-
 class zgv extends basis_db
 {
     

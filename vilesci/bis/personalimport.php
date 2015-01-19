@@ -27,15 +27,9 @@
 // *   fuer die Person vorhanden ist.
 // ****
 		require_once('../../config/vilesci.config.inc.php');
-		require_once('../../include/basis_db.class.php');
+
 		if (!$db = new basis_db())
 			die('Es konnte keine Verbindung zum Server aufgebaut werden.');
-
-	require_once('../../include/functions.inc.php');
-	require_once('../../include/benutzerberechtigung.class.php');
-	require_once('../../include/bisverwendung.class.php');
-	require_once('../../include/studiensemester.class.php');
-
 
 	if (!$user = get_uid())
 			die('Keine UID gefunde !  <a href="javascript:history.back()">Zur&uuml;ck</a>');

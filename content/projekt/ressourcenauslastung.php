@@ -18,11 +18,6 @@
  * Authors: Andreas Oesterreicher 	<andreas.oesterreicher@technikum-wien.at>
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/ressource.class.php');
-require_once('../../include/datum.class.php');
-require_once('../../include/projektphase.class.php');
-require_once('../../include/projekttask.class.php');
 
 $showweeks=52;
 $timestamp = time();

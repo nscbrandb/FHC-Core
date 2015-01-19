@@ -24,20 +24,6 @@
  * Verwaltungsseite zum Anlegen von Moodle Kursen
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/basis_db.class.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/benutzerberechtigung.class.php');
-require_once('../../../include/lehrveranstaltung.class.php');
-require_once('../../../include/lehreinheit.class.php');
-require_once('../../../include/lehreinheitgruppe.class.php');
-require_once('../../../include/lehreinheitmitarbeiter.class.php');
-require_once('../../../include/studiengang.class.php');
-require_once('../../../include/phrasen.class.php');
-require_once('../../../include/moodle.class.php');
-require_once('../../../include/moodle19_course.class.php');
-require_once('../../../include/moodle19_user.class.php');
-require_once('../../../include/moodle24_course.class.php');
-require_once('../../../include/moodle24_user.class.php');
 
 $sprache = getSprache(); 
 $p = new phrasen($sprache); 

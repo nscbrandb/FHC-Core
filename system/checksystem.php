@@ -23,7 +23,6 @@
  * Geprueft wird: - die Datenbank auf aktualitaet, dabei werden fehlende Attribute angelegt.
  */
 require_once('../config/system.config.inc.php');
-require_once('../include/basis_db.class.php');
 
 // Datenbank Verbindung
 $db = new basis_db();

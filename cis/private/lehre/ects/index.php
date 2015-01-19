@@ -30,14 +30,6 @@
    			02-01-2007 Umstellung auf die neue DB
 */
 require_once('../../../../config/cis.config.inc.php');
-require_once('../../../../include/basis_db.class.php');	
-require_once('../../../../include/functions.inc.php');
-require_once('../../../../include/studiengang.class.php');
-require_once('../../../../include/lehrveranstaltung.class.php');
-require_once('../../../../include/lvinfo.class.php');
-require_once('../../../../include/studiensemester.class.php');
-require_once('../../../../include/phrasen.class.php');
-require_once('../../../../include/safehtml/safehtml.class.php');
 
 $sprache1 = getSprache(); 
 $p=new phrasen($sprache1);

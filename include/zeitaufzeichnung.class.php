@@ -23,7 +23,6 @@
  * Klasse Zeitaufzeichnung
  * @create 06-11-2007
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class zeitaufzeichnung extends basis_db
 {

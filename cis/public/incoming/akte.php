@@ -23,8 +23,6 @@
 // um und gibt das Dokument zurueck.
 require_once 'auth.php';
 require_once('../../../config/vilesci.config.inc.php');
-require_once('../../../include/akte.class.php');
-require_once('../../../include/person.class.php');
 
 $person = new person();
 $person_id=$person->checkZugangscode($_SESSION['incoming/user']); 

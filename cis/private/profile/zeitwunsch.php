@@ -24,14 +24,7 @@
  * Aenderung der Zeitwuensche
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/basis_db.class.php');
 require_once('../../../include/globals.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/datum.class.php');
-require_once('../../../include/zeitwunsch.class.php');
-require_once('../../../include/benutzer.class.php');
-require_once('../../../include/phrasen.class.php');
-require_once('../../../include/sprache.class.php');
 
 $sprache = getSprache(); 
 $lang = new sprache(); 

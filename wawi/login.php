@@ -20,8 +20,6 @@
  *          Karl Burkhart <karl.burkhart@technikum-wien.at>.
  */
 require_once(dirname(__FILE__).'/../config/wawi.config.inc.php');
-require_once(dirname(__FILE__).'/../include/wawi_konto.class.php');
-require_once(dirname(__FILE__).'/../include/functions.inc.php');
 
 $errormsg='';
 

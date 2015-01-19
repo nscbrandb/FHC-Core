@@ -19,7 +19,6 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at>
  *          Karl Burkhart <burkhart@technikum-wien.at>.
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class statistik extends basis_db
 {

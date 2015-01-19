@@ -18,9 +18,6 @@
  * Authors: Stefan Puraner <puraner@technikum-wien.at>
  */
 
-require_once(dirname(__FILE__) . '/basis_db.class.php');
-require_once(dirname(__FILE__) . '/functions.inc.php');
-
 class lehrtyp extends basis_db {
 	
 	public $result = array();

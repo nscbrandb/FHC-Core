@@ -19,9 +19,6 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/authentication.class.php');
-require_once(dirname(__FILE__).'/betriebsmittelperson.class.php'); 
 
 // Auth: Benutzer des Webportals
 /**

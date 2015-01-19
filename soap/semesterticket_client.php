@@ -1,7 +1,5 @@
 <?php 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php'); 
-require_once('../include/basis_db.class.php');
 
 $getuid = get_uid(); 
 if(!check_lektor($getuid))

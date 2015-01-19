@@ -27,8 +27,8 @@
  */
 
 	require_once('../../../../config/cis.config.inc.php');
-   	require_once('../../../../include/functions.inc.php');
-	$user = get_uid(); 
+
+	$user = get_uid();
 
    //Gueltigkeit der Parameter pruefen		
    if(!isset($_GET['uebung_id']) || !is_numeric($_GET['uebung_id']))

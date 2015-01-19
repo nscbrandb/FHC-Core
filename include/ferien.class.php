@@ -23,7 +23,6 @@
  * Klasse ferien (FAS-Online)
  * @create 07-12-2006
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class ferien extends basis_db 
 {

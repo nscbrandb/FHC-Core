@@ -20,15 +20,6 @@
  */
 header("Content-type: application/xhtml+xml");
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/student.class.php');
-require_once('../include/prestudent.class.php');
-require_once('../include/adresse.class.php');
-require_once('../include/lehrveranstaltung.class.php');
-require_once('../include/akadgrad.class.php');
-require_once('../include/studiensemester.class.php');
-require_once('../include/nation.class.php');
 
 $uid_arr = (isset($_REQUEST['uid'])?$_REQUEST['uid']:null);
 

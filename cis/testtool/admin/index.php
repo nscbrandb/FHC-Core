@@ -26,11 +26,6 @@
 header('Content-type: application/xhtml+xml');
 
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/frage.class.php');
-require_once('../../../include/vorschlag.class.php');
-require_once('../../../include/benutzerberechtigung.class.php');
-require_once('../../../include/studiengang.class.php');
   
 if (!$db = new basis_db())
 {

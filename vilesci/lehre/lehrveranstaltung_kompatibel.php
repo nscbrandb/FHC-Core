@@ -19,14 +19,6 @@
  *			Andreas Österreicher <andreas.oesterreicher@technikum-wien.at>
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/fachbereich.class.php');
-require_once('../../include/lvinfo.class.php');
-require_once('../../include/lehrveranstaltung.class.php');
-require_once('../../include/organisationsform.class.php');
-require_once('../../include/organisationseinheit.class.php');
 
 if (!$db = new basis_db())
 	die('Es konnte keine Verbindung zum Server aufgebaut werden.');

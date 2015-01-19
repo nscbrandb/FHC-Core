@@ -28,12 +28,6 @@ header("Pragma: no-cache");
 header("Content-type: application/xhtml+xml");
 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/person.class.php');
-require_once('../include/benutzer.class.php');
-require_once('../include/mitarbeiter.class.php');
-require_once('../include/benutzerberechtigung.class.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/functions.inc.php');
 
 if (isset($_GET['lektor']))
 {

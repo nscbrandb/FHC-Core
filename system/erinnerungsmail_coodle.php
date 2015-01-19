@@ -21,10 +21,6 @@
  * Cronjob zur Versendung von Infomails wenn Coodle Umfragen Beendet sind 
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/coodle.class.php');
-require_once('../include/phrasen.class.php');
-require_once('../include/benutzer.class.php');
-require_once('../include/mail.class.php');
 
 $coodle = new coodle();
 $coodle->getCoodleBeendet();

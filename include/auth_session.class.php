@@ -26,7 +26,6 @@
  * Damit Session Authentifizierung funktioniert, muss in der php.ini die option
  * session.auto_start=1 gesetzt sein oder im Config ein session_start() hinzugefügt werden
  */
-require_once(dirname(__FILE__).'/basis.class.php');
 
 class authentication extends auth
 {
@@ -165,6 +164,3 @@ class authentication extends auth
 		return true;
 	}
 }
-require_once(dirname(__FILE__).'/'.AUTH_SYSTEM.'.class.php');
-
-?>

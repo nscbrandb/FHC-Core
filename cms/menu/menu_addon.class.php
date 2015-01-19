@@ -23,9 +23,6 @@
  * Diese Klasse dient als Basisklasse fuer alle Menue Addons des CMS Systems
  */
 
-require_once(dirname(__FILE__).'/../../include/basis_db.class.php');
-require_once(dirname(__FILE__).'/../../include/functions.inc.php');
-
 class menu_addon extends basis_db
 {
 	/**
@@ -122,7 +119,7 @@ class menu_addon extends basis_db
 			echo '<ul class="menu">';
 		else
 			echo '<ul>';
-			
+
 		foreach($item as $row)
 		{
 			if($menu || $child)
@@ -134,9 +131,9 @@ class menu_addon extends basis_db
 				$class='item2';
 			else
 				$class='leaf';
-			
+
 			echo '<a class="'.$class.' " title="'.$row['title'].'" href="'.$row['link'].'" target="'.$row['target'].'">'.$row['name'].'</a>';
-			
+
 			if(isset($row['childs']))
 			{
 				$this->outputItems1($row['childs'],true);
@@ -154,4 +151,3 @@ class menu_addon extends basis_db
 		echo $this->block;
 	}
 }
-?>

@@ -29,13 +29,6 @@
  * - studiengang_kurzbz_lo 3-stelliges Studiengangskuerzel kleingeschrieben
  * - studiengang_kurzbz_hi 3-stelliges Studiengangskuerzel grossgeschrieben
  */
-require_once(dirname(__FILE__).'/menu_addon.class.php');
-require_once(dirname(__FILE__).'/../../include/studiengang.class.php');
-require_once(dirname(__FILE__).'/../../include/lehrveranstaltung.class.php');
-require_once(dirname(__FILE__).'/../../include/organisationsform.class.php');
-require_once(dirname(__FILE__).'/../../include/functions.inc.php');
-require_once(dirname(__FILE__).'/../../include/phrasen.class.php');
-require_once(dirname(__FILE__).'/../../include/student.class.php');
 
 class menu_addon_lehrveranstaltungen extends menu_addon
 {

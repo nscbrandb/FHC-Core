@@ -18,8 +18,6 @@
  * Authors: Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at>
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/rdf.class.php');
-require_once('../include/dokument.class.php');
 
 $oRdf = new rdf('DOKUMENTTYP','http://www.technikum-wien.at/dokumenttyp');
 $oRdf->sendHeader();

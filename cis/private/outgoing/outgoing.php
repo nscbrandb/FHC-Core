@@ -20,16 +20,6 @@
  */
 
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/phrasen.class.php');
-require_once('../../../include/person.class.php');
-require_once('../../../include/benutzer.class.php');
-require_once('../../../include/preoutgoing.class.php'); 
-require_once('../../../include/firma.class.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/mobilitaetsprogramm.class.php');
-require_once('../../../include/datum.class.php');
-require_once('../../../include/mail.class.php');
-require_once('../../../include/akte.class.php');
 
 $method = (isset($_GET['method'])?$_GET['method']:'');
 $message = '';

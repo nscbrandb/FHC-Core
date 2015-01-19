@@ -27,8 +27,6 @@
  * Array welches includiert wird.
  */
 	require_once('../config/vilesci.config.inc.php');
- 	require('../include/functions.inc.php');
- 	require('../include/benutzerberechtigung.class.php');
  	require_once('../include/'.EXT_FKT_PATH.'/vilesci_menu_main.inc.php');
 
 	if (!$uid = get_uid())

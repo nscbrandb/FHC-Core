@@ -23,7 +23,6 @@
  * Klasse ort (FAS-Online)
  * @create 04-12-2006
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class ort extends basis_db 
 {

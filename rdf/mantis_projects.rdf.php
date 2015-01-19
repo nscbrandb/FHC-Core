@@ -18,9 +18,6 @@
  * Authors: Andreas Österreicher <andreas.oesterreicher@technikum-wien.at>
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/rdf.class.php');
-require_once('../include/mantis.class.php');
-require_once('../include/functions.inc.php');
 
 get_uid();
 $oRdf = new rdf('MANTIS_PROJECT','http://www.technikum-wien.at/mantis_project');

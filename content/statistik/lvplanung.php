@@ -20,11 +20,6 @@
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/lehrveranstaltung.class.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/person.class.php');
-require_once('../../include/benutzer.class.php');
 
 if(isset($_GET['studiengang_kz']))
 	$studiengang_kz = $_GET['studiengang_kz'];

@@ -26,10 +26,6 @@ header("Pragma: no-cache");
 session_start();
 
 require_once('../config/vilesci.config.inc.php'); 
-require_once('../include/notiz.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
 
 $SOAPServer = new SoapServer(APP_ROOT."/soap/notiz.wsdl.php?".microtime());
 $SOAPServer->addFunction("saveNotiz");

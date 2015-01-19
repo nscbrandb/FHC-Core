@@ -25,7 +25,6 @@
  * Klasse Betriebsmittel
  * @create 22-01-2007
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class betriebsmittel extends basis_db
 {

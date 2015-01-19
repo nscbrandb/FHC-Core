@@ -21,9 +21,7 @@
  *			Gerald Simane-Sequens <gerald.simane-sequens@technikum-wien.at>
  */
 	require_once('../../config/vilesci.config.inc.php');
-	require_once('../../include/basis_db.class.php');
 	require_once('../../include/ezcomponents/Base/src/ezc_bootstrap.php');
-	require_once('../../include/studiengang.class.php');
 		
 	if(!$graph = new ezcGraphLineChart())
 		die('Fehler beim Initialisieren von EZComponents');

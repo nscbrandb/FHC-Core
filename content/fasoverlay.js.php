@@ -21,8 +21,6 @@
  *			Gerald Simane-Sequens <gerald.simane-sequens@technikum-wien.at>
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/variable.class.php');
 
 $variable = new variable();
 $variable->loadVariables(get_uid());

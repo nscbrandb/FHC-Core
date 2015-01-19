@@ -23,7 +23,6 @@
  * Authors: Christian Paminger <pam@technikum-wien.at
  *			Robert Hofer <robert.hofer@technikum-wien.at>
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class filter extends basis_db
 {

@@ -23,9 +23,6 @@
  * Seite zur Wartung der Statistiken
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/statistik.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/berechtigung.class.php');
 
 if(!$db = new basis_db())
 {

@@ -23,10 +23,6 @@
  * Generiert eine Anwesenheitsliste mit Fotos
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/datum.class.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/akte.class.php');
 
 $stg_obj = new studiengang();
 $stg_obj->getAll('typ, kurzbzlang', false);

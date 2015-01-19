@@ -22,8 +22,6 @@
 /**
  * Klasse WaWi Konto
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/sprache.class.php');
 
 class wawi_konto extends basis_db
 {

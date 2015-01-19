@@ -18,13 +18,6 @@
  * Authors: Andreas Oesterreicher 	<andreas.oesterreicher@technikum-wien.at>
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/ampel.class.php');
-require_once('../../../include/datum.class.php');
-require_once('../../../include/phrasen.class.php');
-require_once('../../../include/benutzerfunktion.class.php');
-require_once('../../../include/organisationseinheit.class.php');
-require_once('../../../include/benutzerberechtigung.class.php');
 
 $user = get_uid();
 $sprache = getSprache();

@@ -28,12 +28,6 @@
 
 	require_once('../config/wawi.config.inc.php');
 	require_once('auth.php');
-  	require_once('../include/functions.inc.php');
-	require_once('../include/benutzerberechtigung.class.php');
-	require_once('../include/mitarbeiter.class.php');
-  	require_once ('../include/firma.class.php');
-  	require_once('../include/standort.class.php');
-  	require_once ('../include/tags.class.php');
 
   	if (!$uid = get_uid())
 		die('Keine UID gefunden:'.$uid.' !  <a href="javascript:history.back()">Zur&uuml;ck</a>');

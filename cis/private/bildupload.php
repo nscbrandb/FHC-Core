@@ -25,12 +25,6 @@
 // Oberflaeche zum Upload von Bildern
 
 require_once('../../config/cis.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/person.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/akte.class.php');
-require_once('../../include/phrasen.class.php');
-require_once('../../include/fotostatus.class.php');
 
 $user = get_uid();
 $sprache = getSprache();

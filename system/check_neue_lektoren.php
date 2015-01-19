@@ -28,8 +28,6 @@
  * Nachricht versendet.
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/studiensemester.class.php');
-require_once('../include/mail.class.php');
 	
 $stsem = new studiensemester();
 if(!$studiensemester = $stsem->getakt())

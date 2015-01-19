@@ -26,12 +26,7 @@
  * daraus ein PDF (xslfo2pdf)
  */
 require_once('../../config/cis.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerberechtigung.class.php');
 require_once('../../include/xslfo2pdf/xslfo2pdf.php');
-require_once('../../include/akte.class.php');
-require_once('../../include/konto.class.php');
-require_once('../../include/benutzer.class.php');
 
 if (!$db = new basis_db())
 	die('Fehler beim Oeffnen der Datenbankverbindung');

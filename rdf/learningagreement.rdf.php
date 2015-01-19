@@ -20,13 +20,6 @@
  *          Karl Burkhart <burkhart@technikum-wien.at>.
  */
 require_once('../config/vilesci.config.inc.php');
-require_once '../include/person.class.php';
-require_once '../include/preincoming.class.php'; 
-require_once '../include/firma.class.php'; 
-require_once '../include/lehrveranstaltung.class.php'; 
-require_once '../include/studiengang.class.php';
-require_once '../include/datum.class.php';
-
 
 if (isset($_REQUEST["xmlformat"]) && $_REQUEST["xmlformat"] == "xml")
 {

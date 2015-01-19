@@ -23,7 +23,6 @@
  * Generiert die Listen fuer die Mailverteiler der Studenten
  */
 	require_once('../../config/vilesci.config.inc.php');
-	require_once('../../include/functions.inc.php');
 	
 	$db = new basis_db();
 	if(!($erg=$db->db_query("SELECT studiengang_kz, bezeichnung, lower(typ::varchar(1) || kurzbz) as kurzbz FROM public.tbl_studiengang ORDER BY kurzbz ASC")))

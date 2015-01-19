@@ -21,7 +21,6 @@
  *
  */
 require_once('../config/cis.config.inc.php');
-require_once('../include/functions.inc.php');
 
 if(isset($_GET['login']))
 {

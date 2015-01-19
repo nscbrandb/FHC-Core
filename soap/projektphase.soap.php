@@ -25,11 +25,6 @@ header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
 header("Pragma: no-cache");
 
 require_once('../config/vilesci.config.inc.php'); 
-require_once('../include/basis_db.class.php');
-require_once('../include/projektphase.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
 
 $SOAPServer = new SoapServer(APP_ROOT."/soap/projektphase.wsdl.php?".microtime());
 $SOAPServer->addFunction("saveProjektphase");

@@ -22,7 +22,6 @@
 /**
  * Verwaltet die Templates fuer das CMS
  */
-require_once('basis_db.class.php');
 
 class template extends basis_db
 {

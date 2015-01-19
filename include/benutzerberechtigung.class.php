@@ -20,12 +20,6 @@
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at> and
  *			Gerald Simane-Sequens <gerald.simane-sequens@technikum-wien.at>
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/organisationseinheit.class.php');
-require_once(dirname(__FILE__).'/studiengang.class.php');
-require_once(dirname(__FILE__).'/fachbereich.class.php');
-require_once(dirname(__FILE__).'/functions.inc.php');
-require_once(dirname(__FILE__).'/wawi_kostenstelle.class.php');
 
 class benutzerberechtigung extends basis_db
 {
@@ -1013,4 +1007,3 @@ class benutzerberechtigung extends basis_db
 		}
 	}
 }
-?>

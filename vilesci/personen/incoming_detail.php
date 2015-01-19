@@ -21,27 +21,6 @@
  */
 require_once('../../config/vilesci.config.inc.php');
 require_once('../../config/global.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/preincoming.class.php');
-require_once('../../include/person.class.php');
-require_once('../../include/adresse.class.php');
-require_once('../../include/kontakt.class.php');
-require_once('../../include/nation.class.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/mobilitaetsprogramm.class.php');
-require_once('../../include/zweck.class.php');
-require_once('../../include/akte.class.php');
-require_once('../../include/lehrveranstaltung.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/prestudent.class.php');
-require_once('../../include/student.class.php');
-require_once('../../include/lehrverband.class.php');
-require_once('../../include/studiengang.class.php');
-require_once('../../include/bisio.class.php');
-require_once('../../include/firma.class.php');
-require_once('../../include/mail.class.php');
-require_once('../../include/datum.class.php'); 
 require_once('../../include/'.EXT_FKT_PATH.'/generateuid.inc.php');
 
 $user = get_uid();

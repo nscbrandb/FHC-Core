@@ -17,7 +17,6 @@
  *
  * Authors: Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class infoscreen extends basis_db
 {

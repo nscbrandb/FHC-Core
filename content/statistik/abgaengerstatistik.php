@@ -21,9 +21,6 @@
  */
 
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/functions.inc.php');
 
 if(isset($_GET['stsem']))
 	$stsem = $_GET['stsem'];

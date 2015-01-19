@@ -32,15 +32,8 @@
 // ***********************************************************************************************	
 // Include Dateien
 // ***********************************************************************************************
-#	require_once('../config.inc.php');
-// ---------------- Vilesci Include Dateien einbinden
 require_once('../../config/vilesci.config.inc.php');	
-require_once('../../include/functions.inc.php');
 require_once('../../include/globals.inc.php');
-include_once('../../include/moodle19_course.class.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/studiengang.class.php');	
-require_once('../../include/benutzerberechtigung.class.php');
 
 $user = get_uid();
 

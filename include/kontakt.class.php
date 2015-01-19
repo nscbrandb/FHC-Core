@@ -23,7 +23,6 @@
  * Klasse kontakt 
  * @create 20-12-2006
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class kontakt extends basis_db
 {

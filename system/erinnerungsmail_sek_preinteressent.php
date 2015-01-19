@@ -23,11 +23,6 @@
  * Versendet Erinnerungsmails an die Assistenz zur Uebernahme der Freigegebenen Preinteressenten
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/preinteressent.class.php');
-require_once('../include/person.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/mail.class.php');
 
 $studiengang = new studiengang();
 $studiengang->getAll();

@@ -19,11 +19,6 @@
  * 
  */
 require_once('../config/cis.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/dms.class.php');
-require_once('../include/gruppe.class.php');
-require_once('../include/benutzerberechtigung.class.php');
-
 
 $user = get_uid();
 $rechte = new benutzerberechtigung();

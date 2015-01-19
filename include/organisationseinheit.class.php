@@ -25,7 +25,6 @@
  * Klasse Organisationseinheit
  * 
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class organisationseinheit extends basis_db
 {

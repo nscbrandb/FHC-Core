@@ -21,8 +21,6 @@
  * Klasse Lehre Tools
  * Verwaltet externe Tools die im CIS zusätzlich pro Organisationseinheit angezeigt werden
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/sprache.class.php');
 
 class lehre_tools extends basis_db
 {

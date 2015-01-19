@@ -21,7 +21,6 @@
 /**
  * Klasse Coodle
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class coodle extends basis_db
 {

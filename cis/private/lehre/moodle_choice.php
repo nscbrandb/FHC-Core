@@ -21,12 +21,6 @@
  *          Gerald Simane-Sequens 	< gerald.simane-sequens@technikum-wien.at >
  */
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/basis_db.class.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/moodle.class.php');
-require_once('../../../include/moodle19_course.class.php');
-require_once('../../../include/moodle24_course.class.php');
-require_once('../../../include/phrasen.class.php');
 
 if (!$db = new basis_db())
 	die('Fehler beim Herstellen der Datenbankverbindung');

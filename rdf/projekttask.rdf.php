@@ -18,12 +18,6 @@
  * Authors: Christian Paminger <christian.paminger@technikum-wien.at>
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
-require_once('../include/projekttask.class.php');
-require_once('../include/rdf.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/ressource.class.php'); 
 
 $datum_obj = new datum();
 

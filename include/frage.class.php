@@ -23,9 +23,6 @@
 /**
  * Klasse fuer die Fragen des Reihungstesttools
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
-require_once(dirname(__FILE__).'/gebiet.class.php');
-require_once(dirname(__FILE__).'/pruefling.class.php');
 
 class frage extends basis_db
 {

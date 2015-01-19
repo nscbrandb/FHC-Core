@@ -21,10 +21,6 @@
  * Script um eine Person gleichzeitig zu mehreren Moodle Kursen zuzuteilen
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/moodle.class.php');
-require_once('../../include/moodle24_user.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
 
 $user = get_uid();
 $rechte = new benutzerberechtigung();

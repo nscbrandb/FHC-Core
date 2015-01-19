@@ -23,13 +23,6 @@
  */
 
 require_once('../../../../config/cis.config.inc.php');
-require_once('../../../../include/functions.inc.php');
-require_once('../../../../include/benutzerberechtigung.class.php');
-require_once('../../../../include/lehrveranstaltung.class.php');
-require_once('../../../../include/konto.class.php');
-require_once('../../../../include/studiensemester.class.php');
-require_once('../../../../include/student.class.php');
-
 
 $uid = get_uid();
 $db = new basis_db();

@@ -24,13 +24,6 @@
  * Erstellt ein XML File fuer den Lehrauftrag
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/lehreinheit.class.php');
-require_once('../include/fachbereich.class.php');
-require_once('../include/mitarbeiter.class.php');
-
 
 // header für no cache
 header("Cache-Control: no-cache");

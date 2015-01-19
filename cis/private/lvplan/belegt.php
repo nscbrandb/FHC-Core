@@ -24,7 +24,6 @@
  * Dies dient zur Freischaltung des WLANS
  */
 require_once(dirname(__FILE__).'/../../../config/cis.config.inc.php');
-require_once(dirname(__FILE__).'/../../../include/basis_db.class.php');
 
 $datum = date('Y-m-d');
 $stunden=array();

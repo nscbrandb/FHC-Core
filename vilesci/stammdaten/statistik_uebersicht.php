@@ -20,8 +20,6 @@
  *          Karl Burkhart 		< burkhart@technikum-wien.at >
  */
 require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/statistik.class.php');
-require_once('../../include/benutzerberechtigung.class.php');
 
 $user = get_uid();
 

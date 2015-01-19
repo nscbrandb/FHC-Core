@@ -22,9 +22,6 @@
  * Prueft und aktualisiert die Datenbank
  */
 require_once('../../config/system.config.inc.php');
-require_once('../../include/basis_db.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerberechtigung.class.php');
 
 // Datenbank Verbindung
 $db = new basis_db();

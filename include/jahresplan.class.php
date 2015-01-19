@@ -30,7 +30,6 @@
  * @param reservierung_id Reservierung Key
  *
  */
-require_once(dirname(__FILE__).'/basis_db.class.php'); 
 
 class jahresplan extends basis_db 
 {

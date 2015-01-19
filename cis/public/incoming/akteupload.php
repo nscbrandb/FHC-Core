@@ -24,14 +24,6 @@
 // Oberflaeche zur Aenderung von Beispielen und Upload von Bildern
 require_once 'auth.php';
 require_once('../../../config/cis.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/person.class.php');
-require_once('../../../include/benutzer.class.php');
-require_once('../../../include/benutzerberechtigung.class.php');
-require_once('../../../include/akte.class.php');
-require_once('../../../include/dokument.class.php');
-require_once('../../../include/mail.class.php');
-require_once('../../../include/phrasen.class.php'); 
 
 header("Content-Type: text/html; charset=utf-8");
 

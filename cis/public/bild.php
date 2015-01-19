@@ -23,9 +23,6 @@
 // um und gibt das ein Bild zurueck.
 // Aufruf mit <img src='bild.php?src=person&person_id=1>
 require_once('../../config/cis.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/basis_db.class.php');
-require_once('../../include/benutzer.class.php');
 
 session_start();
 

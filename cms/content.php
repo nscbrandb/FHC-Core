@@ -24,10 +24,6 @@
  * zeigt diese an.
  */
 require_once('../config/cis.config.inc.php');
-require_once('../include/content.class.php');
-require_once('../include/template.class.php');
-require_once('../include/functions.inc.php');
-require_once('../include/phrasen.class.php');
 
 if(isset($_GET['content_id']))
 	$content_id = $_GET['content_id'];

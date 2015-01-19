@@ -21,7 +21,6 @@
  * Klasse FreeBusy
  * @create 27-01-2012
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class freebusy extends basis_db
 {

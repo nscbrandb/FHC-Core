@@ -21,7 +21,6 @@
  * Authentifizierung fuer DMS Webdav Schnittstelle
  */
 require_once(dirname(__FILE__).'/../config/cis.config.inc.php');
-require_once(dirname(__FILE__).'/../include/functions.inc.php');
 
 class myauth extends \Sabre\DAV\Auth\Backend\AbstractBasic
 {
@@ -33,4 +32,3 @@ class myauth extends \Sabre\DAV\Auth\Backend\AbstractBasic
 			return false;
 	}
 }
-?>

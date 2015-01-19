@@ -21,16 +21,6 @@
  */
 session_start();
 require_once('../config/cis.config.inc.php');
-require_once('../include/content.class.php');
-require_once('../include/template.class.php');
-require_once('../include/functions.inc.php');
-require_once('../include/sprache.class.php');
-require_once('../include/gruppe.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/mail.class.php');
-require_once('../include/benutzerfunktion.class.php');
-require_once('../include/organisationseinheit.class.php');
-require_once('../include/benutzerberechtigung.class.php');
 require_once('../include/xsdformprinter/xsdformprinter.php');
 require_once('../include/DifferenceEngine/DifferenceEngine.php');
 

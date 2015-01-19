@@ -23,10 +23,6 @@
 // um und gibt das Dokument zurueck.
 
 require_once('../../../config/vilesci.config.inc.php');
-require_once('../../../include/functions.inc.php');
-require_once('../../../include/akte.class.php');
-require_once('../../../include/benutzer.class.php');
-
 
 $uid = get_uid();
 

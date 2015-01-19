@@ -21,9 +21,6 @@
  *          Gerald Simane-Sequens 	< gerald.simane-sequens@technikum-wien.at >
  */
 	require_once('../../config/vilesci.config.inc.php');
-	require_once('../../include/functions.inc.php');
-    require_once('../../include/berechtigung.class.php');
-    require_once('../../include/benutzerberechtigung.class.php');
     
     $user = get_uid();
     

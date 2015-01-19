@@ -20,12 +20,6 @@
  */
 
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/projekt.class.php');
-require_once('../include/projektphase.class.php');
-require_once('../include/projekttask.class.php'); 
-require_once('../include/datum.class.php');
-require_once('../include/ressource.class.php');
-require_once('../include/organisationseinheit.class.php');
 
 header("Content-type: application/xhtml+xml");
 

@@ -18,10 +18,6 @@
  * Authors: Andreas Österreicher <andreas.oesterreicher@technikum-wien.at>
  */
 require_once('../config/vilesci.config.inc.php');
-require_once('../include/rdf.class.php');
-require_once('../include/buchung.class.php');
-require_once('../include/functions.inc.php');
-require_once('../include/benutzerberechtigung.class.php');
 
 $user = get_uid();
 $rechte = new benutzerberechtigung();

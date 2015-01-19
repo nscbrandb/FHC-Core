@@ -21,19 +21,6 @@
  */
 
 require_once('../../../../config/cis.config.inc.php');
-require_once('../../../../include/functions.inc.php');
-require_once('../../../../include/lehrveranstaltung.class.php');
-require_once('../../../../include/studiengang.class.php');
-require_once('../../../../include/studiensemester.class.php');
-require_once('../../../../include/lehreinheit.class.php');
-require_once('../../../../include/benutzerberechtigung.class.php');
-require_once('../../../../include/uebung.class.php');
-require_once('../../../../include/beispiel.class.php');
-require_once('../../../../include/studentnote.class.php');
-require_once('../../../../include/datum.class.php');
-require_once('../../../../include/legesamtnote.class.php');
-require_once('../../../../include/lvgesamtnote.class.php');
-require_once('../../../../include/zeugnisnote.class.php');
 
 $user = get_uid();
 

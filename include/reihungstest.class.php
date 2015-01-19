@@ -23,7 +23,6 @@
  * Klasse Reihungstest 
  * @create 10-01-2007
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
 
 class reihungstest extends basis_db 
 {

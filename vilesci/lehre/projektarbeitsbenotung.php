@@ -21,22 +21,10 @@
  *          Gerald Simane-Sequens 	< gerald.simane-sequens@technikum-wien.at >
  */
 		require_once('../../config/vilesci.config.inc.php');
-		require_once('../../include/basis_db.class.php');
+
 		if (!$db = new basis_db())
 				die('Es konnte keine Verbindung zum Server aufgebaut werden.');
 			
-require_once('../../include/studiengang.class.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/benutzerberechtigung.class.php');
-require_once('../../include/projektarbeit.class.php');
-require_once('../../include/person.class.php');
-require_once('../../include/benutzer.class.php');
-require_once('../../include/student.class.php');
-require_once('../../include/projektbetreuer.class.php');
-require_once('../../include/studiensemester.class.php');
-require_once('../../include/note.class.php');
-
-
 if (!$user=get_uid())
 		die('Sie sind nicht angemeldet. Es wurde keine Benutzer UID gefunden !  <a href="javascript:history.back()">Zur&uuml;ck</a>');
 

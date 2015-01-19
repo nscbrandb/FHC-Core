@@ -19,9 +19,6 @@
  * Authors: Stefan Puraner <puraner@technikum-wien.at>,
  *          
  */
-require_once(dirname(__FILE__).'/../../include/functions.inc.php');
-require_once(dirname(__FILE__).'/../../include/studiengang.class.php');
-
 
 function generateZahlungsreferenz($studiengang_kz, $buchungsNr)
 {
@@ -34,4 +31,3 @@ function generateZahlungsreferenz($studiengang_kz, $buchungsNr)
 	
 }
 //generateZahlungsreferenz(33403, 257);
-?>
