@@ -25,6 +25,8 @@
 require_once('../config/system.config.inc.php');
 require_once('../include/basis_db.class.php');
 
+ini_set('output_buffering','0');
+
 // Datenbank Verbindung
 $db = new basis_db();
 echo '<html>
@@ -34,6 +36,136 @@ echo '<html>
 	<link rel="stylesheet" href="../skin/vilesci.css" type="text/css" />
 </head>
 <body>';
+
+echo '<h1>STP Prequisite</h1>';
+$qry = "
+	-- obj und Abhängigkeiten löschen + aufheben
+	-- SELECT stp.deps_save_and_drop_dependencies(p_schema_name, p_object_name);
+	-- Abhängigkeiten wieder herstellen
+	-- SELECT stp.deps_restore_dependencies(p_schema_name, p_object_name);
+	
+	CREATE SCHEMA IF NOT EXISTS stp;
+	
+	CREATE table IF NOT EXISTS stp.deps_saved_ddl
+	(
+	  deps_id serial PRIMARY KEY, 
+	  deps_view_schema VARCHAR(255), 
+	  deps_view_name VARCHAR(255), 
+	  deps_ddl_to_run TEXT
+	);
+	
+	CREATE OR REPLACE FUNCTION stp.deps_save_and_drop_dependencies(p_view_schema VARCHAR, p_view_name VARCHAR) RETURNS void AS
+	$$
+	DECLARE
+	  v_curr record;
+	BEGIN
+	FOR v_curr IN 
+	(
+	  SELECT obj_schema, obj_name, obj_type FROM
+	  (
+	  WITH RECURSIVE recursive_deps(obj_schema, obj_name, obj_type, depth) AS 
+	  (
+	    SELECT p_view_schema, p_view_name, null::VARCHAR, 0
+	    UNION
+	    SELECT dep_schema::VARCHAR, dep_name::VARCHAR, dep_type::VARCHAR, recursive_deps.depth + 1 FROM 
+	    (
+	      SELECT ref_nsp.nspname ref_schema, ref_cl.relname ref_name, 
+		  rwr_cl.relkind dep_type,
+	      rwr_nsp.nspname dep_schema,
+	      rwr_cl.relname dep_name
+	      FROM pg_depend dep
+	      JOIN pg_class ref_cl ON dep.refobjid = ref_cl.oid
+	      JOIN pg_namespace ref_nsp ON ref_cl.relnamespace = ref_nsp.oid
+	      JOIN pg_rewrite rwr ON dep.objid = rwr.oid
+	      JOIN pg_class rwr_cl ON rwr.ev_class = rwr_cl.oid
+	      JOIN pg_namespace rwr_nsp ON rwr_cl.relnamespace = rwr_nsp.oid
+	      WHERE dep.deptype = 'n'
+	      AND dep.classid = 'pg_rewrite'::regclass
+	    ) deps
+	    JOIN recursive_deps ON deps.ref_schema = recursive_deps.obj_schema AND deps.ref_name = recursive_deps.obj_name
+	    WHERE (deps.ref_schema != deps.dep_schema OR deps.ref_name != deps.dep_name)
+	  )
+	  SELECT obj_schema, obj_name, obj_type, depth
+	  FROM recursive_deps 
+	  WHERE depth > 0
+	  ) t
+	  group by obj_schema, obj_name, obj_type
+	  order by max(depth) desc
+	) loop
+	
+	  INSERT INTO stp.deps_saved_ddl(deps_view_schema, deps_view_name, deps_ddl_to_run)
+	  SELECT p_view_schema, p_view_name, 'COMMENT ON ' ||
+	  CASE
+	  WHEN c.relkind = 'v' THEN 'VIEW'
+	  WHEN c.relkind = 'm' THEN 'MATERIALIZED VIEW'
+	  ELSE ''
+	  END
+	  || ' ' || n.nspname || '.' || c.relname || ' IS ''' || REPLACE(d.description, '''', '''''') || ''';'
+	  FROM pg_class c
+	  JOIN pg_namespace n ON n.oid = c.relnamespace
+	  JOIN pg_description d ON d.objoid = c.oid AND d.objsubid = 0
+	  WHERE n.nspname = v_curr.obj_schema AND c.relname = v_curr.obj_name AND d.description IS NOT NULL;
+	
+	  INSERT INTO stp.deps_saved_ddl(deps_view_schema, deps_view_name, deps_ddl_to_run)
+	  SELECT p_view_schema, p_view_name, 'COMMENT ON COLUMN ' || n.nspname || '.' || c.relname || '.' || a.attname || ' IS ''' || REPLACE(d.description, '''', '''''') || ''';'
+	  FROM pg_class c
+	  JOIN pg_attribute a ON c.oid = a.attrelid
+	  JOIN pg_namespace n ON n.oid = c.relnamespace
+	  JOIN pg_description d ON d.objoid = c.oid AND d.objsubid = a.attnum
+	  WHERE n.nspname = v_curr.obj_schema AND c.relname = v_curr.obj_name AND d.description IS NOT NULL;
+	  
+	  INSERT INTO stp.deps_saved_ddl(deps_view_schema, deps_view_name, deps_ddl_to_run)
+	  SELECT p_view_schema, p_view_name, 'GRANT ' || privilege_type || ' ON ' || table_schema || '.' || table_name || ' TO ' || grantee
+	  FROM information_schema.role_table_grants
+	  WHERE table_schema = v_curr.obj_schema AND table_name = v_curr.obj_name;
+	  
+	  IF v_curr.obj_type = 'v' THEN
+	    INSERT INTO stp.deps_saved_ddl(deps_view_schema, deps_view_name, deps_ddl_to_run)
+	    SELECT p_view_schema, p_view_name, 'CREATE VIEW ' || v_curr.obj_schema || '.' || v_curr.obj_name || ' AS ' || view_definition
+	    FROM information_schema.views
+	    WHERE table_schema = v_curr.obj_schema AND table_name = v_curr.obj_name;
+	  ELSEIF v_curr.obj_type = 'm' THEN
+	    INSERT INTO stp.deps_saved_ddl(deps_view_schema, deps_view_name, deps_ddl_to_run)
+	    SELECT p_view_schema, p_view_name, 'CREATE MATERIALIZED VIEW ' || v_curr.obj_schema || '.' || v_curr.obj_name || ' AS ' || definition
+	    FROM pg_matviews
+	    WHERE schemaname = v_curr.obj_schema AND matviewname = v_curr.obj_name;
+	  END IF;
+	  
+	  EXECUTE 'DROP ' ||
+	  CASE 
+	    WHEN v_curr.obj_type = 'v' THEN 'VIEW'
+	    WHEN v_curr.obj_type = 'm' THEN 'MATERIALIZED VIEW'
+	  END
+	  || ' ' || v_curr.obj_schema || '.' || v_curr.obj_name;
+	  
+	end loop;
+	end;
+	$$
+	LANGUAGE plpgsql;
+	
+	CREATE OR REPLACE FUNCTION stp.deps_restore_dependencies(p_view_schema VARCHAR, p_view_name VARCHAR) RETURNS void AS
+	$$
+	DECLARE
+	  v_curr record;
+	BEGIN
+	FOR v_curr IN 
+	(
+	  SELECT deps_ddl_to_run 
+	  FROM stp.deps_saved_ddl
+	  WHERE deps_view_schema = p_view_schema AND deps_view_name = p_view_name
+	  ORDER BY deps_id DESC
+	) LOOP
+	  EXECUTE v_curr.deps_ddl_to_run;
+	END LOOP;
+	DELETE FROM stp.deps_saved_ddl
+	WHERE deps_view_schema = p_view_schema AND deps_view_name = p_view_name;
+	END;
+	$$
+	LANGUAGE plpgsql;";
+
+if (!$db->db_query($qry)) {
+	die('oops ... '.$db->db_last_error());
+}
 
 echo '<H1>Systemcheck!</H1>';
 echo '<H2>DB-Updates!</H2>';
@@ -789,6 +921,7 @@ if(!$result = @$db->db_query("SELECT farbe FROM lehre.tbl_lehrveranstaltung LIMI
 				WHERE lehrtyp_kurzbz='lf' AND tbl_lehrveranstaltung.old_lehrfach_id=tbl_lehreinheit.lehrfach_id_old);
 
 	-- VIEWS Korrigieren
+	SELECT stp.deps_save_and_drop_dependencies('campus','vw_lehreinheit');
 	DROP VIEW campus.vw_lehreinheit;
 	CREATE OR REPLACE VIEW campus.vw_lehreinheit as
 	SELECT 
@@ -814,8 +947,10 @@ if(!$result = @$db->db_query("SELECT farbe FROM lehre.tbl_lehrveranstaltung LIMI
 	GRANT SELECT ON campus.vw_lehreinheit TO vilesci;
 	GRANT SELECT ON campus.vw_lehreinheit TO web;
 
+	SELECT stp.deps_restore_dependencies('campus','vw_lehreinheit');
 	-- ==
-
+	
+	SELECT stp.deps_save_and_drop_dependencies('campus','vw_student_lehrveranstaltung');
 	DROP VIEW campus.vw_student_lehrveranstaltung;
 	CREATE OR REPLACE VIEW campus.vw_student_lehrveranstaltung AS
 	SELECT 
@@ -862,8 +997,10 @@ if(!$result = @$db->db_query("SELECT farbe FROM lehre.tbl_lehrveranstaltung LIMI
 	GRANT SELECT ON campus.vw_student_lehrveranstaltung TO admin;
 	GRANT SELECT ON campus.vw_student_lehrveranstaltung TO vilesci;
 	GRANT SELECT ON campus.vw_student_lehrveranstaltung TO web;
-
+	SELECT stp.deps_restore_dependencies('campus','vw_student_lehrveranstaltung');
 	-- ==
+	
+	SELECT stp.deps_save_and_drop_dependencies('campus','vw_stundenplan');
 	DROP VIEW campus.vw_stundenplan;
 	CREATE OR REPLACE VIEW campus.vw_stundenplan AS
 	SELECT 
@@ -886,8 +1023,10 @@ if(!$result = @$db->db_query("SELECT farbe FROM lehre.tbl_lehrveranstaltung LIMI
 	GRANT SELECT ON campus.vw_stundenplan TO admin;
 	GRANT SELECT ON campus.vw_stundenplan TO vilesci;
 	GRANT SELECT ON campus.vw_stundenplan TO web;
-
+	SELECT stp.deps_restore_dependencies('campus','vw_stundenplan');
+	
 	-- ==
+	SELECT stp.deps_save_and_drop_dependencies('lehre','vw_lva_stundenplan');
 	DROP VIEW lehre.vw_lva_stundenplan;
 	CREATE OR REPLACE VIEW lehre.vw_lva_stundenplan AS
 	SELECT 
@@ -911,8 +1050,11 @@ if(!$result = @$db->db_query("SELECT farbe FROM lehre.tbl_lehrveranstaltung LIMI
 	GRANT SELECT ON lehre.vw_lva_stundenplan TO admin;
 	GRANT SELECT ON lehre.vw_lva_stundenplan TO vilesci;
 	GRANT SELECT ON lehre.vw_lva_stundenplan TO web;
-
+	SELECT stp.deps_restore_dependencies('lehre','vw_lva_stundenplan');
+	
 	-- ==
+	
+	SELECT stp.deps_save_and_drop_dependencies('lehre','vw_lva_stundenplandev');
 	DROP VIEW lehre.vw_lva_stundenplandev;
 	CREATE OR REPLACE VIEW lehre.vw_lva_stundenplandev AS
 	SELECT 
@@ -936,9 +1078,10 @@ if(!$result = @$db->db_query("SELECT farbe FROM lehre.tbl_lehrveranstaltung LIMI
 	GRANT SELECT ON lehre.vw_lva_stundenplandev TO admin;
 	GRANT SELECT ON lehre.vw_lva_stundenplandev TO vilesci;
 	GRANT SELECT ON lehre.vw_lva_stundenplandev TO web;
-
+	SELECT stp.deps_restore_dependencies('lehre','vw_lva_stundenplandev');
+	
 	-- ==
-
+	SELECT stp.deps_save_and_drop_dependencies('lehre','vw_stundenplan');
 	DROP VIEW lehre.vw_stundenplan;
 	CREATE OR REPLACE VIEW lehre.vw_stundenplan AS
 	SELECT 
@@ -962,9 +1105,9 @@ if(!$result = @$db->db_query("SELECT farbe FROM lehre.tbl_lehrveranstaltung LIMI
 	GRANT SELECT ON lehre.vw_stundenplan TO admin;
 	GRANT SELECT ON lehre.vw_stundenplan TO vilesci;
 	GRANT SELECT ON lehre.vw_stundenplan TO web;
-
+	SELECT stp.deps_restore_dependencies('lehre','vw_stundenplan');
 	-- ==
-
+	SELECT stp.deps_save_and_drop_dependencies('lehre','vw_stundenplandev');
 	DROP VIEW lehre.vw_stundenplandev;
 	CREATE OR REPLACE VIEW lehre.vw_stundenplandev AS
 	SELECT 
@@ -989,7 +1132,8 @@ if(!$result = @$db->db_query("SELECT farbe FROM lehre.tbl_lehrveranstaltung LIMI
 	GRANT SELECT ON lehre.vw_stundenplandev TO admin;
 	GRANT SELECT ON lehre.vw_stundenplandev TO vilesci;
 	GRANT SELECT ON lehre.vw_stundenplandev TO web;
-
+	SELECT stp.deps_restore_dependencies('lehre','vw_stundenplandev');
+	
 	ALTER TABLE lehre.tbl_lehreinheit ALTER COLUMN lehrfach_id SET NOT NULL;
 			";
 
@@ -1414,6 +1558,7 @@ if($result = @$db->db_query("SELECT view_definition FROM information_schema.view
 		if($row->view_definition!="SELECT le.lehreinheit_id, le.unr, le.lvnr, (SELECT tbl_fachbereich.fachbereich_kurzbz FROM tbl_fachbereich WHERE ((tbl_fachbereich.oe_kurzbz)::text = (lehrfach.oe_kurzbz)::text)) AS fachbereich_kurzbz, le.lehrfach_id, lehrfach.kurzbz AS lehrfach, lehrfach.bezeichnung AS lehrfach_bez, lehrfach.farbe AS lehrfach_farbe, le.lehrform_kurzbz AS lehrform, lema.mitarbeiter_uid AS lektor_uid, ma.kurzbz AS lektor, tbl_studiengang.studiengang_kz, tbl_studiengang.kurzbz AS studiengang, lvb.semester, lvb.verband, lvb.gruppe, lvb.gruppe_kurzbz, le.raumtyp, le.raumtypalternativ, le.stundenblockung, le.wochenrythmus, lema.semesterstunden, lema.planstunden, le.start_kw, le.anmerkung, le.studiensemester_kurzbz, (SELECT count(DISTINCT ROW(tbl_stundenplan.datum, tbl_stundenplan.stunde, tbl_stundenplan.mitarbeiter_uid, tbl_stundenplan.studiengang_kz, tbl_stundenplan.semester, tbl_stundenplan.verband, tbl_stundenplan.gruppe, tbl_stundenplan.gruppe_kurzbz, tbl_stundenplan.lehreinheit_id, tbl_stundenplan.unr)) AS count FROM lehre.tbl_stundenplan WHERE ((((((((tbl_stundenplan.mitarbeiter_uid)::text = (lema.mitarbeiter_uid)::text) AND (tbl_stundenplan.studiengang_kz = lvb.studiengang_kz)) AND (tbl_stundenplan.semester = lvb.semester)) AND ((tbl_stundenplan.verband = lvb.verband) OR (((tbl_stundenplan.verband IS NULL) OR (tbl_stundenplan.verband = ''::bpchar)) AND (lvb.verband IS NULL)))) AND ((tbl_stundenplan.gruppe = lvb.gruppe) OR (((tbl_stundenplan.gruppe IS NULL) OR (tbl_stundenplan.gruppe = ''::bpchar)) AND (lvb.gruppe IS NULL)))) AND (((tbl_stundenplan.gruppe_kurzbz)::text = (lvb.gruppe_kurzbz)::text) OR ((tbl_stundenplan.gruppe_kurzbz IS NULL) AND (lvb.gruppe_kurzbz IS NULL)))) AND (tbl_stundenplan.lehreinheit_id = lvb.lehreinheit_id))) AS verplant FROM (((((lehre.tbl_lehreinheit le JOIN lehre.tbl_lehreinheitgruppe lvb USING (lehreinheit_id)) JOIN lehre.tbl_lehreinheitmitarbeiter lema USING (lehreinheit_id)) JOIN tbl_studiengang USING (studiengang_kz)) JOIN lehre.tbl_lehrveranstaltung lehrfach ON ((le.lehrfach_id = lehrfach.lehrveranstaltung_id))) JOIN tbl_mitarbeiter ma USING (mitarbeiter_uid));")
 		{
 			$qry = "
+			SELECT stp.deps_save_and_drop_dependencies('lehre','vw_lva_stundenplan');
 			DROP VIEW lehre.vw_lva_stundenplan;
 			CREATE OR REPLACE VIEW lehre.vw_lva_stundenplan AS
 			SELECT 
@@ -1437,6 +1582,7 @@ if($result = @$db->db_query("SELECT view_definition FROM information_schema.view
 			GRANT SELECT ON lehre.vw_lva_stundenplan TO admin;
 			GRANT SELECT ON lehre.vw_lva_stundenplan TO vilesci;
 			GRANT SELECT ON lehre.vw_lva_stundenplan TO web;
+			SELECT stp.deps_restore_dependencies('lehre','vw_lva_stundenplan');
 			";
 
 			if(!$db->db_query($qry))
@@ -1455,6 +1601,7 @@ if($result = @$db->db_query("SELECT view_definition FROM information_schema.view
 		if($row->view_definition!="SELECT le.lehreinheit_id, le.unr, le.lvnr, (SELECT tbl_fachbereich.fachbereich_kurzbz FROM tbl_fachbereich WHERE ((tbl_fachbereich.oe_kurzbz)::text = (lehrfach.oe_kurzbz)::text)) AS fachbereich_kurzbz, le.lehrfach_id, lehrfach.kurzbz AS lehrfach, lehrfach.bezeichnung AS lehrfach_bez, lehrfach.farbe AS lehrfach_farbe, le.lehrform_kurzbz AS lehrform, lema.mitarbeiter_uid AS lektor_uid, tbl_mitarbeiter.kurzbz AS lektor, tbl_studiengang.studiengang_kz, upper((((tbl_studiengang.typ)::character varying)::text || (tbl_studiengang.kurzbz)::text)) AS studiengang, lvb.semester, lvb.verband, lvb.gruppe, lvb.gruppe_kurzbz, le.raumtyp, le.raumtypalternativ, le.stundenblockung, le.wochenrythmus, lema.semesterstunden, lema.planstunden, le.start_kw, le.anmerkung, le.studiensemester_kurzbz, (SELECT count(DISTINCT ROW(tbl_stundenplandev.datum, tbl_stundenplandev.stunde, tbl_stundenplandev.mitarbeiter_uid, tbl_stundenplandev.studiengang_kz, tbl_stundenplandev.semester, tbl_stundenplandev.verband, tbl_stundenplandev.gruppe, tbl_stundenplandev.gruppe_kurzbz, tbl_stundenplandev.lehreinheit_id, tbl_stundenplandev.unr)) AS count FROM lehre.tbl_stundenplandev WHERE ((((((((tbl_stundenplandev.mitarbeiter_uid)::text = (lema.mitarbeiter_uid)::text) AND (tbl_stundenplandev.studiengang_kz = lvb.studiengang_kz)) AND (tbl_stundenplandev.semester = lvb.semester)) AND ((tbl_stundenplandev.verband = lvb.verband) OR (((tbl_stundenplandev.verband IS NULL) OR (tbl_stundenplandev.verband = ''::bpchar)) AND (lvb.verband IS NULL)))) AND ((tbl_stundenplandev.gruppe = lvb.gruppe) OR (((tbl_stundenplandev.gruppe IS NULL) OR (tbl_stundenplandev.gruppe = ''::bpchar)) AND (lvb.gruppe IS NULL)))) AND (((tbl_stundenplandev.gruppe_kurzbz)::text = (lvb.gruppe_kurzbz)::text) OR ((tbl_stundenplandev.gruppe_kurzbz IS NULL) AND (lvb.gruppe_kurzbz IS NULL)))) AND (tbl_stundenplandev.lehreinheit_id = lvb.lehreinheit_id))) AS verplant FROM (((((lehre.tbl_lehreinheit le JOIN lehre.tbl_lehreinheitmitarbeiter lema USING (lehreinheit_id)) JOIN lehre.tbl_lehreinheitgruppe lvb USING (lehreinheit_id)) JOIN tbl_studiengang ON ((lvb.studiengang_kz = tbl_studiengang.studiengang_kz))) JOIN lehre.tbl_lehrveranstaltung lehrfach ON ((le.lehrfach_id = lehrfach.lehrveranstaltung_id))) JOIN tbl_mitarbeiter USING (mitarbeiter_uid));")
 		{
 			$qry = "
+			SELECT stp.deps_save_and_drop_dependencies('lehre','vw_lva_stundenplandev');
 			DROP VIEW lehre.vw_lva_stundenplandev;
 			CREATE OR REPLACE VIEW lehre.vw_lva_stundenplandev AS
 			SELECT 
@@ -1478,6 +1625,7 @@ if($result = @$db->db_query("SELECT view_definition FROM information_schema.view
 			GRANT SELECT ON lehre.vw_lva_stundenplandev TO admin;
 			GRANT SELECT ON lehre.vw_lva_stundenplandev TO vilesci;
 			GRANT SELECT ON lehre.vw_lva_stundenplandev TO web;
+			SELECT stp.deps_restore_dependencies('lehre','vw_lva_stundenplandev');
 			";
 	
 			if(!$db->db_query($qry))
@@ -1568,7 +1716,9 @@ if($result = $db->db_query("SELECT * FROM pg_class WHERE relname='idx_reservieru
 // vw_student erweitern
 if(!$result = @$db->db_query("SELECT aktivierungscode FROM campus.vw_student"))
 {
-	$qry = "CREATE OR REPLACE VIEW campus.vw_student AS
+	$qry = "
+		SELECT stp.deps_save_and_drop_dependencies('campus','vw_student');
+		CREATE OR REPLACE VIEW campus.vw_student AS
 		SELECT 
 			tbl_benutzer.uid, tbl_student.matrikelnr, tbl_student.prestudent_id, tbl_student.studiengang_kz, tbl_student.semester, 
 			tbl_student.verband, tbl_student.gruppe, tbl_benutzer.person_id, tbl_benutzer.alias, tbl_person.geburtsnation, tbl_person.sprache, 
@@ -1581,7 +1731,8 @@ if(!$result = @$db->db_query("SELECT aktivierungscode FROM campus.vw_student"))
 		FROM 
 			public.tbl_student
 			JOIN public.tbl_benutzer ON tbl_student.student_uid::text = tbl_benutzer.uid::text
-			JOIN public.tbl_person USING (person_id);";
+			JOIN public.tbl_person USING (person_id);
+		SELECT stp.deps_restore_dependencies('campus','vw_student');";
 
 	if(!$db->db_query($qry))
 		echo '<br><strong>campus.vw_student: '.$db->db_last_error().'</strong><br>';
@@ -1592,7 +1743,9 @@ if(!$result = @$db->db_query("SELECT aktivierungscode FROM campus.vw_student"))
 // vw_mitarbeiter erweitern
 if(!$result = @$db->db_query("SELECT aktivierungscode FROM campus.vw_mitarbeiter"))
 {
-	$qry = "CREATE OR REPLACE VIEW campus.vw_mitarbeiter AS
+	$qry = "
+	SELECT stp.deps_save_and_drop_dependencies('campus','vw_mitarbeiter');
+	CREATE OR REPLACE VIEW campus.vw_mitarbeiter AS
 	SELECT tbl_benutzer.uid, tbl_mitarbeiter.ausbildungcode, tbl_mitarbeiter.personalnummer, tbl_mitarbeiter.kurzbz, tbl_mitarbeiter.lektor, 
 			tbl_mitarbeiter.fixangestellt, tbl_mitarbeiter.telefonklappe, tbl_benutzer.person_id, tbl_benutzer.alias, tbl_person.geburtsnation, 
 			tbl_person.sprache, tbl_person.anrede, tbl_person.titelpost, tbl_person.titelpre, tbl_person.nachname, tbl_person.vorname, tbl_person.vornamen,
@@ -1604,7 +1757,9 @@ if(!$result = @$db->db_query("SELECT aktivierungscode FROM campus.vw_mitarbeiter
 			
 	FROM public.tbl_mitarbeiter
 	JOIN public.tbl_benutzer ON tbl_mitarbeiter.mitarbeiter_uid::text = tbl_benutzer.uid::text
-	JOIN public.tbl_person USING (person_id);";
+	JOIN public.tbl_person USING (person_id);
+	SELECT stp.deps_restore_dependencies('campus','vw_mitarbeiter');
+		";
 
 	if(!$db->db_query($qry))
 		echo '<strong>campus.vw_mitarbeiter: '.$db->db_last_error().'</strong><br>';
