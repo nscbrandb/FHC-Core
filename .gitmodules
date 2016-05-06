@@ -1,0 +1,3 @@
+[submodule "addons/ldap"]
+	path = addons/ldap
+	url = https://github.com/FH-Complete/FHC-AddOn-LDAP.git
