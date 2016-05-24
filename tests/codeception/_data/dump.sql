@@ -390,7 +390,9 @@ DELETE FROM system.tbl_rolleberechtigung WHERE berechtigung_kurzbz IN (
 	'basis/rechnung', 
 	'basis/rechnungsbetrag', 
 	'basis/rechnungstyp', 
-	'basis/zahlungstyp'
+	'basis/zahlungstyp',
+	'basis/studienplan_semester',
+	'basis/dms_version'
 );
 
 DELETE FROM system.tbl_berechtigung WHERE berechtigung_kurzbz IN (
@@ -606,7 +608,9 @@ DELETE FROM system.tbl_berechtigung WHERE berechtigung_kurzbz IN (
 	'basis/rechnung', 
 	'basis/rechnungsbetrag', 
 	'basis/rechnungstyp', 
-	'basis/zahlungstyp'
+	'basis/zahlungstyp',
+	'basis/studienplan_semester',
+	'basis/dms_version'
 );
 
 -- Permissions
@@ -823,6 +827,8 @@ INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/rechnungsbetrag', 'Tbl_rechnungsbetrag');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/rechnungstyp', 'Tbl_rechnungstyp');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/zahlungstyp', 'Tbl_zahlungstyp');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/studienplan_semester', 'Tbl_studienplan_semester');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/dms_version', 'Tbl_dms_version');
 
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/archiv', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/ausbildung', 'admin', 'suid');
@@ -1037,3 +1043,5 @@ INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/rechnungsbetrag', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/rechnungstyp', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/zahlungstyp', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/studienplan_semester', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/dms_version', 'admin', 'suid');
