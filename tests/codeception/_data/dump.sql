@@ -1,6 +1,14 @@
 -- UPDATE tbl_studiengang
 UPDATE public.tbl_studiengang SET onlinebewerbung = TRUE;
 
+-- EMPTY public.tbl_preinteressent
+DELETE FROM public.tbl_preinteressent;
+-- EMPTY public.tbl_prestudentstatus
+DELETE FROM public.tbl_prestudentstatus;
+-- EMPTY public.tbl_prestudent
+DELETE FROM public.tbl_prestudent;
+-- EMPTY lehre.tbl_studienplan
+DELETE FROM lehre.tbl_studienplan_semester;
 -- EMPTY lehre.tbl_studienplan
 DELETE FROM lehre.tbl_studienplan;
 -- EMPTY lehre.tbl_studienordnung_semester
@@ -177,6 +185,19 @@ INSERT INTO lehre.tbl_studienplan VALUES (2, 1, 'VZ', 'A', '01234', 6, 'English'
 INSERT INTO lehre.tbl_studienplan VALUES (3, 1, 'VZ', 'A', '01234', 6, 'English', 't', 15, 't', NOW(), 'codeception', NOW(), NULL, NULL, NULL, NULL, NULL);
 INSERT INTO lehre.tbl_studienplan VALUES (4, 1, 'VZ', 'A', '01234', 6, 'English', 't', 15, 't', NOW(), 'codeception', NOW(), NULL, NULL, NULL, NULL, NULL);
 
+-- INSERT Prestudent (public.tbl_prestudent)
+INSERT INTO public.tbl_prestudent VALUES (1, 'TGM', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'f', NULL, 't', NULL, NULL, NULL, NULL, NULL, NULL, 'f', NULL, NULL, NULL, 0.0, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+-- INSERT Prestudent status (public.tbl_prestudentstatus)
+INSERT INTO public.tbl_prestudentstatus VALUES (1, 'Interessent', 'WS2016', 1, NOW(), NOW(), 'codeception', NOW(), 'codeception', NULL, 'VZ', 1, NULL, 'admin', NULL, NULL, NULL, NULL);
+
+-- INSERT Preinteressent (public.tbl_preinteressent)
+INSERT INTO public.tbl_preinteressent VALUES (1, 1, 'WS2016', 'TGM', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'bewerbungonline', NULL);
+
+-- INSERT INTO lehre.tbl_studienplan_semester (studienplan_semester_id, studienplan_id, studiensemester_kurzbz, semester)
+INSERT INTO lehre.tbl_studienplan_semester VALUES (1, 1, 'WS2016', 1);
+
+-- DELETE FROM system.tbl_rolleberechtigung
 DELETE FROM system.tbl_rolleberechtigung WHERE berechtigung_kurzbz IN (
 	'basis/archiv', 
 	'basis/ausbildung', 
@@ -395,6 +416,7 @@ DELETE FROM system.tbl_rolleberechtigung WHERE berechtigung_kurzbz IN (
 	'basis/dms_version'
 );
 
+-- DELETE FROM system.tbl_berechtigung
 DELETE FROM system.tbl_berechtigung WHERE berechtigung_kurzbz IN (
 	'basis/archiv', 
 	'basis/ausbildung', 
@@ -613,7 +635,7 @@ DELETE FROM system.tbl_berechtigung WHERE berechtigung_kurzbz IN (
 	'basis/dms_version'
 );
 
--- Permissions
+-- INSERT Permissions
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/archiv', 'Tbl_archiv');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/ausbildung', 'Tbl_ausbildung');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/berufstaetigkeit', 'Tbl_berufstaetigkeit');
@@ -830,6 +852,7 @@ INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/studienplan_semester', 'Tbl_studienplan_semester');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/dms_version', 'Tbl_dms_version');
 
+-- INSERT link between user admin and permissions
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/archiv', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/ausbildung', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/berufstaetigkeit', 'admin', 'suid');

@@ -4,6 +4,8 @@ class DB_Model extends FHC_Model
 {
 	protected $dbTable;  // Name of the DB-Table for CI-Insert, -Update, ...
 	protected $pk;  // Name of the PrimaryKey for DB-Update, Load, ...
+	protected $hasSequence;	// False if this table has a composite primary key that is not using a sequence
+							// True if this table has a primary key that uses a sequence
 	protected $acl;  // Name of the PrimaryKey for DB-Update, Load, ...
 	
 	function __construct($dbTable = null, $pk = null)
@@ -11,6 +13,7 @@ class DB_Model extends FHC_Model
 		parent::__construct();
 		$this->dbTable = $dbTable;
 		$this->pk = $pk;
+		$this->hasSequence = true;
 		$this->load->database();
 		$this->acl = $this->config->item('fhc_acl');
 	}
@@ -33,7 +36,29 @@ class DB_Model extends FHC_Model
 
 		// DB-INSERT
 		if ($this->db->insert($this->dbTable, $data))
-			return $this->_success($this->db->insert_id());
+		{
+			// If the table has a primary key that uses a sequence
+			if ($this->hasSequence === true)
+			{
+				return $this->_success($this->db->insert_id());
+			}
+			// Avoid to use method insert_id() from CI because it forces to have a sequence
+			// and doesn't return the primary key when it's composed by more columns
+			else
+			{
+				$primaryKeysArray = array();
+
+				foreach ($this->pk as $key => $value)
+				{
+					if (isset($data[$value]))
+					{
+						$primaryKeysArray[$value] = $data[$value];
+					}
+				}
+
+				return $this->_success($primaryKeysArray);
+			}
+		}
 		else
 			return $this->_error($this->db->error(), FHC_DB_ERROR);
 	}
