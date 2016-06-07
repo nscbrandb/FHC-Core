@@ -130,7 +130,7 @@ function draw_orgformsubmenu($stg_kz, $orgform)
 	
 	echo '
 	<RDF:Description RDF:about="'.$rdf_url.$stg_kurzbz.'/'.$orgform.'" >
-		<VERBAND:name>'.$orgform.'</VERBAND:name>
+		<VERBAND:name><![CDATA['.$orgform.']]></VERBAND:name>
 		<VERBAND:stg>'.$stg_kz.'</VERBAND:stg>
 		<VERBAND:stg_kz>'.$stg_kz.'</VERBAND:stg_kz>
 		<VERBAND:sem></VERBAND:sem>
@@ -349,7 +349,7 @@ function draw_orgformsubmenu($stg_kz, $orgform)
 				
 				echo '		
 					<RDF:Description RDF:about="'.$rdf_url.$stg_kurzbz.'/'.$orgform.'/'.$sem.'">
-						<VERBAND:name>'.$stg_kurzbz.'-'.$sem.' '.$bezeichnung.'</VERBAND:name>
+						<VERBAND:name><![CDATA['.$stg_kurzbz.'-'.$sem.' '.$bezeichnung.']]></VERBAND:name>
 						<VERBAND:stg>'.$stg_kurzbz.'</VERBAND:stg>
 						<VERBAND:stg_kz>'.$stg_kz.'</VERBAND:stg_kz>
 						<VERBAND:sem>'.$sem.'</VERBAND:sem>
@@ -363,7 +363,7 @@ function draw_orgformsubmenu($stg_kz, $orgform)
 				$orgform_sequence[$stg_kz].= "\t\t\t\t\t\t\t<RDF:li RDF:resource=\"$rdf_url$stg_kurzbz/$orgform/$row->semester/$row->gruppe_kurzbz\" />\n";
 				echo '
 					<RDF:Description RDF:about="'.$rdf_url.$stg_kurzbz.'/'.$orgform.'/'.$row->semester.'/'.$row->gruppe_kurzbz.'">
-						<VERBAND:name>'.$row->gruppe_kurzbz.' ('.$row->bezeichnung.')</VERBAND:name>
+						<VERBAND:name><![CDATA['.$row->gruppe_kurzbz.' ('.$row->bezeichnung.')]]></VERBAND:name>
 						<VERBAND:stg>'.$stg_kurzbz.'</VERBAND:stg>
 						<VERBAND:stg_kz>'.$stg_kz.'</VERBAND:stg_kz>
 						<VERBAND:sem>'.$row->semester.'</VERBAND:sem>
@@ -392,7 +392,7 @@ function draw_orgformsubmenu($stg_kz, $orgform)
 
 					echo '				
 						<RDF:Description RDF:about="'.$rdf_url.$stg_kurzbz.'/'.$orgform.'/'.$row->semester.'/'.$row->verband.'">
-							<VERBAND:name>'.$stg_kurzbz.'-'.$row->semester.$row->verband.($row->bezeichnung!=''?'  ('.$row->bezeichnung.')':'').'</VERBAND:name>
+							<VERBAND:name><![CDATA['.$stg_kurzbz.'-'.$row->semester.$row->verband.($row->bezeichnung!=''?'  ('.$row->bezeichnung.')':'').']]></VERBAND:name>
 							<VERBAND:stg>'.$stg_kurzbz.'</VERBAND:stg>
 							<VERBAND:stg_kz>'.$stg_kz.'</VERBAND:stg_kz>
 							<VERBAND:sem>'.$row->semester.'</VERBAND:sem>
@@ -406,7 +406,7 @@ function draw_orgformsubmenu($stg_kz, $orgform)
 					$orgform_sequence[$stg_kz].= "\t\t\t\t\t\t\t<RDF:li RDF:resource=\"$rdf_url$stg_kurzbz/$orgform/$row->semester/$row->verband/$row->gruppe\" />\n";
 					echo '			
 							<RDF:Description RDF:about="'.$rdf_url.$stg_kurzbz.'/'.$orgform.'/'.$row->semester.'/'.$row->verband.'/'.$row->gruppe.'">
-								<VERBAND:name>'.$stg_kurzbz.'-'.$row->semester.$row->verband.$row->gruppe.($row->bezeichnung!=''?'  ('.$row->bezeichnung.')':'').'</VERBAND:name>
+								<VERBAND:name><![CDATA['.$stg_kurzbz.'-'.$row->semester.$row->verband.$row->gruppe.($row->bezeichnung!=''?'  ('.$row->bezeichnung.')':'').']]></VERBAND:name>
 								<VERBAND:stg>'.$stg_kurzbz.'</VERBAND:stg>
 								<VERBAND:stg_kz>'.$stg_kz.'</VERBAND:stg_kz>
 								<VERBAND:sem>'.$row->semester.'</VERBAND:sem>
@@ -461,7 +461,7 @@ while ($row=$dbo->db_fetch_object())
 		$stg_kurzbz=strtoupper($row->typ.$row->kurzbz);
 		?>
 		<RDF:Description RDF:about="<?php echo $rdf_url.$stg_kurzbz; ?>" >
-			<VERBAND:name><?php echo $row->kurzbzlang.' ('.$stg_kurzbz.') - '.htmlspecialchars($row->bezeichnung); ?></VERBAND:name>
+			<VERBAND:name><![CDATA[<?php echo $row->kurzbzlang.' ('.$stg_kurzbz.') - '.htmlspecialchars($row->bezeichnung); ?>]]></VERBAND:name>
 			<VERBAND:stg><?php echo $stg_kurzbz; ?></VERBAND:stg>
 			<VERBAND:stg_kz NC:parseType="Integer"><?php echo $row->studiengang_kz; ?></VERBAND:stg_kz>
 		</RDF:Description>
@@ -593,11 +593,10 @@ while ($row=$dbo->db_fetch_object())
 		?>
 
 		<RDF:Description RDF:about="<?php echo $rdf_url.$stg_kurzbz.'/'.$sem; ?>">
-			<VERBAND:name><?php echo $stg_kurzbz.'-'.$sem;
+			<VERBAND:name><![CDATA[<?php echo $stg_kurzbz.'-'.$sem;
 								if ($row->lvb_bezeichnung!='' && $row->lvb_bezeichnung!=null)
 									echo '  ('.$row->lvb_bezeichnung.')';
-							?>
-			</VERBAND:name>
+							?>]]></VERBAND:name>
 			<VERBAND:stg><?php echo $stg_kurzbz; ?></VERBAND:stg>
 			<VERBAND:stg_kz><?php echo $stg_kz; ?></VERBAND:stg_kz>
 			<VERBAND:sem><?php echo $sem; ?></VERBAND:sem>
@@ -609,7 +608,7 @@ while ($row=$dbo->db_fetch_object())
 		?>
 
 		<RDF:Description RDF:about="<?php echo $rdf_url.$stg_kurzbz.'/'.$row->semester.'/'.$row->gruppe_kurzbz; ?>">
-			<VERBAND:name><?php echo $row->gruppe_kurzbz.' ('.$row->grp_bezeichnung.')'; ?></VERBAND:name>
+			<VERBAND:name><![CDATA[<?php echo $row->gruppe_kurzbz.' ('.$row->grp_bezeichnung.')'; ?>]]></VERBAND:name>
 			<VERBAND:stg><?php echo $stg_kurzbz; ?></VERBAND:stg>
 			<VERBAND:stg_kz><?php echo $row->studiengang_kz; ?></VERBAND:stg_kz>
 			<VERBAND:sem><?php echo $row->semester; ?></VERBAND:sem>
@@ -622,13 +621,12 @@ while ($row=$dbo->db_fetch_object())
 		?>
 
 		<RDF:Description RDF:about="<?php echo $rdf_url.$stg_kurzbz.'/'.$row->semester.'/'.$row->verband; ?>">
-			<VERBAND:name>
+			<VERBAND:name><![CDATA[
 				<?php
 					echo $stg_kurzbz.'-'.$row->semester.$row->verband;
 					if ($row->lvb_bezeichnung!='' && $row->lvb_bezeichnung!=null)
 						echo '  ('.$row->lvb_bezeichnung.')';
-				?>
-			</VERBAND:name>
+				?>]]></VERBAND:name>
 			<VERBAND:stg><?php echo $stg_kurzbz; ?></VERBAND:stg>
 			<VERBAND:stg_kz><?php echo $row->studiengang_kz; ?></VERBAND:stg_kz>
 			<VERBAND:sem><?php echo $row->semester; ?></VERBAND:sem>
@@ -641,13 +639,12 @@ while ($row=$dbo->db_fetch_object())
 		?>
 
 		<RDF:Description RDF:about="<?php echo $rdf_url.$stg_kurzbz.'/'.$row->semester.'/'.$row->verband.'/'.$row->gruppe; ?>">
-			<VERBAND:name>
+			<VERBAND:name><![CDATA[
 				<?php
 					echo $stg_kurzbz.'-'.$row->semester.$row->verband.$row->gruppe;
 					if ($row->lvb_bezeichnung!='' && $row->lvb_bezeichnung!=null)
 						echo '  ('.$row->lvb_bezeichnung.')';
-				?>
-				</VERBAND:name>
+				?>]]></VERBAND:name>
 			<VERBAND:stg><?php echo $stg_kurzbz; ?></VERBAND:stg>
 			<VERBAND:stg_kz><?php echo $row->studiengang_kz; ?></VERBAND:stg_kz>
 			<VERBAND:sem><?php echo $row->semester; ?></VERBAND:sem>

@@ -19,18 +19,6 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
-// header fuer no cache
-header("Cache-Control: no-cache");
-header("Cache-Control: post-check=0, pre-check=0",false);
-header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
-header("Pragma: no-cache");
-// content type setzen
-header("Content-type: application/xhtml+xml");
-// xml
-if(isset($_GET['xmlformat']) && $_GET['xmlformat']=='xml')
-	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-else
-	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 // DAO
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/functions.inc.php');
@@ -46,6 +34,19 @@ require_once('../include/lehrveranstaltung.class.php');
 require_once('../include/mitarbeiter.class.php');
 require_once('../include/organisationsform.class.php');
 require_once('../include/konto.class.php');
+
+// header fuer no cache
+header("Cache-Control: no-cache");
+header("Cache-Control: post-check=0, pre-check=0",false);
+header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
+header("Pragma: no-cache");
+// content type setzen
+header("Content-type: application/xhtml+xml");
+// xml
+if(isset($_GET['xmlformat']) && $_GET['xmlformat']=='xml')
+	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+else
+	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 
 // *********** Funktionen *************************
 function convdate($date)
