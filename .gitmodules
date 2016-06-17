@@ -4,3 +4,9 @@
 [submodule "submodules/pivottable"]
 	path = submodules/pivottable
 	url = https://github.com/nicolaskruchten/pivottable.git
+[submodule "addons/STPCore"]
+	path = addons/STPCore
+	url = git@tools.fhstp.ac.at:nscbrandb/FHC-AddOn-STPCore.git
+[submodule "addons/ldap"]
+	path = addons/ldap
+	url = https://github.com/FH-Complete/FHC-AddOn-LDAP.git
