@@ -32,6 +32,8 @@ require_once(dirname(__FILE__).'/../application/models/codex/Orgform_model.php')
  
 class organisationsform extends Orgform_model
 {
+	use db_extra; //CI Hack
+	
 	public $orgform_kurzbz; 
 	public $code; 
 	public $bezeichnung; 
@@ -139,19 +141,22 @@ class organisationsform extends Orgform_model
 	 */
 	public function getOrgformLV()
 	{
-		$qry = "SELECT * FROM bis.tbl_orgform WHERE orgform_kurzbz NOT IN ('VBB', 'ZGS') ORDER BY orgform_kurzbz";
-		if($result = $this->db_query($qry))
+		$result = parent::getOrgformLV();
+		
+		if (is_object($result) && $result->error == EXIT_SUCCESS && is_array($result->retval))
 		{
-			while($row = $this->db_fetch_object($result))	
+			for ($i = 0; $i < count($result->retval); $i++)
 			{
-				$orgform = new organisationsform(); 
+				$row = $result->retval[$i];
 				
-				$orgform->orgform_kurzbz = $row->orgform_kurzbz; 
-				$orgform->code = $row->code; 
-				$orgform->bezeichnung = $row->bezeichnung; 
-				$orgform->rolle = $row->rolle; 
+				$orgform = new organisationsform();
 				
-				$this->result[] = $orgform; 
+				$orgform->orgform_kurzbz = $row->orgform_kurzbz;
+				$orgform->code = $row->code;
+				$orgform->bezeichnung = $row->bezeichnung;
+				$orgform->rolle = $row->rolle;
+				
+				$this->result[] = $orgform;
 			}
 			return true;
 		}
@@ -159,6 +164,6 @@ class organisationsform extends Orgform_model
 		{
 			$this->errormsg = 'Fehler beim Laden der Daten';
 			return false;
-		}	
+		}
 	}
 }

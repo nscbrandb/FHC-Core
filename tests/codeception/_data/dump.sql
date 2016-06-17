@@ -413,7 +413,13 @@ DELETE FROM system.tbl_rolleberechtigung WHERE berechtigung_kurzbz IN (
 	'basis/rechnungstyp', 
 	'basis/zahlungstyp',
 	'basis/studienplan_semester',
-	'basis/dms_version'
+	'basis/dms_version',
+	'student/stammdaten',
+	'mitarbeiter/stammdaten',
+	'basis/vw_studiensemester',
+	'lehre/reservierung',
+	'lehre/reihungstest',
+	'wawi/inventar:begrenzt'
 );
 
 -- DELETE FROM system.tbl_berechtigung
@@ -632,7 +638,13 @@ DELETE FROM system.tbl_berechtigung WHERE berechtigung_kurzbz IN (
 	'basis/rechnungstyp', 
 	'basis/zahlungstyp',
 	'basis/studienplan_semester',
-	'basis/dms_version'
+	'basis/dms_version',
+	'student/stammdaten',
+	'mitarbeiter/stammdaten',
+	'basis/vw_studiensemester',
+	'lehre/reservierung',
+	'lehre/reihungstest',
+	'wawi/inventar:begrenzt'
 );
 
 -- INSERT Permissions
@@ -851,6 +863,12 @@ INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/zahlungstyp', 'Tbl_zahlungstyp');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/studienplan_semester', 'Tbl_studienplan_semester');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/dms_version', 'Tbl_dms_version');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('student/stammdaten', '');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('mitarbeiter/stammdaten', '');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/vw_studiensemester', '');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('lehre/reservierung', '');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('lehre/reihungstest', '');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('wawi/inventar:begrenzt', '');
 
 -- INSERT link between user admin and permissions
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/archiv', 'admin', 'suid');
@@ -1068,3 +1086,26 @@ INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/zahlungstyp', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/studienplan_semester', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/dms_version', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('student/stammdaten', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('mitarbeiter/stammdaten', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/vw_studiensemester', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('lehre/reservierung', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('lehre/reihungstest', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('wawi/inventar:begrenzt', 'admin', 'suid');
+
+-- EMPTY public.tbl_statistik
+DELETE FROM public.tbl_statistik;
+
+-- INSERT Statistiks (public.tbl_statistik)
+INSERT INTO public.tbl_statistik VALUES ('StudentenHistorie', 'StudentenHistorie', NULL, 'studenten_historie.php', 'Studierende', NULL, NULL, NULL, '2011-04-04 09:25:35', 'oesi', '2011-04-04 09:25:35', 'oesi', NULL, false, NULL);
+INSERT INTO public.tbl_statistik VALUES ('Abgaengerstatistik', 'Abgängerstatistik', 9, '../../content/statistik/abgaengerstatistik.php', 'Studierende', NULL, NULL, NULL, '2011-04-01 10:57:05', 'oesi', '2011-04-01 11:13:55', 'oesi', NULL, false, NULL);
+INSERT INTO public.tbl_statistik VALUES ('Absolventenstatistik', 'Absolventenstatistik', 10, '../../content/statistik/absolventenstatistik.php', 'Studierende', NULL, NULL, NULL, '2011-04-01 10:57:46', 'oesi', '2011-04-01 11:14:01', 'oesi', NULL, false, NULL);
+INSERT INTO public.tbl_statistik VALUES ('Bewerberstatistik', 'Bewerberstatistik', 2, '../../content/statistik/bewerberstatistik.php?stsem=$Studiensemester', 'Studierende', NULL, NULL, NULL, '2011-04-01 10:43:44', 'oesi', '2011-04-01 11:14:19', 'oesi', NULL, false, NULL);
+INSERT INTO public.tbl_statistik VALUES ('Lektorenstatistik', 'Lektorenstatistik', 13, '../../content/statistik/lektorenstatistik.php', 'Mitarbeiter', NULL, NULL, NULL, '2011-04-01 11:08:41', 'oesi', '2011-04-01 11:14:27', 'oesi', NULL, false, NULL);
+INSERT INTO public.tbl_statistik VALUES ('Raumauslastung', 'Raumauslastung', 3, '../lehre/raumauslastung.php', 'LV-Plan', NULL, NULL, NULL, '2011-04-01 10:51:01', 'oesi', '2011-04-01 11:14:50', 'oesi', NULL, false, NULL);
+INSERT INTO public.tbl_statistik VALUES ('Stromanalyse', 'Stromanalyse', 15, '../../content/statistik/bama_stromanalyse.php', 'Studierende', NULL, NULL, NULL, '2011-04-01 11:09:45', 'oesi', '2011-04-01 11:14:59', 'oesi', NULL, false, NULL);
+INSERT INTO public.tbl_statistik VALUES ('Mitarbeiterstatistik', 'Mitarbeiterstatistik', 14, '../../content/statistik/mitarbeiterstatistik.php', 'Mitarbeiter', NULL, NULL, NULL, '2011-04-01 11:09:13', 'oesi', '2012-01-12 15:48:47', 'kollmitz', NULL, false, NULL);
+INSERT INTO public.tbl_statistik VALUES ('Verplanungsübersicht', 'Verplanungsübersicht', 4, '../lehre/check/verplanungsuebersicht.php', 'LV-Plan', NULL, NULL, NULL, '2011-04-01 10:51:53', 'oesi', '2011-04-01 11:15:20', 'oesi', NULL, false, NULL);
+INSERT INTO public.tbl_statistik VALUES ('Zeitwünsche', 'Zeitwünsche', 5, '../lehre/zeitwuensche.php', 'LV-Plan', NULL, NULL, NULL, '2011-04-01 10:52:37', 'oesi', '2011-04-01 11:15:27', 'oesi', NULL, false, NULL);
+INSERT INTO public.tbl_statistik VALUES ('AnzahlStudierende', 'Aktuell Studierende im Haus', 16, '../../cis/private/lvplan/stpl_week_anzahl_studenten.php', 'Studierende', NULL, NULL, NULL, '2011-04-01 11:11:52', 'oesi', '2012-02-20 19:09:16', 'kindlm', NULL, false, NULL);
+INSERT INTO public.tbl_statistik VALUES ('ALVS-Statistik', 'ALVS-Statistik', 7, '../../content/statistik/alvsstatistik.php', 'Lehre', NULL, NULL, NULL, '2011-04-01 10:54:03', 'oesi', '2011-04-01 11:23:12', 'oesi', NULL, false, NULL);

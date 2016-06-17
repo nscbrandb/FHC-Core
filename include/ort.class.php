@@ -23,12 +23,19 @@
  * Klasse ort (FAS-Online)
  * @create 04-12-2006
  */
-require_once(dirname(__FILE__).'/basis_db.class.php');
+require_once(dirname(__FILE__).'/datum.class.php');
 
-class ort extends basis_db 
+// CI
+require_once(dirname(__FILE__).'/../ci_hack.php');
+require_once(dirname(__FILE__).'/../application/models/ressource/Ort_model.php');
+
+class ort extends Ort_model
 {
+	use db_extra; //CI Hack
+	
 	public $new;     			// boolean
 	public $result = array(); 	// ort Objekt
+	public $errormsg;			// string
 
 	//Tabellenspalten
 	public $ort_kurzbz;		// string
@@ -72,29 +79,33 @@ class ort extends basis_db
 	 * Laedt alle verfuegbaren Orte
 	 * @return true wenn ok, false im Fehlerfall
 	 */
-	public function getAll($raumtyp_kurzbz=null)
+	public function getAll($raumtyp_kurzbz = null)
 	{
-		$qry = 'SELECT * FROM public.tbl_ort ORDER BY ort_kurzbz;';
-
-		if(!is_null($raumtyp_kurzbz) && $raumtyp_kurzbz!='')
+		parent::addOrder('ort_kurzbz');
+		
+		if (!is_null($raumtyp_kurzbz) && $raumtyp_kurzbz != '')
 		{
-			$qry = '
-				SELECT 
-					tbl_ort.* 
-				FROM 
-					public.tbl_ort 
-					JOIN public.tbl_ortraumtyp USING(ort_kurzbz) 
-				WHERE raumtyp_kurzbz='.$this->db_add_param($raumtyp_kurzbz).'
-				ORDER BY ort_kurzbz;';
+			$result = parent::addJoin('public.tbl_ortraumtyp', 'ort_kurzbz');
+			if ($result->error == EXIT_SUCCESS)
+			{
+				$result = parent::loadWhere(array('raumtyp_kurzbz' => $raumtyp_kurzbz));
+			}
 		}
-		if(!$this->db_query($qry))
+		else
+		{
+			$result = parent::loadWhole();
+		}
+		
+		if (!is_object($result) || (is_object($result) && ($result->error != EXIT_SUCCESS || !is_array($result->retval))))
 		{
 			$this->errormsg = 'Fehler beim Laden der Datensaetze';
 			return false;
 		}
 
-		while($row = $this->db_fetch_object())
+		for ($i = 0; $i < count($result->retval); $i++)
 		{
+			$row = $result->retval[$i];
+			
 			$ort_obj = new ort();
 
 			$ort_obj->ort_kurzbz 		= $row->ort_kurzbz;
@@ -127,22 +138,23 @@ class ort extends basis_db
 	 */
 	public function load($ort_kurzbz)
 	{
-		if($ort_kurzbz == '')
+		if ($ort_kurzbz == '')
 		{
 			$this->errormsg = 'kurzbz darf nicht leer sein';
 			return false;
 		}
 
-		$qry = "SELECT * FROM public.tbl_ort WHERE trim(ort_kurzbz) = ".$this->db_add_param(trim($ort_kurzbz)).";";
-
-		if(!$this->db_query($qry))
+		$result = parent::load(trim($ort_kurzbz));
+		if (!is_object($result) || (is_object($result) && $result->error != EXIT_SUCCESS))
 		{
 			$this->errormsg = 'Fehler beim Laden des Datensatzes';
 			return false;
 		}
 
-		if($row = $this->db_fetch_object())
+		if(is_array($result->retval) && count($result->retval) > 0)
 		{
+			$row = $result->retval[0];
+			
 			$this->ort_kurzbz 		= $row->ort_kurzbz;
 			$this->bezeichnung 		= $row->bezeichnung;
 			$this->planbezeichnung 	= $row->planbezeichnung;

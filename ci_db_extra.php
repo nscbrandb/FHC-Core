@@ -1,7 +1,12 @@
 <?php
 trait db_extra
 {
-	protected $db_result=null;
+	/*
+	 * Moved to private to avoid to violate "Strict standards"
+	 * This property must be used only in the methods of this trait
+	 * and access to it should only be done through the methods of this trait
+	 */
+	private $db_result = null;
 
 	public function db_query($sql)
 	{
@@ -115,5 +120,37 @@ trait db_extra
 			$string.=$this->db_add_param($row);
 		}
 		return $string;
+	}
+	
+	public function db_num_fields($result=null)
+	{
+		if(is_null($result))
+			return pg_num_fields($this->db_result);
+		else
+			return pg_num_fields($result);
+	}
+	
+	public function convert_html_chars($value)
+	{
+		return htmlspecialchars($value);
+	}
+	
+	/**
+	 * Liefert den Feldnamen mit index i
+	 */
+	public function db_field_name($result=null, $i)
+	{
+		if(is_null($result))
+			return pg_field_name($this->db_result, $i);
+		else
+			return pg_field_name($result, $i);
+	}
+	
+	public function db_num_rows($result=null)
+	{
+		if(is_null($result))
+			return pg_num_rows($this->db_result);
+		else
+			return pg_num_rows($result);
 	}
 }
