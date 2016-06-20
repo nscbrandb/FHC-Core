@@ -53,6 +53,22 @@ class Kontakt extends APIv1_Controller
 		}
     }
 	
+	public function getOnlyKontakt()
+    {
+		$kontakt_id = $this->get("kontakt_id");
+		
+		if (isset($kontakt_id))
+		{
+			$result = $this->KontaktModel->loadWhere(array('kontakt_id' => $kontakt_id));
+			
+			$this->response($result, REST_Controller::HTTP_OK);
+		}
+		else
+		{
+			$this->response();
+		}
+    }
+	
 	public function getKontaktByPersonID()
     {
 		$person_id = $this->get("person_id");
@@ -68,6 +84,22 @@ class Kontakt extends APIv1_Controller
 					$result = $this->KontaktModel->loadWhere(array('person_id' => $person_id));
 				}
 			}
+			
+			$this->response($result, REST_Controller::HTTP_OK);
+		}
+		else
+		{
+			$this->response();
+		}
+    }
+	
+	public function getOnlyKontaktByPersonID()
+    {
+		$person_id = $this->get("person_id");
+		
+		if (isset($person_id))
+		{
+			$result = $this->KontaktModel->loadWhere(array('person_id' => $person_id));
 			
 			$this->response($result, REST_Controller::HTTP_OK);
 		}

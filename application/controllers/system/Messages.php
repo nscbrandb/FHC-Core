@@ -1,7 +1,7 @@
 <?php
 if (! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Message extends FHC_Controller 
+class Messages extends FHC_Controller 
 {
 
 	public function __construct()
@@ -23,7 +23,7 @@ class Message extends FHC_Controller
 		(
 			'message' => $msg->retval[0]
 		);
-		$v = $this->load->view('test.php', $data);
+		$v = $this->load->view('message.php', $data);
 	}
 
 	public function view($msg_id)
@@ -39,24 +39,31 @@ class Message extends FHC_Controller
 		(
 			'message' => $msg->retval[0]
 		);
-		var_dump($data['message']);
-		$v = $this->load->view('system/message', $data);
+		//var_dump($data['message']);
+		$v = $this->load->view('system/messageView', $data);
 	}
-	
-	public function neu()
-	{
-		//$messages = $this->Message_model->getMessages();
-		$msg = $this->Message_model->load($id);
-		if ($msg->error)
-			show_error($msg->retval);
-		if (count($msg->retval) != 1)
-			show_error('Nachricht nicht vorhanden! ID: '.$id);
 
+	public function write($vorlage_kurzbz = null)
+	{
 		$data = array
 		(
-			'message' => $msg->retval[0]
-		);
-		var_dump($data);
-		$v = $this->load->view('system/message', $data);
+			'subject' => 'TestSubject',
+			'body' => 'TestDevelopmentBodyText'
+		);		
+		$v = $this->load->view('system/messageWrite', $data);
+	}
+	
+	public function send()
+	{
+		$body = $this->input->post('body', TRUE);
+		$subject = $this->input->post('subject', TRUE);
+		if (! $this->messaging->addRecipient(1))
+			show_error('Error: AddRecipient');
+		$msg = $this->messaging->sendMessage(1,$body ,$subject);
+		if ($msg->error)
+			show_error($msg->retval);
+		$msg_id = $msg->retval;
+
+		redirect('/system/Message/view/'.$msg_id);
 	}
 }

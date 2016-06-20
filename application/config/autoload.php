@@ -60,7 +60,7 @@ $autoload['packages'] = array();
 */
 
 //$autoload['libraries'] = array();
-$autoload['libraries'] = array('Session', 'FHC_Auth');
+$autoload['libraries'] = array('Session', 'FHC_Auth', 'TemplateLib');
 
 /*
 | -------------------------------------------------------------------
@@ -114,7 +114,7 @@ $autoload['config'] = array('fhcomplete');
 | "codeigniter_lang.php" would be referenced as array('codeigniter');
 |
 */
-$autoload['language'] = array();
+$autoload['language'] = array('fhcomplete');
 
 /*
 | -------------------------------------------------------------------
