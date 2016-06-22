@@ -1,5 +1,5 @@
 <?php
-	$this->load->view('templates/header', array('title' => 'TemplateList', 'tablesort' => true, 'tableid' => 't1', 'headers' => '4:{sorter:false}'));
+	$this->load->view('templates/header', array('title' => 'TemplatesList', 'tablesort' => true, 'tableid' => 't1', 'headers' => '4:{sorter:false}'));
 ?>
 <div class="row">
 	<div class="span4">

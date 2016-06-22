@@ -11,17 +11,21 @@ class MessageLib
 {
 	private $recipients = array();
 	
-    public function __construct()
+    public function __construct($params = null)
     {
-        require_once APPPATH.'config/message.php';
+        $this->ci =& get_instance();
+		$this->ci->config->load('message');
 
-		$this->ci =& get_instance();
-		//$this->ci->load->model('person/Person_model', 'PersonModel');
 		$this->ci->load->model('system/Message_model', 'MessageModel');
+		if (is_array($params) && isset($params['uid']))
+		{
+			$this->ci->MessageModel->setUID($params['uid']);
+		}
+		
 		$this->ci->load->model('system/MsgStatus_model', 'MsgStatusModel');
 		$this->ci->load->model('system/Recipient_model', 'RecipientModel');
 		$this->ci->load->model('system/Attachment_model', 'AttachmentModel');
-        $this->ci->load->helper('language');
+        //$this->ci->load->helper('language');
         $this->ci->lang->load('message');
     }
 
@@ -53,6 +57,40 @@ class MessageLib
         return $msg;
     }
 
+	/**
+     * getMessagesByUID() - will return all messages, including the latest status for specified user. It don´t returns Attachments.
+     *
+     * @param   string  $uid   REQUIRED
+     * @return  array
+     */
+    function getMessagesByUID($uid, $all = false)
+    {
+        if (empty($uid))
+        	return $this->_error(MSG_ERR_INVALID_MSG_ID);
+		
+		$msg = $this->ci->MessageModel->getMessagesByUID($uid, $all);		
+
+        // General Error Occurred
+        return $msg;
+    }
+
+	/**
+     * getMessagesByPerson() - will return all messages, including the latest status for specified user. It don´t returns Attachments.
+     *
+     * @param   bigint  $person_id   REQUIRED
+     * @return  array
+     */
+    function getMessagesByPerson($person_id, $all = false)
+    {
+        if (empty($person_id))
+        	return $this->_error(MSG_ERR_INVALID_MSG_ID);
+		
+		$msg = $this->ci->MessageModel->getMessagesByPerson($person_id, $all);		
+
+        // General Error Occurred
+        return $msg;
+    }
+
     // ------------------------------------------------------------------------
 
     /**
@@ -66,8 +104,7 @@ class MessageLib
         if (!is_numeric($msg_id))
         	return $this->_invalid_id(MSG_ERR_INVALID_MSG_ID);
 		
-        $msg = $this->getMessage($msg_id);
-        return $msg;
+        return $this->getMessage($msg_id);
     }
 
     // ------------------------------------------------------------------------
@@ -285,7 +322,7 @@ class MessageLib
 	 *
 	 * @return  array
 	 */
-	protected function _error($retval = '', $message = MSG_ERROR_GENERAL)
+	protected function _error($retval = '', $message = MSG_ERROR)
 	{
 		$return = new stdClass();
 		$return->error = EXIT_ERROR;
