@@ -29,7 +29,8 @@
 	require_once('../config/vilesci.config.inc.php');
  	require('../include/functions.inc.php');
  	require('../include/benutzerberechtigung.class.php');
- 	require_once('../include/'.EXT_FKT_PATH.'/vilesci_menu_main.inc.php');
+ 	// könnte man hier vll. auch eine Default config einbauen mit $menu Template?
+ 	if (is_file('../include/'.EXT_FKT_PATH.'/vilesci_menu_main.inc.php')) require_once('../include/'.EXT_FKT_PATH.'/vilesci_menu_main.inc.php');
 
 	if (!$uid = get_uid())
 			die('Keine UID gefunde !  <a href="javascript:history.back()">Zur&uuml;ck</a>');
@@ -40,6 +41,20 @@
 	if (!($berechtigung->isBerechtigt('basis/vilesci', null, 's')))
 		die ('Keine Berechtigung!');
 	
+	// get Vilesci Menu Addons
+	require_once(dirname(__FILE__).'../../include/addon.class.php');
+	$addon_obj = new addon();
+	if($addon_obj->loadAddons())
+	{
+		if(count($addon_obj->result)>0)
+		{
+			foreach($addon_obj->result as $row)
+			{
+				if (is_file('../addons/'.$row->kurzbz.'/vilesci/vilesci_menu_main.inc.php')) require_once('../addons/'.$row->kurzbz.'/vilesci/vilesci_menu_main.inc.php');
+			}
+		}
+	}
+		
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
