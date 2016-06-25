@@ -59,7 +59,7 @@ class studiensemester extends Studiensemester_model
 	 *
 	 * @param $studiensemester_kurzbz Stsem das geladen werden soll
 	 */
-	public function load($studiensemester_kurzbz)
+	public function load($studiensemester_kurzbz=null)
 	{
 		$result = parent::load($studiensemester_kurzbz);
 			
