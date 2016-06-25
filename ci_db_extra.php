@@ -153,4 +153,9 @@ trait db_extra
 		else
 			return pg_num_rows($result);
 	}
+	
+	public function db_last_error()
+	{
+		return pg_last_error();
+	}
 }

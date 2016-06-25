@@ -10,6 +10,7 @@ class FHC_Model extends CI_Model
 		$this->load->helper('language');
 		$this->lang->load('fhc_model');
 		$this->lang->load('fhcomplete');
+		$this->load->helper('Message');
 		
 		$uid = null;
 		
@@ -39,6 +40,16 @@ class FHC_Model extends CI_Model
 	{
 		return $this->fhc_db_acl->setUID($uid);
 	}
+
+	/** ---------------------------------------------------------------
+	 * get UID
+	 *
+	 * @return  string or (bool)false
+	 */
+	public function getUID()
+	{
+		return $this->fhc_db_acl->getUID();
+	}
 	
 	/** ---------------------------------------------------------------
 	 * Success
@@ -46,14 +57,9 @@ class FHC_Model extends CI_Model
 	 * @param   mixed  $retval
 	 * @return  array
 	 */
-	protected function _success($retval, $message = FHC_SUCCESS)
+	protected function _success($retval, $message = null)
 	{
-		$return = new stdClass();
-		$return->error = EXIT_SUCCESS;
-		$return->fhcCode = $message;
-		$return->msg = lang('fhc_' . $message);
-		$return->retval = $retval;
-		return $return;
+		return success($retval, $message);
 	}
 
 	/** ---------------------------------------------------------------
@@ -61,13 +67,8 @@ class FHC_Model extends CI_Model
 	 *
 	 * @return  array
 	 */
-	protected function _error($retval = '', $message = FHC_MODEL_ERROR)
+	protected function _error($retval, $message = null)
 	{
-		$return = new stdClass();
-		$return->error = EXIT_MODEL;
-		$return->fhcCode = $message;
-		$return->msg = lang('fhc_' . $message);
-		$return->retval = $retval;
-		return $return;
+		return error($retval, $message);
 	}
 }

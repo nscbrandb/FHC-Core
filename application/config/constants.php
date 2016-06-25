@@ -16,6 +16,7 @@ define('FHC_MODEL_ERROR', 2); 	// Model Error
 define('FHC_DB_ERROR', 3);		// Database Error
 define('FHC_NODBTABLE', 4); 	// No DB-Table is set
 define('FHC_NORIGHT', 5); 	    // No rights
+define('FHC_INVALIDID', 6); 	// Invalid or no ID (key)
 
 
 
@@ -65,6 +66,7 @@ define('FOPEN_READ_WRITE_CREATE_STRICT', 'x+b');
 |
 */
 define('SHOW_DEBUG_BACKTRACE', TRUE);
+
 
 /*
 |--------------------------------------------------------------------------
