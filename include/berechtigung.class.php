@@ -50,11 +50,7 @@ class berechtigung extends Berechtigung_model
 	 * @param $berechtigung_kurzbz
 	 * @return true wenn ok, false im Fehlerfall
 	 */
-<<<<<<< HEAD
-	public function load($berechtigung_kurzbz=null)
-=======
 	public function load($berechtigung_kurzbz = null)
->>>>>>> c2c4620af9c200c6c8208c90b1308b7a5be3429e
 	{
 		if (empty($berechtigung_kurzbz))
 		{

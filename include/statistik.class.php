@@ -80,11 +80,7 @@ class statistik extends Statistik_model
 	 * Laedt eine Statistik
 	 * @param $statistik_kurzbz
 	 */
-<<<<<<< HEAD
-	public function load($statistik_kurzbz=null)
-=======
 	public function load($statistik_kurzbz = null)
->>>>>>> c2c4620af9c200c6c8208c90b1308b7a5be3429e
 	{
 		$result = parent::load($statistik_kurzbz);
 		
