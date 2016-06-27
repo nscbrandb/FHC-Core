@@ -109,9 +109,14 @@ class funktion extends Funktion_model
 	 * @param $funktion_kurzbz ID der zu ladenden Funktion
 	 * @return true wenn ok, false im Fehlerfall
 	 */
+<<<<<<< HEAD
 	public function load($funktion_kurzbz=null)
+=======
+	public function load($funktion_kurzbz = null)
+>>>>>>> c2c4620af9c200c6c8208c90b1308b7a5be3429e
 	{
-		if ($funktion_kurzbz == '')
+		
+		if (empty($funktion_kurzbz) || $funktion_kurzbz == '')
 		{
 			$this->errormsg = 'funktion_bz darf nicht leer sein';
 			return false;

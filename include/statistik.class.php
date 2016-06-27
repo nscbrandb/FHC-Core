@@ -80,7 +80,11 @@ class statistik extends Statistik_model
 	 * Laedt eine Statistik
 	 * @param $statistik_kurzbz
 	 */
+<<<<<<< HEAD
 	public function load($statistik_kurzbz=null)
+=======
+	public function load($statistik_kurzbz = null)
+>>>>>>> c2c4620af9c200c6c8208c90b1308b7a5be3429e
 	{
 		$result = parent::load($statistik_kurzbz);
 		
@@ -133,7 +137,7 @@ class statistik extends Statistik_model
 			parent::addOrder($order);
 		}
 		
-		$result = parent::loadWhole();
+		$result = parent::load();
 		
 		if (is_object($result) && $result->error == EXIT_SUCCESS && is_array($result->retval))
 		{
@@ -339,7 +343,7 @@ class statistik extends Statistik_model
 		parent::addOrder('bezeichnung');
 		parent::addOrder('statistik_kurzbz');
 		
-		$result = parent::loadWhole();
+		$result = parent::load();
 			
 		if (is_object($result) && $result->error == EXIT_SUCCESS && is_array($result->retval))
 		{
