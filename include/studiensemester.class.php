@@ -59,11 +59,7 @@ class studiensemester extends Studiensemester_model
 	 *
 	 * @param $studiensemester_kurzbz Stsem das geladen werden soll
 	 */
-<<<<<<< HEAD
-	public function load($studiensemester_kurzbz=null)
-=======
 	public function load($studiensemester_kurzbz = null)
->>>>>>> c2c4620af9c200c6c8208c90b1308b7a5be3429e
 	{
 		if (empty($studiensemester_kurzbz))
 		{
