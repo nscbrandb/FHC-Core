@@ -24,8 +24,8 @@ class Ort extends APIv1_Controller
 		parent::__construct();
 		// Load model OrtModel
 		$this->load->model('ressource/ort_model', 'OrtModel');
-		// Load set the uid of the model to let to check the permissions
-		$this->OrtModel->setUID($this->_getUID());
+		
+		
 	}
 
 	/**
@@ -66,7 +66,7 @@ class Ort extends APIv1_Controller
 		}
 		else
 		{
-			$result = $this->OrtModel->loadWhole();
+			$result = $this->OrtModel->load();
 		}
 		
 		$this->response($result, REST_Controller::HTTP_OK);

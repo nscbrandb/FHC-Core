@@ -24,8 +24,8 @@ class Studiensemester extends APIv1_Controller
 		parent::__construct();
 		// Load model StudiensemesterModel
 		$this->load->model('organisation/studiensemester_model', 'StudiensemesterModel');
-		// Load set the uid of the model to let to check the permissions
-		$this->StudiensemesterModel->setUID($this->_getUID());
+		
+		
 	}
 
 	/**
@@ -89,7 +89,7 @@ class Studiensemester extends APIv1_Controller
 			$this->StudiensemesterModel->addOrder('ende', 'ASC');
 		}
 		
-		$result = $this->StudiensemesterModel->loadWhole();
+		$result = $this->StudiensemesterModel->load();
 		
 		$this->response($result, REST_Controller::HTTP_OK);
 	}

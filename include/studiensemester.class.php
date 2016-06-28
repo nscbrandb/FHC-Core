@@ -59,8 +59,14 @@ class studiensemester extends Studiensemester_model
 	 *
 	 * @param $studiensemester_kurzbz Stsem das geladen werden soll
 	 */
-	public function load($studiensemester_kurzbz=null)
+	public function load($studiensemester_kurzbz = null)
 	{
+		if (empty($studiensemester_kurzbz))
+		{
+			$this->errormsg = "studiensemester not set!";
+			return false;
+		}
+
 		$result = parent::load($studiensemester_kurzbz);
 			
 		if (is_object($result) && $result->error == EXIT_SUCCESS && is_array($result->retval))
@@ -318,7 +324,7 @@ class studiensemester extends Studiensemester_model
 			parent::addOrder('ende', 'ASC');
 		}
 		
-		$result = parent::loadWhole();
+		$result = parent::load();
 
 		if (is_object($result) && $result->error == EXIT_SUCCESS && is_array($result->retval))
 		{
