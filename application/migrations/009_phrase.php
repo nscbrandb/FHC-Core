@@ -6,26 +6,27 @@ class Migration_Phrase extends CI_Migration {
 
     public function up()
     {
-		if (! $this->db->table_exists('public.tbl_phrase'))
+		if (! $this->db->table_exists('system.tbl_app'))
 		{
-			$this->db->insert('system.tbl_berechtigung', array(
-				'berechtigung_kurzbz' => 'basis/phrase',
-				'beschreibung' => 'Phrase System'));
-			$this->db->insert('system.tbl_rolleberechtigung', array(
-				'berechtigung_kurzbz' => 'basis/phrase',
-				'rolle_kurzbz' => 'admin',
-				'art' => 'suid'));
-
 			$query= "
-                CREATE TABLE public.tbl_app (
+                CREATE TABLE system.tbl_app (
                   app varchar(32),
                   PRIMARY KEY (app)
                 );
-                GRANT SELECT ON TABLE public.tbl_app TO web;
-                GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.tbl_app TO admin;
-                GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.tbl_app TO vilesci;
+                GRANT SELECT ON TABLE system.tbl_app TO web;
+                GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE system.tbl_app TO admin;
+                GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE system.tbl_app TO vilesci;
+			";
+			if (!$this->db->simple_query($query))
+			{
+					echo "Error creating Basis DB-Schema!";
+			}
+		}
 
-				CREATE TABLE public.tbl_phrase (
+		if (! $this->db->table_exists('system.tbl_phrase'))
+		{
+			$query= "
+				CREATE TABLE system.tbl_phrase (
 				  phrase_id serial,
 				  app varchar(32) NOT NULL,
 				  phrase varchar(64) NOT NULL,
@@ -33,14 +34,14 @@ class Migration_Phrase extends CI_Migration {
 				  insertvon varchar(32),
 				  PRIMARY KEY (phrase_id)
 				);
-				GRANT SELECT ON TABLE public.tbl_phrase TO web;
-				GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.tbl_phrase TO admin;
-				GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.tbl_phrase TO vilesci;
-				GRANT SELECT, UPDATE ON SEQUENCE public.tbl_phrase_phrase_id_seq TO web;
-				GRANT SELECT, UPDATE ON SEQUENCE public.tbl_phrase_phrase_id_seq TO admin;
-				GRANT SELECT, UPDATE ON SEQUENCE public.tbl_phrase_phrase_id_seq TO vilesci;
+				GRANT SELECT ON TABLE system.tbl_phrase TO web;
+				GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE system.tbl_phrase TO admin;
+				GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE system.tbl_phrase TO vilesci;
+				GRANT SELECT, UPDATE ON SEQUENCE system.tbl_phrase_phrase_id_seq TO web;
+				GRANT SELECT, UPDATE ON SEQUENCE system.tbl_phrase_phrase_id_seq TO admin;
+				GRANT SELECT, UPDATE ON SEQUENCE system.tbl_phrase_phrase_id_seq TO vilesci;
 
-				CREATE TABLE public.tbl_phrase_inhalt (
+				CREATE TABLE system.tbl_phrase_inhalt (
 				  phrase_inhalt_id serial,
 				  phrase_id bigint NOT NULL,
                   sprache varchar(32) NOT NULL,
@@ -52,12 +53,12 @@ class Migration_Phrase extends CI_Migration {
 				  insertvon varchar(32),
 				  PRIMARY KEY (phrase_inhalt_id)
 				);
-				GRANT SELECT ON TABLE public.tbl_phrase_inhalt TO web;
-				GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.tbl_phrase_inhalt TO admin;
-				GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.tbl_phrase_inhalt TO vilesci;
-                GRANT SELECT, UPDATE ON SEQUENCE public.tbl_phrase_inhalt_phrase_inhalt_id_seq TO web;
-                GRANT SELECT, UPDATE ON SEQUENCE public.tbl_phrase_inhalt_phrase_inhalt_id_seq TO admin;
-                GRANT SELECT, UPDATE ON SEQUENCE public.tbl_phrase_inhalt_phrase_inhalt_id_seq TO vilesci;
+				GRANT SELECT ON TABLE system.tbl_phrase_inhalt TO web;
+				GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE system.tbl_phrase_inhalt TO admin;
+				GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE system.tbl_phrase_inhalt TO vilesci;
+                GRANT SELECT, UPDATE ON SEQUENCE system.tbl_phrase_inhalt_phrase_inhalt_id_seq TO web;
+                GRANT SELECT, UPDATE ON SEQUENCE system.tbl_phrase_inhalt_phrase_inhalt_id_seq TO admin;
+                GRANT SELECT, UPDATE ON SEQUENCE system.tbl_phrase_inhalt_phrase_inhalt_id_seq TO vilesci;
                 ";
   			if (!$this->db->simple_query($query))
 			{
@@ -70,12 +71,10 @@ class Migration_Phrase extends CI_Migration {
     {
 		try
 		{
-			$this->db->delete('system.tbl_rolleberechtigung', array('berechtigung_kurzbz' => 'basis/phrase'));
-			$this->db->delete('system.tbl_berechtigung', array('berechtigung_kurzbz' => 'basis/phrase'));
-			$this->dbforge->drop_table('public.tbl_phrase_inhalt');
-            $this->dbforge->drop_table('public.tbl_phrase');
-			$this->dbforge->drop_table('public.tbl_app');
-            echo "Table public.tbl_phrase_inhalt, public.tbl_phrase and public.tbl_app dropped!";
+			$this->dbforge->drop_table('system.tbl_phrase_inhalt');
+            $this->dbforge->drop_table('system.tbl_phrase');
+			$this->dbforge->drop_table('system.tbl_app');
+            echo "Table system.tbl_phrase_inhalt, system.tbl_phrase and system.tbl_app dropped!";
 		}
 		catch(Exception $e)
 		{

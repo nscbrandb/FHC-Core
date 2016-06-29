@@ -19,6 +19,14 @@ trait db_extra
 		}
 	}
 
+	public function db_num_rows($result=null)
+	{
+		if(is_null($result))
+			return pg_num_rows($this->db_result);
+		else
+			return pg_num_rows($result);
+	}
+
 	public function db_fetch_object($result = null, $i=null)
 	{
 		if(is_null($result))
@@ -144,14 +152,6 @@ trait db_extra
 			return pg_field_name($this->db_result, $i);
 		else
 			return pg_field_name($result, $i);
-	}
-	
-	public function db_num_rows($result=null)
-	{
-		if(is_null($result))
-			return pg_num_rows($this->db_result);
-		else
-			return pg_num_rows($result);
 	}
 	
 	public function db_last_error()
