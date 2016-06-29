@@ -154,14 +154,6 @@ trait db_extra
 			return pg_field_name($result, $i);
 	}
 	
-	public function db_num_rows($result=null)
-	{
-		if(is_null($result))
-			return pg_num_rows($this->db_result);
-		else
-			return pg_num_rows($result);
-	}
-	
 	public function db_last_error()
 	{
 		return pg_last_error();
