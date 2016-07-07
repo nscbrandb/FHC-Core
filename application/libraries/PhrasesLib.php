@@ -9,19 +9,19 @@ if (! defined('BASEPATH')) exit('No direct script access allowed');
 class PhrasesLib
 {
 	/*
-	 * 
+	 *
 	 */
     public function __construct()
     {
         //require_once APPPATH.'config/message.php';
 
 		$this->ci =& get_instance();
-		
+
 		$this->ci->load->library('parser');
-		
+
 		$this->ci->load->model('system/Phrase_model', 'PhraseModel');
-		$this->ci->load->model('system/Phrase_inhalt_model', 'PhraseInhaltModel');
-		
+		$this->ci->load->model('system/Phrasentext_model', 'PhrasentextModel');
+
         $this->ci->load->helper('language');
 		$this->ci->load->helper('Message');
         //$this->ci->lang->load('fhcomplete');
@@ -59,8 +59,17 @@ class PhrasesLib
         if (empty($phrase_id))
         	return $this->_error(MSG_ERR_INVALID_MSG_ID);
 
-        $phrase_inhalt = $this->ci->PhraseInhaltModel->loadWhere(array('phrase_id' => $phrase_id));
-        return $phrase_inhalt;
+        $phrasentext = $this->ci->PhrasentextModel->loadWhere(array('phrase_id' => $phrase_id));
+        return $phrasentext;
+    }
+
+    function delPhrasentext($phrasentext_id)
+    {
+        if (empty($phrasentext_id))
+        	return $this->_error(MSG_ERR_INVALID_MSG_ID);
+
+        $phrasentext = $this->ci->PhrasentextModel->delete(array('phrasentext_id' => $phrasentext_id));
+        return $phrasentext;
     }
 
 	/**
@@ -85,17 +94,17 @@ class PhrasesLib
      * @param   string  $vorlage_kurzbz    REQUIRED
      * @return  array
      */
-    function getPhraseInhaltById($phrase_inhalt_id)
+    function getPhrasentextById($phrasentext_id)
 	{
-        if (empty($phrase_inhalt_id))
+        if (empty($phrasentext_id))
         	return $this->_error($this->ci->lang->line('fhc_'.FHC_INVALIDID, false));
 
-        $phrase_inhalt = $this->ci->PhraseInhaltModel->loadWhere(array('phrase_inhalt_id' =>$phrase_inhalt_id));
-        return $phrase_inhalt;
+        $phrasentext = $this->ci->PhrasentextModel->load($phrasentext_id);
+        return $phrasentext;
     }
-	
+
 	/**
-     * getPhrases() - 
+     * getPhrases() -
      *
      * @return  struct
      */
@@ -104,12 +113,22 @@ class PhrasesLib
 		if (isset($app) && isset($sprache))
 		{
 			$result = $this->ci->PhraseModel->getPhrases($app, $sprache, $phrase, $orgeinheit_kurzbz, $orgform_kurzbz);
+			
+			if (is_object($result) && $result->error == EXIT_SUCCESS && is_array($result->retval) && count($result->retval) > 0)
+			{
+				$parser = new \Netcarver\Textile\Parser();
+				
+				for ($i = 0; $i < count($result->retval); $i++)
+				{
+					$result->retval[$i]->text = $parser->textileThis($result->retval[$i]->text);
+				}
+			}
 		}
 		else
 		{
 			$result = $this->_error('app and sprache parameters are required');
 		}
-		
+
 		return $result;
     }
 
@@ -138,8 +157,8 @@ class PhrasesLib
      */
     function insertPhraseinhalt($data)
 	{
-        $phrase_inhalt = $this->ci->PhraseInhaltModel->insert($data);
-        return $phrase_inhalt;
+        $phrasentext = $this->ci->PhrasentextModel->insert($data);
+        return $phrasentext;
     }
 
 	/**
@@ -160,10 +179,10 @@ class PhrasesLib
      * @param   string  $vorlage_kurzbz    REQUIRED
      * @return  array
      */
-    function updatePhraseInhalt($phrase_inhalt_id, $data)
+    function updatePhraseInhalt($phrasentext_id, $data)
 	{
-        $phrase_inhalt = $this->ci->PhraseInhaltModel->update($phrase_inhalt_id, $data);
-        return $phrase_inhalt;
+        $phrasentext = $this->ci->PhrasentextModel->update($phrasentext_id, $data);
+        return $phrasentext;
     }
 
 	/**
@@ -180,17 +199,17 @@ class PhrasesLib
 		$text = $this->ci->parser->parse_string($text, $data, TRUE);
 		return $text;
     }
-	
+
 	/*
-	 * 
+	 *
 	 */
 	protected function _error($retval = '', $message = EXIT_ERROR)
 	{
 		return error($retval, $message);
 	}
-	
+
 	/*
-	 * 
+	 *
 	 */
 	protected function _success($retval, $message = EXIT_SUCCESS)
 	{

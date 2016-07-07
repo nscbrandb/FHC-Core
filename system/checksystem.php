@@ -41,10 +41,8 @@ $uid = get_uid();
 $rechte = new benutzerberechtigung();
 $rechte->getBerechtigungen($uid);
 
-if(!$rechte->isBerechtigt('admin'))
-{
-	exit('Sie haben keine Berechtigung');
-}
+if(! $rechte->isBerechtigt('admin'))
+	exit('Sie ('.$uid.') haben keine Berechtigung');
 
 echo '<H1>Systemcheck!</H1>';
 echo '<H2>DB-Updates!</H2>';
@@ -70,6 +68,7 @@ $berechtigungen = array(
 	array('basis/addon','Addons verwalten'),
 	array('basis/ampel','Ampeln Administrieren'),
 	array('basis/ampeluebersicht','Ampel Übersicht für Leiter'),
+	array('basis/benutzer','API-Recht zur Benutzer-Auth'),
 	array('basis/berechtigung','Berechtigungsverwaltung'),
 	array('basis/betriebsmittel','Betriebsmittel'),
 	array('basis/cms','CMS Administration'),
@@ -83,10 +82,12 @@ $berechtigungen = array(
 	array('basis/firma','Firmenverwaltung'),
 	array('basis/firma:begrenzt','Firmenverwaltung'),
 	array('basis/infoscreen','Infoscreenverwaltung'),
+	array('basis/message','Nachrichten'),
 	array('basis/moodle','basis/moodle'),
 	array('basis/news','Newsverwaltung'),
 	array('basis/notiz','Notizen'),
 	array('basis/organisationseinheit','Organisationseinheiten Verwalten'),
+	array('basis/orgform','Orgformen Verwalten'),
 	array('basis/ort','Raum-/Ortverwaltung'),
 	array('basis/person','Personen Zusammenlegen, Stg-Wiederholer anlegen, etc'),
 	array('basis/planner','Planner Zugriff'),

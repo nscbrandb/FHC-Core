@@ -35,6 +35,7 @@ class Phrases extends FHC_Controller
 		if (empty($phrase_id))
 			exit;
 		$phrase_inhalt = $this->phraseslib->getPhraseInhalt($phrase_id);
+		$phrase = $this->phraseslib->getPhrase($phrase_id);
 		if ($phrase_inhalt->error)
 			show_error($phrase_inhalt->retval);
 		//var_dump($vorlage);
@@ -42,9 +43,22 @@ class Phrases extends FHC_Controller
 		$data = array
 		(
 			'phrase_id' => $phrase_id,
+			'phrase' => $phrase->retval[0]->phrase,
 			'phrase_inhalt' => $phrase_inhalt->retval
 		);
 		$v = $this->load->view('system/phrasesinhaltList.php', $data);
+	}
+
+	public function deltext($phrasentext_id=null, $phrase_id = null)
+	{
+		if (empty($phrase_id) or empty($phrasentext_id))
+			exit;
+		$phrase_inhalt = $this->phraseslib->delPhrasentext($phrasentext_id);
+		if ($phrase_inhalt->error)
+			show_error($phrase_inhalt->retval);
+		//var_dump($vorlage);
+
+		redirect('/system/Phrases/view/'.$phrase_id);
 	}
 
 	public function edit($phrase_id = null)
@@ -107,9 +121,9 @@ class Phrases extends FHC_Controller
 		redirect('/system/Phrases/editText/'.$phrase_inhalt_id);
 	}
 
-	public function editText($phrase_inhalt_id)
+	public function editText($phrasentext_id)
 	{
-		$phrase_inhalt = $this->phraseslib->getPhraseInhaltById($phrase_inhalt_id);
+		$phrase_inhalt = $this->phraseslib->getPhrasentextById($phrasentext_id);
 		if ($phrase_inhalt->error)
 			show_error($phrase_inhalt->retval);
 		$data = $phrase_inhalt->retval[0];
@@ -121,6 +135,7 @@ class Phrases extends FHC_Controller
 	{
 		$phrase_inhalt_id = $this->input->post('phrase_inhalt_id', TRUE);
 		$data['orgeinheit_kurzbz'] = $this->input->post('oe_kurzbz', TRUE);
+		$data['orgform_kurzbz'] = $this->input->post('orgform_kurzbz', TRUE);
 		$data['text'] = $this->input->post('text', TRUE);
 		$data['description'] = $this->input->post('description', TRUE);
 		$data['sprache'] = $this->input->post('sprache', TRUE);
