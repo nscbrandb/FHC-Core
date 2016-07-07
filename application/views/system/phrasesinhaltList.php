@@ -4,7 +4,7 @@
 
 <div class="row">
   <div class="span4">
-	<h2>Phrase Inhalt - <?php echo $phrase_id; ?></h2>
+	<h2>Phrase Inhalt - <?php echo $phrase; ?></h2>
 	<form method="post" action="../newtext" target="PhrasesBottom">
 	  <input type="hidden" name="phrase_id" value="<?php echo $phrase_id; ?>"/>
 	  <button type="submit">Neu</button>
@@ -19,23 +19,35 @@
 			<th class='table-sortable:default'>Text</th>
 			<th>Beschreibung</th>
 			<th></th>
+			<th></th>
 		</tr>
 	  </thead>
 	  <tbody>
 		<?php foreach ($phrase_inhalt as $v): ?>
-			<tr><td><a href="../edittext/<?php echo $v->phrase_inhalt_id; ?>" target="PhrasesBottom"><?php echo $v->phrase_inhalt_id; ?></a></td>
+			<tr><td><a href="../edittext/<?php echo $v->phrasentext_id; ?>" target="PhrasesBottom"><?php echo $v->phrasentext_id; ?></a></td>
 				<td><?php echo $v->sprache; ?></td>
 				<td><?php echo $v->orgeinheit_kurzbz; ?></td>
 				<td><?php echo $v->orgform_kurzbz; ?></td>
 				<td><?php echo $v->text; ?></td>
 				<td><?php echo $v->description; ?></td>
-				<td><a href="../edittext/<?php echo $v->phrase_inhalt_id; ?>" target="PhrasesBottom">edit</a></td>
+				<td><a href="../edittext/<?php echo $v->phrasentext_id; ?>" target="PhrasesBottom">edit</a></td>
+				<td>
+					<a href="javascript:void(0);" onclick="delPhrasentext(<?php echo $v->phrasentext_id; ?>, <?php echo $phrase_id; ?>)">delete</a>
+				</td>
 			</tr>
 		<?php endforeach ?>
 	  </tbody>
 	</table>
   </div>
 </div>
+<script>
+function delPhrasentext(id,pid)
+{
+	var c = confirm("Wirklich löschen?");
+	if (c == true)
+		window.location.href = "../deltext/"+id+"/"+pid;
+}
+</script>
 
 <?php
 	$this->load->view('templates/footer');

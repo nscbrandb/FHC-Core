@@ -27,8 +27,8 @@
  * Array welches includiert wird.
  */
 	require_once('../config/vilesci.config.inc.php');
- 	require('../include/functions.inc.php');
- 	require('../include/benutzerberechtigung.class.php');
+ 	require_once('../include/functions.inc.php');
+ 	require_once('../include/benutzerberechtigung.class.php');
  	// könnte man hier vll. auch eine Default config einbauen mit $menu Template?
  	if (is_file('../include/'.EXT_FKT_PATH.'/vilesci_menu_main.inc.php')) require_once('../include/'.EXT_FKT_PATH.'/vilesci_menu_main.inc.php');
 
