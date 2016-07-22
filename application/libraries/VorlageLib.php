@@ -18,6 +18,7 @@ class VorlageLib
 		$this->ci =& get_instance();
 		
 		$this->ci->load->library('parser');
+		$this->ci->load->library('OrganisationseinheitLib');
 		
 		$this->ci->load->model('system/Vorlage_model', 'VorlageModel');
 		$this->ci->load->model('system/Vorlagestudiengang_model', 'VorlageStudiengangModel');
@@ -88,21 +89,50 @@ class VorlageLib
 	/**
      * loadVorlagetext() - will load the best fitting Template.
      *
-     * @param   string  $vorlage_kurzbz REQUIRED
-     * @param   string  $oe_kurzbz    	OPTIONAL
-     * @param   string  $orgform_kurzbz OPTIONAL
+     * @param   string  $vorlage_kurzbz	REQUIRED
+     * @param   string  $oe_kurzbz		OPTIONAL
+     * @param   string  $orgform_kurzbz	OPTIONAL
+	 * @param   string  $sprache		OPTIONAL
      * @return  array
      */
-    function loadVorlagetext($vorlage_kurzbz, $oe_kurzbz=null, $orgform_kurzbz=null)
+    function loadVorlagetext($vorlage_kurzbz, $oe_kurzbz = null, $orgform_kurzbz = null, $sprache = null)
 	{
         if (empty($vorlage_kurzbz))
         	return $this->_error($this->ci->lang->line('fhc_'.FHC_INVALIDID, false));
 		
-        $vorlage = $this->ci->VorlageStudiengangModel->loadWhere(array(
-			'vorlage_kurzbz' => $vorlage_kurzbz,
-			'oe_kurzbz' => $oe_kurzbz,
-			'orgform_kurzbz' => $orgform_kurzbz)
+		// Builds where clause
+		$where = "";
+		if (is_null($orgform_kurzbz))
+		{
+			$where .= "orgform_kurzbz IS NULL";
+		}
+		else
+		{
+			$where .= "orgform_kurzbz = " . $this->ci->VorlageModel->escape($orgform_kurzbz);
+		}
+		
+		$where .= " AND ";
+		
+		if (is_null($sprache))
+		{
+			$where .= "sprache IS NULL";
+		}
+		else
+		{
+			$where .= "sprache = " . $this->ci->VorlageModel->escape($sprache);
+		}
+		
+		$vorlage = $this->ci->organisationseinheitlib->treeSearch(
+				'public',
+				'tbl_vorlagestudiengang',
+				array("vorlage_kurzbz", "studiengang_kz", "version", "text", "oe_kurzbz",
+						"vorlagestudiengang_id", "style", "berechtigung", "anmerkung_vorlagestudiengang", 
+						"aktiv", "sprache", "subject", "orgform_kurzbz"),
+				$where,
+				"version DESC",
+				$oe_kurzbz
 		);
+		
         return $vorlage;
     }
 

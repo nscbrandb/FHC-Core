@@ -118,8 +118,6 @@ class Message extends APIv1_Controller
 	{
 		$validation = $this->_validatePostMessageVorlage($this->post());
 		
-//		$this->response($this->post(), REST_Controller::HTTP_OK);
-		
 		if (is_object($validation) && $validation->error == EXIT_SUCCESS)
 		{
 			$result = $this->messagelib->sendMessageVorlage(
