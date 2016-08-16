@@ -73,6 +73,8 @@ $this->phrasen['pruefung/lvErfolgreichEntfernt'] = 'Lehrveranstaltung erfolgreic
 $this->phrasen['pruefung/pruefungStorniert'] = 'Prüfung storniert';
 $this->phrasen['pruefung/terminGeloescht'] = 'Termin gelöscht';
 $this->phrasen['pruefung/unbegrenzt'] = 'unlimited';
+$this->phrasen['pruefung/bewertungenZu'] = 'Bewertungen zu';
+$this->phrasen['pruefung/keineAuswahl'] = 'Keine Auswahl';
 
 // pruefungsbewertung
 $this->phrasen['pruefung/pruefungsbewertungTitle'] = 'Prüfungsbewertung';
@@ -104,6 +106,8 @@ $this->phrasen['pruefung/kollisionMitAnderemTermin'] = 'Kollision mit anderem Te
 $this->phrasen['pruefung/terminNichtInDerVergangenheit'] = 'Prüfungstermin liegt nicht in der Vergangenheit.';
 $this->phrasen['pruefung/keineLehreinheitenVorhanden'] = 'Keine Lehreinheiten vorhanden.';
 $this->phrasen['pruefung/keineAnmeldungenVorhanden'] = 'Keine Anmeldungen vorhanden.';
+$this->phrasen['pruefung/derLektor'] = 'Lektor';
+$this->phrasen['pruefung/dieKommission'] = 'Kommission';
 
 // anmeldungen Verwalten
 $this->phrasen['pruefung/anmeldungenVerwaltenTitle'] = 'Prüfungsanmeldung Verwaltung';

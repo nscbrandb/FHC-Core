@@ -633,19 +633,22 @@ function resetForm()
  */
 function setTablesorter(tableId)
 {
-	if($("#"+tableId)[0].hasInitialized !== true)
-	{
-		$("#"+tableId).tablesorter({
-			widgets: ["zebra"],
-			sortList: [[1,0]]
-		});
-	}
-	else
-	{
-		$("#"+tableId).trigger("updateAll");
-		var sorting = [[1,0],[0,0]];
-		$("#"+tableId).trigger("sorton",[sorting]);
-	}
+    if($("#"+tableId).length != 0)
+    {
+        if($("#"+tableId)[0].hasInitialized !== true)
+        {
+                $("#"+tableId).tablesorter({
+                        widgets: ["zebra"],
+                        sortList: [[1,0]]
+                });
+        }
+        else
+        {
+                $("#"+tableId).trigger("updateAll");
+                var sorting = [[1,0],[0,0]];
+                $("#"+tableId).trigger("sorton",[sorting]);
+        }
+    }
 }
 
 /**
@@ -732,13 +735,15 @@ function showAnmeldungen(pruefungstermin_id, lehrveranstaltung_id)
 
 function writeAnmeldungen(data)
 {
-	console.log(data);
 	if(data.error === 'false')
 	{
 		var terminId = data.result.anmeldungen[0].pruefungstermin_id;
 		var pruefung_id = data.result.anmeldungen[0].pruefung_id;
 		var lehrveranstaltung_id = data.result.anmeldungen[0].lehrveranstaltung_id;
 		var ort_kurzbz = data.result.ort_kurzbz;
+		var lv_bezeichnung = data.result.lv_bezeichnung;
+		var lv_lehrtyp = data.result.lv_lehrtyp;
+		var prf_termin = data.result.datum;
 		var liste = "<ul id='sortable'>";
 		var count = 0;
 		var studiensemester = $("#filter_studiensemester option:selected").val();
@@ -774,6 +779,7 @@ function writeAnmeldungen(data)
 		liste += "</ul>";
 		$("#anmeldung_hinzufuegen").html("<input id='anmeldung_hinzufuegen_uid' type='text' placeholder='StudentIn-UID' /><input type='button' value='<?php echo $p->t('global/hinzufuegen'); ?>' onclick='saveAnmeldung(\""+lehrveranstaltung_id+"\",\""+terminId+"\");'/>");
 		$("#reihungSpeichernButton").html("<input type='button' value='<?php echo $p->t('pruefung/reihungSpeichern'); ?>' onclick='saveReihung(\""+terminId+"\", \""+lehrveranstaltung_id+"\");'>");
+		$("#lvdaten").html(lv_bezeichnung+" ("+prf_termin+")");
 		$("#anmeldeDaten").html(liste);
 		$("#listeDrucken").html("<a href='./pruefungsanmeldungen_liste.php?termin_id="+terminId+"&lehrveranstaltung_id="+lehrveranstaltung_id+"&studiensemester="+studiensemester+"' target='_blank'><?php echo $p->t('pruefung/listeDrucken'); ?></a>");
 		if(ort_kurzbz !== null)
@@ -968,10 +974,17 @@ function loadPruefungStudiengang(studiengang_kz, studiensemester)
 				var liste = "";
 				data.result.forEach(function(e){
 					liste += "<ul><li>"+e.bezeichnung+"<ul>";
-					e.pruefung[0].termine.forEach(function(d){
-						liste += "<li> <a onclick='showAnmeldungen(\""+d.pruefungstermin_id+"\", \""+e.lehrveranstaltung_id+"\");'>"+convertDateTime(d.von)+" "+convertDateTime(d.von, "time")+" - "+convertDateTime(d.bis, "time")+"</a></li>";
-					});
-					liste += "</li></ul></ul>";
+					try
+					{
+						e.pruefung[0].termine.forEach(function(d){
+							liste += "<li> <a onclick='showAnmeldungen(\""+d.pruefungstermin_id+"\", \""+e.lehrveranstaltung_id+"\");'>"+convertDateTime(d.von)+" "+convertDateTime(d.von, "time")+" - "+convertDateTime(d.bis, "time")+"</a></li>";
+						});
+					}
+					catch(err)
+					{
+						var errmsg = err.message;
+					}
+					liste += "</ul></li></ul>";
 				});
 				$("#pruefungenListe").append(liste);
 			}

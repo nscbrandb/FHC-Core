@@ -30,7 +30,7 @@ ALTER TABLE lehre.tbl_studienplan ALTER COLUMN aktiv SET DEFAULT true;";
 if(!$db->db_query($qry))
 	echo '<strong>public.tbl_studiengang: '.$db->db_last_error().'</strong><br>';
 else
-	echo 'Defaultwerte für tbl_studiengang und tbl_studienplan gesetzt.';
+	echo 'Defaultwerte für tbl_studiengang und tbl_studienplan gesetzt.<br>';
 
 
 //Spalte studiensemester_kurzbz für Reihungstest
@@ -1295,6 +1295,91 @@ if(!@$db->db_query("SELECT bezeichnung_mehrsprachig FROM public.tbl_status LIMIT
 	else
 		echo '<br>Spalte bezeichnung_mehrsprachig in public.tbl_status hinzugefügt<br>Die ersten beiden Sprachen wurden vorbefüllt. Weitere Übersetzungen sind zu ergänzen!<br>';
 }
+
+
+
+
+/************************************  07.16 Vorlage für bewerberakt ************************************/
+if($result = $db->db_query("SELECT * FROM public.tbl_vorlage WHERE vorlage_kurzbz='Bewerberakt'"))
+{
+	if($db->db_num_rows($result)==0)
+	{
+		$qry_oe = "SELECT oe_kurzbz FROM public.tbl_organisationseinheit WHERE oe_parent_kurzbz is null";
+		if($result = $db->db_query($qry_oe))
+		{
+			$qry = "INSERT INTO public.tbl_vorlage(vorlage_kurzbz, bezeichnung, anmerkung,mimetype)
+			VALUES('Bewerberakt','Bewerberakt Deckblatt', 'wird als Deckblatt fuer den Bewerberakt verwendet', 'application/vnd.oasis.opendocument.text');";
+
+			$testQuery = "SELECT setval('seq_vorlagestudiengang_vorlagestudiengang_id', max(vorlagestudiengang_id)) FROM tbl_vorlagestudiengang;";
+			$testResult = $db->db_query($testQuery);
+			
+			$text = file_get_contents('../system/xsl/Bewerberakt.xsl');
+
+			while($row = $db->db_fetch_object($result))
+			{
+				$qry.="INSERT INTO public.tbl_vorlagestudiengang(vorlage_kurzbz, studiengang_kz, version, text,
+				oe_kurzbz, style, berechtigung, anmerkung_vorlagestudiengang, aktiv) VALUES(
+				'Bewerberakt',0,0,".$db->db_add_param($text).",".$db->db_add_param($row->oe_kurzbz).",null,null,'',true);";
+			}
+		}
+
+		if(!$db->db_query($qry))
+			echo '<strong>Bewerberakt Dokumentenvorlage: '.$db->db_last_error().'</strong><br>';
+		else
+			echo 'Bewerberakt Dokumentenvorlage hinzugefuegt<br>';
+	}
+}
+
+
+
+
+
+// public.tbl_vorlagedokument hinzufuegen
+if($result = @$db->db_query("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='public' AND TABLE_NAME='tbl_vorlagedokument';"))
+{
+	if($db->db_num_rows($result)==0)
+	{
+		$qry = "
+		CREATE TABLE public.tbl_vorlagedokument
+		(
+			vorlagedokument_id integer NOT NULL,
+			sort integer NOT NULL,
+			vorlagestudiengang_id bigint NOT NULL,
+			dokument_kurzbz varchar(8) NOT NULL
+		);
+
+
+
+		CREATE SEQUENCE public.tbl_vorlagedokument_vorlagedokument_id_seq
+			INCREMENT BY 1
+			NO MAXVALUE
+			NO MINVALUE
+			CACHE 1;
+
+
+		COMMENT ON TABLE public.tbl_vorlagedokument IS 'Verknuepft mehrere tbl_dokument mit einer tbl_vorlagestudiengang';
+		ALTER TABLE public.tbl_vorlagedokument ADD CONSTRAINT pr_vorlagedokument_id PRIMARY KEY (vorlagedokument_id);
+		ALTER TABLE public.tbl_vorlagedokument ALTER COLUMN vorlagedokument_id SET DEFAULT nextval('public.tbl_vorlagedokument_vorlagedokument_id_seq');
+
+		ALTER TABLE public.tbl_vorlagedokument ADD CONSTRAINT fk_tbl_vorlagedokument_tbl_dokument FOREIGN KEY (dokument_kurzbz) REFERENCES public.tbl_dokument (dokument_kurzbz) ON DELETE RESTRICT ON UPDATE CASCADE;
+		ALTER TABLE public.tbl_vorlagedokument ADD CONSTRAINT fk_tbl_vorlagedokument_tbl_vorlagestudiengang FOREIGN KEY (vorlagestudiengang_id) REFERENCES public.tbl_vorlagestudiengang (vorlagestudiengang_id) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+
+		GRANT SELECT, UPDATE, INSERT, DELETE ON public.tbl_vorlagedokument TO vilesci;
+		GRANT SELECT ON public.tbl_vorlagedokument TO web;
+		GRANT SELECT, UPDATE ON public.tbl_vorlagedokument_vorlagedokument_id_seq TO vilesci;
+		";
+
+
+		if(!$db->db_query($qry))
+			echo '<strong>public.tbl_vorlagedokument: '.$db->db_last_error().'</strong><br>';
+		else
+			echo ' Tabelle public.tbl_vorlagedokument hinzugefuegt!<br>';
+	}
+}
+
+
+
 
 
 // *** Pruefung und hinzufuegen der neuen Attribute und Tabellen

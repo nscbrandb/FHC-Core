@@ -162,6 +162,7 @@ class studienplan extends Studienplan_model
 
 		if(!is_null($orgform_kurzbz))
 			$qry.=" AND orgform_kurzbz=".$this->db_add_param($orgform_kurzbz);
+		$qry.=" ORDER BY bezeichnung";
 
 		if($this->db_query($qry))
 		{
@@ -708,7 +709,42 @@ class studienplan extends Studienplan_model
 	function getStudienplaeneFromSem($studiengang_kz, $studiensemester_kurzbz, $ausbildungssemester="", $orgform_kurzbz = "")
 	{
 		$qry = "SELECT
-					*
+					studienplan_id,
+					studienordnung_id,
+					orgform_kurzbz,
+					tbl_studienplan.version AS version_studienplan,
+					tbl_studienplan.bezeichnung AS bezeichnung_studienplan,
+					regelstudiendauer,
+					sprache,
+					aktiv,
+					semesterwochen,
+					testtool_sprachwahl,
+					tbl_studienplan.insertamum AS insertamum_studienplan,
+					tbl_studienplan.insertvon AS insertvon_studienplan,
+					tbl_studienplan.updateamum AS updateamum_studienplan,
+					tbl_studienplan.updatevon AS updatevon_studienplan,
+					ects_stpl,
+					pflicht_sws,
+					pflicht_lvs,
+					studiengang_kz,
+					tbl_studienordnung.version AS version_studienordnung,
+					gueltigvon,
+					gueltigbis,
+					tbl_studienordnung.bezeichnung AS bezeichnung_studienordnung,
+					ects,
+					studiengangbezeichnung,
+					studiengangbezeichnung_englisch,
+					studiengangkurzbzlang,
+					akadgrad_id,
+					tbl_studienordnung.insertamum AS insertamum_studienordnung,
+					tbl_studienordnung.insertvon AS insertvon_studienordnung,
+					tbl_studienordnung.updateamum AS updateamum_studienordnung,
+					tbl_studienordnung.updatevon AS updatevon_studienordnung,
+					status_kurzbz,
+					standort_id,
+					studienplan_semester_id,
+					studiensemester_kurzbz,
+					semester
 				FROM
 					lehre.tbl_studienplan
 					JOIN lehre.tbl_studienordnung USING(studienordnung_id)
@@ -725,7 +761,6 @@ class studienplan extends Studienplan_model
 		{
 			$qry.=" AND orgform_kurzbz=".$this->db_add_param($orgform_kurzbz);
 		}
-
 
 		$res = array();
 
@@ -865,7 +900,7 @@ class studienplan extends Studienplan_model
 			WHERE
 			tbl_studienplan_lehrveranstaltung.lehrveranstaltung_id=".$this->db_add_param($lehrveranstaltung_id, FHC_INTEGER)."
 			AND EXISTS (
-			SELECT 1 FROM lehre.tbl_studienordnung_semester
+			SELECT 1 FROM lehre.tbl_studienplan_semester
 			WHERE studienordnung_id=tbl_studienplan.studienordnung_id
 			AND studiensemester_kurzbz=".$this->db_add_param($studiensemester_kurzbz)."
 			AND semester = tbl_studienplan_lehrveranstaltung.semester)
