@@ -25,19 +25,12 @@
  * 			Andreas Moik	<moik@technikum-wien.at>
  */
 
-require_once(dirname(__FILE__).'/datum.class.php');
+require_once(dirname(__FILE__).'/basis_db.class.php');
 
-// CI
-require_once(dirname(__FILE__).'/../ci_hack.php');
-require_once(dirname(__FILE__).'/../application/models/organisation/Studienplan_model.php');
-
-class studienplan extends Studienplan_model
+class studienplan extends basis_db
 {
-	use db_extra; //CI Hack
-
     public $new = true;			// boolean
     public $result = array();		// Objekte
-	public $errormsg;			// string
 
     //Tabellenspalten
     public $studienplan_id;			// integer (PK)
@@ -82,12 +75,12 @@ class studienplan extends Studienplan_model
 	{
 		$this->$name=$value;
 	}
-/*
+	
 	public function __get($name)
 	{
 		return $this->$name;
 	}
-*/
+	
 	/**
 	 * Laedt Studienplan mit der ID $studienplan_id
 	 * @param  $studienplan_id ID des zu ladenden Studienplanes
@@ -1144,6 +1137,59 @@ class studienplan extends Studienplan_model
 			return false;
 		}
 		return false;
+	}
+	
+	/**
+	 * Sucht nach Studienordnungen, die den Kriterien entsprechen
+	 * @param string $searchItems Array aus Suchstrings
+	 */
+	public function searchStudienplaene($searchItems)
+	{
+		$qry= "
+				SELECT DISTINCT 
+					studienplan_id, tbl_studienplan.bezeichnung
+				FROM 
+					lehre.tbl_studienplan
+				JOIN 
+					lehre.tbl_studienordnung USING (studienordnung_id)
+				JOIN 
+					lehre.tbl_studienplan_semester USING (studienplan_id)
+				JOIN 
+					public.tbl_studiengang USING (studiengang_kz)
+				WHERE
+					tbl_studienplan.aktiv=true
+				AND
+					tbl_studienordnung.status_kurzbz IN ('approved')";
+				
+			foreach($searchItems as $value)
+			$qry.=" AND
+					(
+						lower(tbl_studienplan.bezeichnung) LIKE lower('%".$this->db_escape($value)."%')
+						OR
+						lower(tbl_studienplan_semester.studiensemester_kurzbz) LIKE lower('%".$this->db_escape($value)."%')
+						OR
+						lower(tbl_studiengang.typ||tbl_studiengang.kurzbz) LIKE lower('%".$this->db_escape($value)."%')
+						OR
+						lower(tbl_studienplan.orgform_kurzbz) LIKE lower('%".$this->db_escape($value)."%')
+						OR
+						tbl_studienplan.studienplan_id::text = '".$this->db_escape($value)."'
+					)";
+			$qry.=" ORDER BY studienplan_id DESC";
+
+		if($result = $this->db_query($qry))
+		{
+			while($row = $this->db_fetch_object($result))
+			{
+				$obj = new studienplan();
+	
+				$obj->studienplan_id = $row->studienplan_id;
+				$obj->bezeichnung = $row->bezeichnung;
+				$obj->new=false;
+	
+				$this->result[] = $obj;
+			}
+			return true;
+		}
 	}
 }
 ?>

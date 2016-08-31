@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  *
  * Authors: Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
+ *          Andreas Moik <moik@technikum-wien.at>.
  */
 require_once(dirname(__FILE__).'/vorlage.class.php');
 require_once(dirname(__FILE__).'/addon.class.php');
@@ -33,12 +34,16 @@ class dokument_export
 	private $temp_filename;
 	private $temp_folder;
 	private $images=array();
+	public $errormsg;
 
 	/**
 	 * Konstruktor
 	 */
-	public function __construct($vorlage, $oe_kurzbz=0, $version=null)
+	public function __construct($vorlage = null, $oe_kurzbz=0, $version=null)
 	{
+		if(!isset($vorlage))
+			return;
+
 		//Vorlage aus der Datenbank holen
 		$this->vorlage = new vorlage();
 		if(!$this->vorlage->getAktuelleVorlage($oe_kurzbz, $vorlage, $version))
@@ -164,10 +169,10 @@ class dokument_export
 
 		$contentbuffer = $proc->transformToXml($this->xml_data);
 
-		$this->temp_folder = '/tmp/fhcunoconv-'.uniqid();
+		$this->temp_folder = sys_get_temp_dir().'/fhcunoconv-'.uniqid();
 		mkdir($this->temp_folder);
 		chdir($this->temp_folder);
-		file_put_contents('content.xml', $contentbuffer);
+		file_put_contents($this->temp_folder . '/content.xml', $contentbuffer);
 
 		// styles.xml erstellen
 		if(!is_null($this->styles_xsl))
@@ -177,7 +182,7 @@ class dokument_export
 
 			$stylesbuffer = $style_proc->transformToXml($this->xml_data);
 
-			file_put_contents('styles.xml', $stylesbuffer);
+			file_put_contents($this->temp_folder . '/styles.xml', $stylesbuffer);
 		}
 
 		// Template holen
@@ -197,7 +202,8 @@ class dokument_export
 		if(!$vorlage_found)
 			$zipfile = DOC_ROOT.'system/vorlage_zip/'.$this->vorlage_file;
 
-		$tempname_zip = 'out.zip';
+		$tempname_zip = $this->temp_folder . '/out.zip';
+
 		if(!copy($zipfile, $tempname_zip))
 			die('copy failed');
 
@@ -250,8 +256,9 @@ class dokument_export
 		switch($this->outputformat)
 		{
 			case 'pdf':
-				$this->temp_filename='out.pdf';
+				$this->temp_filename = $this->temp_folder . '/out.pdf';
 				exec("unoconv -e IsSkipEmptyPages=false --stdout -f pdf $tempname_zip > ".$this->temp_filename, $out, $ret);
+
 				if($ret!=0)
 				{
 					$this->errormsg = 'Dokumentenkonvertierung ist derzeit nicht möglich. Bitte informieren Sie den Administrator';
@@ -326,7 +333,7 @@ class dokument_export
 		}
 		else
 		{
-			$data = fread($handle, filesize($file));
+			$data = fread($handle, $fsize);
 			fclose($handle);
 			return $data;
 		}
@@ -342,8 +349,9 @@ class dokument_export
 		if($this->styles_xsl!='')
 			unlink('styles.xml');
 
-		unlink('out.zip');
 		unlink($this->temp_filename);
+		if(file_exists("out.zip"))
+			unlink('out.zip');
 
 		if(count($this->images)>0)
 		{
@@ -395,10 +403,26 @@ class dokument_export
 		return $_xml_data->asXML();
 	}
 
-	public function getXML()
+	/**
+	* Konvertiert ein Dokument in ein anderes Format
+	* @param string $inFile Origin File Path
+	* @param string $outFile Output file
+	* @param string $format Format to export To
+	* @return boolean
+	*/
+	public function convert($inFile, $outFile, $format = "pdf")
 	{
-		$this->xml_data->formatOutput=true;
-		return $this->xml_data->saveXML();
+		$command = 'unoconv --format %s --output %s %s';
+		$command = sprintf($command, $format, $outFile, $inFile);
+
+		exec($command, $out, $ret);
+		if($ret!=0)
+		{
+			$this->errormsg = 'Dokumentenkonvertierung ist derzeit nicht möglich. Bitte informieren Sie den Administrator';
+			return false;
+		}
+
+		return true;
 	}
 }
 ?>
