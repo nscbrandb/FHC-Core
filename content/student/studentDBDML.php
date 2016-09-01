@@ -71,6 +71,7 @@ require_once('../../include/note.class.php');
 require_once('../../include/standort.class.php');
 require_once('../../include/adresse.class.php');
 require_once('../../include/reihungstest.class.php');
+require_once('../../include/studienplan.class.php');
 
 $user = get_uid();
 $db = new basis_db();
@@ -933,10 +934,10 @@ if(!$error)
 				{
 					if($row = $db->db_fetch_object($result))
 					{
-						if($row->anzahl<=1)
+						if($row->anzahl<=1 && !$rechte->isBerechtigt('admin', null, 'suid'))
 						{
 							$return = false;
-							$errormsg = 'Die letzte Rolle darf nicht geloescht werden';
+							$errormsg = 'Die letzte Rolle kann nur durch den Administrator geloescht werden';
 							$error = true;
 						}
 					}
@@ -1021,7 +1022,68 @@ if(!$error)
 				{
 					if($rolle->bestaetige_rolle($_POST['prestudent_id'],$_POST['status_kurzbz'],$_POST['studiensemester_kurzbz'], $_POST['ausbildungssemester'],$user))
 					{
-						$return = true;
+						// Message verschicken
+						$prestudent = new prestudent();
+						$prestudent->load($_POST['prestudent_id']);
+
+						$url =APP_ROOT.'index.ci.php/api/v1/system/Message/MessageVorlage';
+						$ch = curl_init();
+						curl_setopt($ch, CURLOPT_URL,$url);
+						curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
+						$header=array();
+						$auth = base64_encode(FHC_REST_USER.':'.FHC_REST_PASSWORD);
+						$header[]="Authorization: Basic $auth";
+						$header[]='FHC-API-KEY:'.FHC_REST_API_KEY;
+
+						curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+						curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+						$studiengang = new studiengang();
+						$studiengang->load($prestudent->studiengang_kz);
+						$studiengang->getAllTypes();
+
+						$orgform='';
+						if($rolle->studienplan_id!='')
+						{
+							$studienplan = new studienplan();
+							$studienplan->loadStudienplan($rolle->studienplan_id);
+							$orgform = $studienplan->orgform_kurzbz;
+						}
+						else
+							$orgform = $rolle->orgform_kurzbz;
+						$curl_post_data = array(
+						"sender_id" => 1, // TODO
+						"receiver_id" => $prestudent->person_id,
+						"oe_kurzbz" => $studiengang->oe_kurzbz,
+						"vorlage_kurzbz" => 'MailStatConfirm'.$_POST['status_kurzbz'],
+						"data" => array(
+							'anrede'=>$prestudent->anrede,
+							'vorname'=>$prestudent->vorname,
+							'nachname'=>$prestudent->nachname,
+							'typ'=>$studiengang->studiengang_typ_arr[$studiengang->typ],
+							'studiengang'=>$studiengang->bezeichnung,
+							'orgform'=>$orgform,
+							'stgMail'=>$studiengang->email
+						 )
+						);
+
+						curl_setopt($ch, CURLOPT_POST, true);
+						curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($curl_post_data));
+
+						$result = curl_exec($ch);
+						$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+						curl_close($ch);
+
+						$jsonresult = json_decode($result);
+						if(isset($jsonresult->error) && $jsonresult->error==1)
+						{
+							$return = false;
+							$errormsg = $jsonresult->retval;
+						}
+						else
+						{
+							$return = true;
+						}
 					}
 					else
 					{
@@ -2281,11 +2343,13 @@ if(!$error)
 		//ein Student oder Mitarbeiter ist
 		if(($_POST['studiengang_kz']!='' &&
 			!$rechte->isBerechtigt('assistenz',$_POST['studiengang_kz'],'suid') &&
-			!$rechte->isBerechtigt('admin',$_POST['studiengang_kz'], 'suid')
+			!$rechte->isBerechtigt('admin',$_POST['studiengang_kz'], 'suid') &&
+			!$rechte->isBerechtigt('basis/betriebsmittel',$_POST['studiengang_kz'], 'suid')
 		   ) ||
 		   ($_POST['studiengang_kz']=='' &&
 		    !$rechte->isBerechtigt('admin', null, 'suid') &&
-		    !$rechte->isBerechtigt('mitarbeiter', null, 'suid')
+		    !$rechte->isBerechtigt('mitarbeiter', null, 'suid') &&
+		    !$rechte->isBerechtigt('basis/betriebsmittel', null, 'suid')
 		   ))
 		{
 			$error = true;
@@ -2324,11 +2388,13 @@ if(!$error)
 		//ein Student oder Mitarbeiter ist
 		if(($_POST['studiengang_kz']!='' &&
 			!$rechte->isBerechtigt('assistenz',$_POST['studiengang_kz'],'suid') &&
-			!$rechte->isBerechtigt('admin',$_POST['studiengang_kz'], 'suid')
+			!$rechte->isBerechtigt('admin',$_POST['studiengang_kz'], 'suid') &&
+			!$rechte->isBerechtigt('basis/betriebsmittel',$_POST['studiengang_kz'], 'suid')
 		   ) ||
 		   ($_POST['studiengang_kz']=='' &&
 		    !$rechte->isBerechtigt('admin', null, 'suid') &&
-		    !$rechte->isBerechtigt('mitarbeiter', null, 'suid')
+		    !$rechte->isBerechtigt('mitarbeiter', null, 'suid') &&
+		    !$rechte->isBerechtigt('basis/betriebsmittel', null, 'suid')
 		   ))
 		{
 			$error = true;

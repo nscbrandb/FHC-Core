@@ -11,7 +11,7 @@
  * @filesource
  */
 // ------------------------------------------------------------------------
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined("BASEPATH")) exit("No direct script access allowed");
 
 class Studiengang2 extends APIv1_Controller
 {
@@ -22,14 +22,12 @@ class Studiengang2 extends APIv1_Controller
 	{
 		parent::__construct();
 		// Load model PersonModel
-		$this->load->model('organisation/studiengang_model', 'StudiengangModel');
-		
-		
+		$this->load->model("organisation/studiengang_model", "StudiengangModel");
 	}
 	
 	public function getStudiengang()
 	{
-		$studiengang_kz = $this->get('studiengang_kz');
+		$studiengang_kz = $this->get("studiengang_kz");
 		
 		if (isset($studiengang_kz))
 		{
@@ -46,5 +44,33 @@ class Studiengang2 extends APIv1_Controller
 	public function getAllForBewerbung()
 	{
 		$this->response($this->StudiengangModel->getAllForBewerbung(), REST_Controller::HTTP_OK);
+	}
+	
+	/**
+	 * Method getStudiengangStudienplan
+	 */
+	public function getStudiengangStudienplan()
+	{
+		// Getting HTTP GET parameters
+		$studiensemester_kurzbz = $this->get("studiensemester_kurzbz");
+		$ausbildungssemester = $this->get("ausbildungssemester");
+		$aktiv = $this->get("aktiv");
+		$onlinebewerbung = $this->get("onlinebewerbung");
+		
+		// If $studiensemester_kurzbz and $ausbildungssemester are present
+		if (isset($studiensemester_kurzbz) && isset($ausbildungssemester))
+		{
+			// Check & set
+			if (!isset($aktiv)) $aktiv = "TRUE";
+			if (!isset($onlinebewerbung)) $onlinebewerbung = "TRUE";
+			
+			$result = $this->StudiengangModel->getStudienplan($studiensemester_kurzbz, $ausbildungssemester, $aktiv, $onlinebewerbung);
+			
+			$this->response($result, REST_Controller::HTTP_OK);
+		}
+		else
+		{
+			$this->response();
+		}
 	}
 }

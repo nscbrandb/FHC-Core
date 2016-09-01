@@ -23,19 +23,12 @@
  * Klasse ort (FAS-Online)
  * @create 04-12-2006
  */
-require_once(dirname(__FILE__).'/datum.class.php');
+require_once(dirname(__FILE__).'/basis_db.class.php');
 
-// CI
-require_once(dirname(__FILE__).'/../ci_hack.php');
-require_once(dirname(__FILE__).'/../application/models/ressource/Ort_model.php');
-
-class ort extends Ort_model
+class ort extends basis_db
 {
-	use db_extra; //CI Hack
-	
 	public $new;     			// boolean
 	public $result = array(); 	// ort Objekt
-	public $errormsg;			// string
 
 	//Tabellenspalten
 	public $ort_kurzbz;		// string
@@ -60,6 +53,7 @@ class ort extends Ort_model
 	public $oe_kurzbz;		// varchar(32)
 	public $m2;				// numeric(8,2)
 	public $gebteil;		// varchar(32)
+	public $arbeitsplaetze;	// integer
 	
 	public $ort_kurzbz_old;	// string
 
@@ -81,31 +75,27 @@ class ort extends Ort_model
 	 */
 	public function getAll($raumtyp_kurzbz = null)
 	{
-		parent::addOrder('ort_kurzbz');
-		
+		$qry = 'SELECT * FROM public.tbl_ort ORDER BY ort_kurzbz;';
+
 		if (!is_null($raumtyp_kurzbz) && $raumtyp_kurzbz != '')
 		{
-			$result = parent::addJoin('public.tbl_ortraumtyp', 'ort_kurzbz');
-			if ($result->error == EXIT_SUCCESS)
-			{
-				$result = parent::loadWhere(array('raumtyp_kurzbz' => $raumtyp_kurzbz));
-			}
+			$qry = '
+				SELECT 
+					tbl_ort.* 
+				FROM 
+					public.tbl_ort 
+					JOIN public.tbl_ortraumtyp USING(ort_kurzbz) 
+				WHERE raumtyp_kurzbz = ' . $this->db_add_param($raumtyp_kurzbz) .
+				'ORDER BY ort_kurzbz;';
 		}
-		else
-		{
-			$result = parent::load();
-		}
-		
-		if (!is_object($result) || (is_object($result) && ($result->error != EXIT_SUCCESS || !is_array($result->retval))))
+		if (!$this->db_query($qry))
 		{
 			$this->errormsg = 'Fehler beim Laden der Datensaetze';
 			return false;
 		}
 
-		for ($i = 0; $i < count($result->retval); $i++)
+		while ($row = $this->db_fetch_object())
 		{
-			$row = $result->retval[$i];
-			
 			$ort_obj = new ort();
 
 			$ort_obj->ort_kurzbz 		= $row->ort_kurzbz;
@@ -126,6 +116,7 @@ class ort extends Ort_model
 			$ort_obj->m2				= $row->m2;
 			$ort_obj->oe_kurzbz			= $row->oe_kurzbz;
 			$ort_obj->gebteil			= $row->gebteil;
+			$ort_obj->arbeitsplaetze	= $row->arbeitsplaetze;
 			$this->result[] = $ort_obj;
 		}
 		return true;
@@ -136,7 +127,7 @@ class ort extends Ort_model
 	 * @param $fachb_id ID des zu ladenden Ortes
 	 * @return true wenn ok, false im Fehlerfall
 	 */
-	public function load($ort_kurzbz = null)
+	public function load($ort_kurzbz)
 	{
 		if ($ort_kurzbz == '')
 		{
@@ -144,20 +135,19 @@ class ort extends Ort_model
 			return false;
 		}
 
-		$result = parent::load(trim($ort_kurzbz));
-		if (!is_object($result) || (is_object($result) && $result->error != EXIT_SUCCESS))
+		$qry = "SELECT * FROM public.tbl_ort WHERE trim(ort_kurzbz) = " . $this->db_add_param(trim($ort_kurzbz)) . ";";
+
+		if (!$this->db_query($qry))
 		{
 			$this->errormsg = 'Fehler beim Laden des Datensatzes';
 			return false;
 		}
 
-		if(is_array($result->retval) && count($result->retval) > 0)
+		if ($row = $this->db_fetch_object())
 		{
-			$row = $result->retval[0];
-			
 			$this->ort_kurzbz 		= $row->ort_kurzbz;
 			$this->bezeichnung 		= $row->bezeichnung;
-			$this->planbezeichnung 	= $row->planbezeichnung;
+			$this->planbezeichnung	= $row->planbezeichnung;
 			$this->max_person 		= $row->max_person;
 			$this->aktiv 			= $this->db_parse_bool($row->aktiv);
 			$this->lehre 			= $this->db_parse_bool($row->lehre);
@@ -173,6 +163,7 @@ class ort extends Ort_model
 			$this->gebteil			= $row->gebteil;
 			$this->oe_kurzbz		= $row->oe_kurzbz;
 			$this->m2				= $row->m2;
+			$this->arbeitsplaetze	= $row->arbeitsplaetze;
 		}
 		else
 		{
@@ -228,7 +219,7 @@ class ort extends Ort_model
 		{
 			//Neuen Datensatz anlegen
 			$qry = 'INSERT INTO public.tbl_ort (ort_kurzbz, bezeichnung, planbezeichnung, max_person, aktiv, lehre, reservieren, lageplan,
-				dislozierung, kosten, stockwerk, standort_id, telefonklappe, insertamum, insertvon, updateamum, updatevon, content_id,ausstattung,m2,gebteil,oe_kurzbz) VALUES ('.
+				dislozierung, kosten, stockwerk, standort_id, telefonklappe, insertamum, insertvon, updateamum, updatevon, content_id,ausstattung,m2,gebteil,oe_kurzbz,arbeitsplaetze) VALUES ('.
 				$this->db_add_param($this->ort_kurzbz).', '.
 				$this->db_add_param($this->bezeichnung).', '.
 				$this->db_add_param($this->planbezeichnung).', '.
@@ -250,7 +241,8 @@ class ort extends Ort_model
 				$this->db_add_param($this->ausstattung).','.
 				$this->db_add_param($this->m2).','.
 				$this->db_add_param($this->gebteil).','.
-				$this->db_add_param($this->oe_kurzbz).');';
+				$this->db_add_param($this->oe_kurzbz).','.
+				$this->db_add_param($this->arbeitsplaetze).');';
 		}
 		else
 		{
@@ -276,7 +268,8 @@ class ort extends Ort_model
 				'content_id='.$this->db_add_param($this->content_id).', '.
 				'm2='.$this->db_add_param($this->m2).', '.
 				'gebteil='.$this->db_add_param($this->gebteil).', '.
-				'oe_kurzbz='.$this->db_add_param($this->oe_kurzbz).' '.
+				'oe_kurzbz='.$this->db_add_param($this->oe_kurzbz).', '.
+				'arbeitsplaetze='.$this->db_add_param($this->arbeitsplaetze).' '.
 				'WHERE ort_kurzbz = '.$this->db_add_param(($this->ort_kurzbz_old!='')?$this->ort_kurzbz_old:$this->ort_kurzbz).';';
 		}
 
@@ -390,6 +383,10 @@ class ort extends Ort_model
 				$ort_obj->standort_id		= $row->standort_id;
 				$ort_obj->telefonklappe		= $row->telefonklappe;
 				$ort_obj->content_id 		= $row->content_id;
+				$ort_obj->m2 				= $row->m2;
+				$ort_obj->gebteil 			= $row->gebteil;
+				$ort_obj->oe_kurzbz 		= $row->oe_kurzbz;
+				$ort_obj->arbeitsplaetze	= $row->arbeitsplaetze;
 	
 				$this->result[] = $ort_obj;
 			}
@@ -454,6 +451,10 @@ class ort extends Ort_model
 			$ort_obj->standort_id		= $row->standort_id;
 			$ort_obj->telefonklappe		= $row->telefonklappe;
 			//$ort_obj->content_id		= $row->content_id;
+			$ort_obj->m2 				= $row->m2;
+			$ort_obj->gebteil 			= $row->gebteil;
+			$ort_obj->oe_kurzbz 		= $row->oe_kurzbz;
+			$ort_obj->arbeitsplaetze	= $row->arbeitsplaetze;
 
 			$this->result[] = $ort_obj;
 		}
@@ -507,6 +508,7 @@ class ort extends Ort_model
 			$ort_obj->m2				= $row->m2;
 			$ort_obj->oe_kurzbz			= $row->oe_kurzbz;
 			$ort_obj->gebteil			= $row->gebteil;
+			$ort_obj->arbeitsplaetze	= $row->arbeitsplaetze;
 			$this->result[] = $ort_obj;
 		}
 		return true;
@@ -563,6 +565,7 @@ class ort extends Ort_model
 				$ort_obj->m2				= $row->m2;
 				$ort_obj->oe_kurzbz			= $row->oe_kurzbz;
 				$ort_obj->gebteil			= $row->gebteil;
+				$ort_obj->arbeitsplaetze	= $row->arbeitsplaetze;
 				$this->result[] = $ort_obj;
 			}
 			return true;

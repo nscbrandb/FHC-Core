@@ -34,6 +34,9 @@ require_once('../include/lehrveranstaltung.class.php');
 require_once('../include/mitarbeiter.class.php');
 require_once('../include/organisationsform.class.php');
 require_once('../include/konto.class.php');
+require_once('../include/reihungstest.class.php');
+require_once('../include/studienordnung.class.php');
+require_once('../include/studienplan.class.php');
 
 // header fuer no cache
 header("Cache-Control: no-cache");
@@ -148,7 +151,8 @@ function draw_content_liste($row)
 	$status = $prestudent->status_kurzbz;
 	$orgform = $prestudent->orgform_kurzbz;
 	$studienplan_bezeichnung=$prestudent->studienplan_bezeichnung;
-
+	$reihungstest = new reihungstest($row->reihungstest_id);
+	$rt_datum = $reihungstest->datum;
 	echo '
 	  <RDF:li>
       	<RDF:Description  id="'.$row->prestudent_id.'"  about="'.$rdf_url.'/'.$row->prestudent_id.'" >
@@ -187,6 +191,8 @@ function draw_content_liste($row)
 		<STUDENT:punkte1><![CDATA['.$row->rt_punkte1.']]></STUDENT:punkte1>
 		<STUDENT:punkte2><![CDATA['.$row->rt_punkte2.']]></STUDENT:punkte2>
 		<STUDENT:punkte3><![CDATA['.$row->rt_punkte3.']]></STUDENT:punkte3>
+		<STUDENT:rt_datum><![CDATA['.$rt_datum.']]></STUDENT:rt_datum>
+		<STUDENT:rt_anmeldung><![CDATA['.$row->anmeldungreihungstest.']]></STUDENT:rt_anmeldung>
 		<STUDENT:dual><![CDATA['.($row->dual=='t'?'true':'false').']]></STUDENT:dual>
 		<STUDENT:dual_bezeichnung><![CDATA['.($row->dual=='t'?'Ja':'Nein').']]></STUDENT:dual_bezeichnung>
 		<STUDENT:matr_nr><![CDATA['.$row->matr_nr.']]></STUDENT:matr_nr>
@@ -302,6 +308,8 @@ function draw_content($row)
 function draw_prestudent($row)
 {
 	global $rdf_url, $datum_obj, $stg_arr;
+	$reihungstest = new reihungstest($row->reihungstest_id);
+	$rt_datum = $reihungstest->datum;
 	if($row->prestudent_id!='')
 	{
 	echo '
@@ -333,6 +341,8 @@ function draw_prestudent($row)
 			<STUDENT:punkte1><![CDATA['.$row->rt_punkte1.']]></STUDENT:punkte1>
 			<STUDENT:punkte2><![CDATA['.$row->rt_punkte2.']]></STUDENT:punkte2>
 			<STUDENT:punkte3><![CDATA['.$row->rt_punkte3.']]></STUDENT:punkte3>
+			<STUDENT:rt_datum><![CDATA['.$rt_datum.']]></STUDENT:rt_datum>
+			<STUDENT:rt_anmeldung><![CDATA['.$row->anmeldungreihungstest.']]></STUDENT:rt_anmeldung>
 			<STUDENT:bismelden><![CDATA['.($row->bismelden?'true':'false').']]></STUDENT:bismelden>
 			<STUDENT:dual><![CDATA['.($row->dual?'true':'false').']]></STUDENT:dual>
 			<STUDENT:dual_bezeichnung><![CDATA['.($row->dual?'Ja':'Nein').']]></STUDENT:dual_bezeichnung>
@@ -459,7 +469,7 @@ if($xmlformat=='rdf')
 						(SELECT rt_punkte1 as punkte FROM public.tbl_prestudent WHERE prestudent_id=tbl_student.prestudent_id) as rt_punkte1,
 						(SELECT rt_punkte2 as punkte FROM public.tbl_prestudent WHERE prestudent_id=tbl_student.prestudent_id) as rt_punkte2,
 						(SELECT rt_punkte3 as punkte FROM public.tbl_prestudent WHERE prestudent_id=tbl_student.prestudent_id) as rt_punkte3,
-						 tbl_prestudent.dual as dual, p.matr_nr
+						 tbl_prestudent.dual as dual, tbl_prestudent.reihungstest_id, tbl_prestudent.anmeldungreihungstest, p.matr_nr
 						FROM public.tbl_student
 							JOIN public.tbl_benutzer ON (student_uid=uid) JOIN public.tbl_person p USING (person_id)  JOIN public.tbl_prestudent USING(prestudent_id) ";
 		if($gruppe_kurzbz!=null)
@@ -753,7 +763,25 @@ else
 				if($row = $db->db_fetch_object())
 				{
 					$semester = $row->ausbildungssemester;
+					$studienplan_id = $row->studienplan_id;
 				}
+			}
+
+			if($studienplan_id!='')
+			{
+				$stpl = new studienplan();
+				$stpl->loadStudienplan($studienplan_id);
+
+				$sto = new studienordnung();
+				$sto->loadStudienordnung($stpl->studienordnung_id);
+
+				$sto_studiengang_bezeichnung = $sto->studiengangbezeichnung;
+				$sto_studiengang_bezeichnung_englisch = $sto->studiengangbezeichnung_englisch;
+			}
+			else
+			{
+				$sto_studiengang_bezeichnung='';
+				$sto_studiengang_bezeichnung_englisch='';
 			}
 
 			//für ao. Studierende wird der Studiengang der Lehrveranstaltungen benötigt, die sie besuchen
@@ -794,7 +822,7 @@ else
 								break;
 				}
 			}
-			$prestudent = new prestudent();
+			$prestudent = new prestudent($student->prestudent_id);
 			$prestudent->getLastStatus($student->prestudent_id);
 
 			$orgform_bezeichnung = new organisationsform();
@@ -824,6 +852,10 @@ else
 			}
 			else
 				$stg_kz = sprintf("%04s", abs($student->studiengang_kz));
+			if (($semester % 2) == 0)
+				$studienjahr =  $semester/2;
+			else
+				$studienjahr = intval($semester/2)+1;
 
 			echo '
 			<student>
@@ -835,11 +867,14 @@ else
 				<vorname><![CDATA['.$student->vorname.']]></vorname>
 				<nachname><![CDATA['.$student->nachname.']]></nachname>
 				<matrikelnummer><![CDATA['.$student->matrikelnr.']]></matrikelnummer>
+				<matr_nr><![CDATA['.$student->matr_nr.']]></matr_nr>
 				<geburtsdatum><![CDATA['.$datum_obj->convertISODate($student->gebdatum).']]></geburtsdatum>
 				<geburtsdatum_iso><![CDATA['.$student->gebdatum.']]></geburtsdatum_iso>
+				<geburtsort><![CDATA['.$student->gebort.']]></geburtsort>
 				<semester><![CDATA['.$semester.']]></semester>
 				<verband><![CDATA['.$student->verband.']]></verband>
 				<gruppe><![CDATA['.$student->gruppe.']]></gruppe>
+				<studienjahr><![CDATA['.$studienjahr.']]></studienjahr>
 				<student_orgform_kurzbz><![CDATA['.$prestudent->orgform_kurzbz.']]></student_orgform_kurzbz>
                 <student_orgform_bezeichnung><![CDATA['.$orgform_student_bezeichnung->bezeichnung.']]></student_orgform_bezeichnung>
 				<studiengang_kz><![CDATA['.$stg_kz.']]></studiengang_kz>
@@ -849,6 +884,8 @@ else
                 <studiengang_orgform_kurzbz><![CDATA['.$studiengang->orgform_kurzbz.']]></studiengang_orgform_kurzbz>
                 <studiengang_orgform_bezeichnung><![CDATA['.$orgform_bezeichnung->bezeichnung.']]></studiengang_orgform_bezeichnung>
                 <studiengang_studiengangsleitung><![CDATA['.$stgl.']]></studiengang_studiengangsleitung>
+				<studiengang_bezeichnung_sto><![CDATA['.$sto_studiengang_bezeichnung.']]></studiengang_bezeichnung_sto>
+				<studiengang_bezeichnung_sto_englisch><![CDATA['.$sto_studiengang_bezeichnung_englisch.']]></studiengang_bezeichnung_sto_englisch>
 				<lv_studiengang_kz><![CDATA['.$lv_studiengang_kz.']]></lv_studiengang_kz>
 				<lv_studiengang_bezeichnung><![CDATA['.$lv_studiengang_bezeichnung.']]></lv_studiengang_bezeichnung>
                 <lv_studiengang_typ><![CDATA['.$lv_studiengang_typ.']]></lv_studiengang_typ>
@@ -862,6 +899,7 @@ else
 				<studienbeginn_beginn><![CDATA['.$datum_obj->convertISODate($studienbeginn).']]></studienbeginn_beginn>
 				<studiensemester_beginn><![CDATA['.$studiensemester.']]></studiensemester_beginn>
 				<studiensemester_aktuell><![CDATA['.$stsem->studiensemester_kurzbz.']]></studiensemester_aktuell>
+				<studienjahr_kurzbz><![CDATA['.$stsem->studienjahr_kurzbz.']]></studienjahr_kurzbz>
 				<studiensemester_aktuell_bezeichnung><![CDATA['.$stsem->bezeichnung.']]></studiensemester_aktuell_bezeichnung>
 				<studienbeginn_aktuell><![CDATA['.$datum_obj->convertISODate($stsem->start).']]></studienbeginn_aktuell>
 				<tagesdatum><![CDATA['.date('d.m.Y').']]></tagesdatum>

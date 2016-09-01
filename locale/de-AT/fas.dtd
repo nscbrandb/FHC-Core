@@ -1,5 +1,5 @@
-<!ENTITY window.title			"FAS"> 
-<!ENTITY window.version			"3.2a"> 
+<!ENTITY window.title			"FAS">
+<!ENTITY window.version			"3.2a">
 
 <!-- MENUE -->
 
@@ -191,6 +191,10 @@
 <!ENTITY menu-dokumente-inskriptionsbestaetigung.label		"Inskriptionsbestätigung">
 <!ENTITY menu-dokumente-inskriptionsbestaetigung.accesskey	"I">
 
+<!ENTITY menu-dokumente-bewerberakt.key		"B">
+<!ENTITY menu-dokumente-bewerberakt.label		"Bewerberakt">
+<!ENTITY menu-dokumente-bewerberakt.accesskey	"B">
+
 <!ENTITY menu-dokumente-zeugnis.key		"Z">
 <!ENTITY menu-dokumente-zeugnis.label		"Zeugnis Deutsch">
 <!ENTITY menu-dokumente-zeugnis.accesskey	"Z">
@@ -296,6 +300,15 @@
 <!ENTITY menu-cis-notenliste.key		"N">
 <!ENTITY menu-cis-notenliste.label		"Notenliste">
 <!ENTITY menu-cis-notenliste.accesskey	"N">
+
+<!-- MESSAGES -->
+<!ENTITY menu-messages.label		"Nachrichten">
+<!ENTITY menu-messages.accesskey	"N">
+
+<!ENTITY menu-messages-new.key		"N">
+<!ENTITY menu-messages-new.label		"Neue Nachricht erstellen">
+<!ENTITY menu-messages-new.accesskey	"N">
+
 
 <!-- Extras -->
 <!ENTITY menu-extras.label		"Extras">

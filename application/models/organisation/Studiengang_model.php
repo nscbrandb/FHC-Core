@@ -17,11 +17,11 @@ class Studiengang_model extends DB_Model
 	public function getAllForBewerbung()
 	{
 		// Checks if the operation is permitted by the API caller
-		if (! $this->fhc_db_acl->isBerechtigt($this->acl['lehre.vw_studienplan'], 's'))
-			return $this->_error(lang('fhc_'.FHC_NORIGHT).' -> '.$this->acl['lehre.vw_studienplan'], FHC_MODEL_ERROR);
+		if (! $this->fhc_db_acl->isBerechtigt($this->getBerechtigungKurzbz('lehre.vw_studienplan'), 's'))
+			return $this->_error(lang('fhc_'.FHC_NORIGHT).' -> '.$this->getBerechtigungKurzbz('lehre.vw_studienplan'), FHC_MODEL_ERROR);
 		
-		if (! $this->fhc_db_acl->isBerechtigt($this->acl['bis.tbl_lgartcode'], 's'))
-			return $this->_error(lang('fhc_'.FHC_NORIGHT).' -> '.$this->acl['bis.tbl_lgartcode'], FHC_MODEL_ERROR);
+		if (! $this->fhc_db_acl->isBerechtigt($this->getBerechtigungKurzbz('bis.tbl_lgartcode'), 's'))
+			return $this->_error(lang('fhc_'.FHC_NORIGHT).' -> '.$this->getBerechtigungKurzbz('bis.tbl_lgartcode'), FHC_MODEL_ERROR);
 		
 		$allForBewerbungQuery = "SELECT DISTINCT studiengang_kz,
 										typ,
@@ -99,5 +99,40 @@ class Studiengang_model extends DB_Model
 		$result = $this->db->query($allForBewerbungQuery);
 		
 		return $this->_success($result->result());
+	}
+	
+	/**
+	 * 
+	 */
+	public function getStudienplan($studiensemester_kurzbz, $ausbildungssemester, $aktiv, $onlinebewerbung)
+	{
+		// Join table public.tbl_studiengang with table lehre.tbl_studienordnung on column studiengang_kz
+		$this->addJoin("lehre.tbl_studienordnung", "studiengang_kz");
+		// Then join with table lehre.tbl_studienplan on column studienordnung_id
+		$this->addJoin("lehre.tbl_studienplan", "studienordnung_id");
+		// Then join with table lehre.tbl_studienplan_semester on column studienplan_id
+		$this->addJoin("lehre.tbl_studienplan_semester", "studienplan_id");
+		
+		// Ordering by studiengang_kz and studienplan_id
+		$this->addOrder("public.tbl_studiengang.studiengang_kz");
+		$this->addOrder("lehre.tbl_studienplan.studienplan_id");
+		
+		$result = $this->loadList(
+			"tbl_studiengang",
+			array(
+				"tbl_studienplan"
+			),
+			array(
+				"lehre.tbl_studienplan_semester.studiensemester_kurzbz" => $studiensemester_kurzbz,
+				"lehre.tbl_studienplan_semester.semester" => $ausbildungssemester,
+				"public.tbl_studiengang.aktiv" => $aktiv,
+				"public.tbl_studiengang.onlinebewerbung" => $onlinebewerbung
+			),
+			array(
+				"studienplaene"
+			)
+		);
+		
+		return $result;
 	}
 }

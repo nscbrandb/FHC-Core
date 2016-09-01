@@ -297,9 +297,9 @@ DELETE FROM system.tbl_rolleberechtigung WHERE berechtigung_kurzbz IN (
 	'basis/projektbetreuer', 
 	'basis/projekttyp', 
 	'basis/pruefungstyp', 
-	'basis/studienordnung', 
-	'basis/studienordnungstatus', 
-	'basis/studienplan', 
+	'lehre/studienordnung', 
+	'lehre/studienordnungstatus', 
+	'lehre/studienplan', 
 	'basis/studienplatz', 
 	'basis/stunde', 
 	'basis/stundenplan', 
@@ -413,17 +413,19 @@ DELETE FROM system.tbl_rolleberechtigung WHERE berechtigung_kurzbz IN (
 	'basis/rechnungsbetrag', 
 	'basis/rechnungstyp', 
 	'basis/zahlungstyp',
-	'basis/studienplan_semester',
+	'lehre/studienplan_semester',
 	'basis/dms_version',
 	'student/stammdaten',
 	'mitarbeiter/stammdaten',
-	'basis/vw_studiensemester',
+	'lehre/vw_studiensemester',
 	'lehre/reservierung',
 	'lehre/reihungstest',
 	'wawi/inventar:begrenzt',
 	'fs/dms',
 	'system/phrase',
-	'system/vorlagestudiengang'
+	'system/vorlagestudiengang',
+	'system/vorlage',
+	'system/appdaten'
 );
 
 -- DELETE FROM system.tbl_berechtigung
@@ -526,9 +528,9 @@ DELETE FROM system.tbl_berechtigung WHERE berechtigung_kurzbz IN (
 	'basis/projektbetreuer', 
 	'basis/projekttyp', 
 	'basis/pruefungstyp', 
-	'basis/studienordnung', 
-	'basis/studienordnungstatus', 
-	'basis/studienplan', 
+	'lehre/studienordnung', 
+	'lehre/studienordnungstatus', 
+	'lehre/studienplan', 
 	'basis/studienplatz', 
 	'basis/stunde', 
 	'basis/stundenplan', 
@@ -642,17 +644,19 @@ DELETE FROM system.tbl_berechtigung WHERE berechtigung_kurzbz IN (
 	'basis/rechnungsbetrag', 
 	'basis/rechnungstyp', 
 	'basis/zahlungstyp',
-	'basis/studienplan_semester',
+	'lehre/studienplan_semester',
 	'basis/dms_version',
 	'student/stammdaten',
 	'mitarbeiter/stammdaten',
-	'basis/vw_studiensemester',
+	'lehre/vw_studiensemester',
 	'lehre/reservierung',
 	'lehre/reihungstest',
 	'wawi/inventar:begrenzt',
 	'fs/dms',
 	'system/phrase',
-	'system/vorlagestudiengang'
+	'system/vorlagestudiengang',
+	'system/vorlage',
+	'system/appdaten'
 );
 
 -- INSERT Permissions
@@ -754,9 +758,9 @@ INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/projektbetreuer', 'Tbl_projektbetreuer');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/projekttyp', 'Tbl_projekttyp');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/pruefungstyp', 'Tbl_pruefungstyp');
-INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/studienordnung', 'Tbl_studienordnung');
-INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/studienordnungstatus', 'Tbl_studienordnungstatus');
-INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/studienplan', 'Tbl_studienplan');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('lehre/studienordnung', 'Tbl_studienordnung');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('lehre/studienordnungstatus', 'Tbl_studienordnungstatus');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('lehre/studienplan', 'Tbl_studienplan');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/studienplatz', 'Tbl_studienplatz');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/stunde', 'Tbl_stunde');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/stundenplan', 'Tbl_stundenplan');
@@ -869,11 +873,11 @@ INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/rechnungsbetrag', 'Tbl_rechnungsbetrag');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/rechnungstyp', 'Tbl_rechnungstyp');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/zahlungstyp', 'Tbl_zahlungstyp');
-INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/studienplan_semester', 'Tbl_studienplan_semester');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('lehre/studienplan_semester', 'Tbl_studienplan_semester');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/dms_version', 'Tbl_dms_version');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('student/stammdaten', '');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('mitarbeiter/stammdaten', '');
-INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/vw_studiensemester', '');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('lehre/vw_studiensemester', '');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('lehre/reservierung', '');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('lehre/reihungstest', '');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('wawi/inventar:begrenzt', '');
@@ -881,6 +885,8 @@ INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('basis/message', '');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('system/phrase', '');
 INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('system/vorlagestudiengang', '');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('system/vorlage', '');
+INSERT INTO system.tbl_berechtigung (berechtigung_kurzbz, beschreibung) VALUES('system/appdaten', '');
 
 -- INSERT link between user admin and permissions
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/archiv', 'admin', 'suid');
@@ -981,9 +987,9 @@ INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/projektbetreuer', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/projekttyp', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/pruefungstyp', 'admin', 'suid');
-INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/studienordnung', 'admin', 'suid');
-INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/studienordnungstatus', 'admin', 'suid');
-INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/studienplan', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('lehre/studienordnung', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('lehre/studienordnungstatus', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('lehre/studienplan', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/studienplatz', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/stunde', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/stundenplan', 'admin', 'suid');
@@ -1096,11 +1102,11 @@ INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/rechnungsbetrag', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/rechnungstyp', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/zahlungstyp', 'admin', 'suid');
-INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/studienplan_semester', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('lehre/studienplan_semester', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/dms_version', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('student/stammdaten', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('mitarbeiter/stammdaten', 'admin', 'suid');
-INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/vw_studiensemester', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('lehre/vw_studiensemester', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('lehre/reservierung', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('lehre/reihungstest', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('wawi/inventar:begrenzt', 'admin', 'suid');
@@ -1108,6 +1114,8 @@ INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('basis/message', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('system/phrase', 'admin', 'suid');
 INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('system/vorlagestudiengang', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('system/vorlage', 'admin', 'suid');
+INSERT INTO system.tbl_rolleberechtigung (berechtigung_kurzbz, rolle_kurzbz, art) VALUES('system/appdaten', 'admin', 'suid');
 
 -- EMPTY public.tbl_statistik
 DELETE FROM public.tbl_statistik;

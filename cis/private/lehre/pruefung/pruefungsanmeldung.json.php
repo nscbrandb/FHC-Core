@@ -486,8 +486,8 @@ function saveAnmeldung($aktStudiensemester = null, $uid = null)
     {
 	if($termin->teilnehmer_max > $termin->getNumberOfParticipants() || $termin->teilnehmer_max == NULL)
 	{
-	    $pruefung = new pruefungCis();
-	    $reihung = $pruefung->getLastOfReihung($_REQUEST["termin_id"]);
+		$pruefung = new pruefungCis();
+		$reihung = $pruefung->getLastOfReihung($_REQUEST["termin_id"]);
 	    $anmeldung = new pruefungsanmeldung();
 	    $anmeldung->lehrveranstaltung_id = $_REQUEST["lehrveranstaltung_id"];
 	    $anmeldung->pruefungstermin_id = $_REQUEST["termin_id"];
@@ -500,6 +500,7 @@ function saveAnmeldung($aktStudiensemester = null, $uid = null)
 
 	    $konto = new konto();
 	    $creditpoints = $konto->getCreditPoints($uid, $aktStudiensemester);
+
 	    if($creditpoints !== false)
 	    {
 		if($creditpoints < $lehrveranstaltung->ects)
@@ -547,6 +548,10 @@ function saveAnmeldung($aktStudiensemester = null, $uid = null)
     $person->getPersonFromBenutzer($uid);
     $prestudent = new prestudent();
     $prestudent->getPrestudenten($person->person_id);
+    $studiensemester = new studiensemester();
+    $stdsem = $studiensemester->getaktorNext();
+	if ($aktStudiensemester)
+		$stdsem = $aktStudiensemester;
 
     if(count($prestudent->result) > 0)
     {
@@ -563,58 +568,65 @@ function saveAnmeldung($aktStudiensemester = null, $uid = null)
 	}
 	if($prestudent_id != "")
 	{
-        $anrechungSaveResult = false;
-	    if(!defined('CIS_PRUEFUNGSANMELDUNG_ANRECHNUNG') || CIS_PRUEFUNGSANMELDUNG_ANRECHNUNG == true)
-        {
-            $anrechnung->lehrveranstaltung_id = $lehrveranstaltung->lehrveranstaltung_id;
-            $anrechnung->lehrveranstaltung_id_kompatibel = $lv_komp->lehrveranstaltung_id;
-            $anrechnung->prestudent_id = $prestudent_id;
-            $anrechnung->begruendung_id = "2";
-            $anrechnung->genehmigt_von = CIS_PRUEFUNGSANMELDUNG_USER;
-            $anrechnung->new = true;
-            $anrechungSaveResult = $anrechnung->save();
-        }
-        else
-        {
-            $anrechungSaveResult = true;
-        }
+            $anrechungSaveResult = false;
+            if(!defined('CIS_PRUEFUNGSANMELDUNG_ANRECHNUNG') || CIS_PRUEFUNGSANMELDUNG_ANRECHNUNG == true)
+            {
+                if($lv_komp->lehrveranstaltung_id != null && ($lv_komp->lehrveranstaltung_id != $lehrveranstaltung->lehrveranstaltung_id))
+                {
+                    $anrechnung->lehrveranstaltung_id = $lv_komp->lehrveranstaltung_id;
+                    $anrechnung->lehrveranstaltung_id_kompatibel = $lehrveranstaltung->lehrveranstaltung_id;
+                    $anrechnung->prestudent_id = $prestudent_id;
+                    $anrechnung->begruendung_id = "2";
+                    $anrechnung->genehmigt_von = CIS_PRUEFUNGSANMELDUNG_USER;
+                    $anrechnung->new = true;
+                    $anrechungSaveResult = $anrechnung->save();
+                }
+                else
+                {
+                    $anrechungSaveResult = true;
+                }
+            }
+            else
+            {
+                $anrechungSaveResult = true;
+            }
 
 	    if($anrechungSaveResult)
 	    {
-            if($anrechnung->anrechnung_id == "")
-                $anmeldung->anrechnung_id = null;
-            else
-                $anmeldung->anrechnung_id = $anrechnung->anrechnung_id;
-
-            if($anmeldung->save(true))
-            {
-                $pruefung = new pruefungCis($termin->pruefung_id);
-                if(defined('CIS_PRUEFUNG_MAIL_EMPFAENGER_ANMEDLUNG') && (CIS_PRUEFUNG_MAIL_EMPFAENGER_ANMEDLUNG !== ""))
-                $to = CIS_PRUEFUNG_MAIL_EMPFAENGER_ANMEDLUNG."@".DOMAIN;
+                if($anrechnung->anrechnung_id == "")
+                    $anmeldung->anrechnung_id = null;
                 else
-                $to = $pruefung->mitarbeiter_uid."@".DOMAIN;
-                $from = "noreply@".DOMAIN;
-                $subject = $p->t('pruefung/emailLektorSubjectAnmeldung');
-                $mail = new mail($to, $from, $subject, $p->t('pruefung/emailBodyBitteHtmlSicht'));
+                    $anmeldung->anrechnung_id = $anrechnung->anrechnung_id;
 
-                $student = new student($uid);
-                $datum = new datum();
+                if($anmeldung->save(true))
+                {
+                    $pruefung = new pruefungCis($termin->pruefung_id);
+                    if(defined('CIS_PRUEFUNG_MAIL_EMPFAENGER_ANMEDLUNG') && (CIS_PRUEFUNG_MAIL_EMPFAENGER_ANMEDLUNG !== ""))
+                    $to = CIS_PRUEFUNG_MAIL_EMPFAENGER_ANMEDLUNG."@".DOMAIN;
+                    else
+                    $to = $pruefung->mitarbeiter_uid."@".DOMAIN;
+                    $from = "noreply@".DOMAIN;
+                    $subject = $p->t('pruefung/emailLektorSubjectAnmeldung');
+                    $mail = new mail($to, $from, $subject, $p->t('pruefung/emailBodyBitteHtmlSicht'));
 
-                $lv = new lehrveranstaltung($anmeldung->lehrveranstaltung_id);
+                    $student = new student($uid);
+                    $datum = new datum();
 
-                $html = $p->t('pruefung/emailLektorStudentIn')." ".$student->vorname." ".$student->nachname." ".$p->t('pruefung/emailLektorHatSichZurPruefung')." ".$lv->bezeichnung." ".$p->t('pruefung/emailLektorAm')." ".$datum->formatDatum($termin->von, "m.d.Y")." ".$p->t('pruefung/emailLektorVon')." ".$datum->formatDatum($termin->von,"h:i")." ".$p->t('pruefung/emailLektorUhrBis')." ".$datum->formatDatum($termin->bis,"h:i")." ".$p->t('pruefung/emailLektorUhrAngemeldet');
-                $mail->setHTMLContent($html);
-                $mail->send();
+                    $lv = new lehrveranstaltung($anmeldung->lehrveranstaltung_id);
 
-                $data['result'] = $p->t('pruefung/anmeldungErfolgreich');
-                $data['error']='false';
-                $data['errormsg']='';
-            }
-            else
-            {
-                $data['error']='true';
-                $data['errormsg']=$anmeldung->errormsg;
-            }
+                    $html = $p->t('pruefung/emailLektorStudentIn')." ".$student->vorname." ".$student->nachname." ".$p->t('pruefung/emailLektorHatSichZurPruefung')." ".$lv->bezeichnung." ".$p->t('pruefung/emailLektorAm')." ".$datum->formatDatum($termin->von, "d.m.Y")." ".$p->t('pruefung/emailLektorVon')." ".$datum->formatDatum($termin->von,"H:i")." ".$p->t('pruefung/emailLektorUhrBis')." ".$datum->formatDatum($termin->bis,"H:i")." ".$p->t('pruefung/emailLektorUhrAngemeldet');
+                    $mail->setHTMLContent($html);
+                    $mail->send();
+
+                    $data['result'] = $p->t('pruefung/anmeldungErfolgreich');
+                    $data['error']='false';
+                    $data['errormsg']='';
+                }
+                else
+                {
+                    $data['error']='true';
+                    $data['errormsg']=$anmeldung->errormsg;
+                }
 	    }
 	    else
 	    {
@@ -742,6 +754,11 @@ function getAnmeldungenTermin()
     $pruefungstermin = new pruefungstermin($pruefungstermin_id);
     $pruefungsanmeldung = new pruefungsanmeldung();
     $pruefungstermin->anmeldungen = $pruefungsanmeldung->getAnmeldungenByTermin($pruefungstermin_id, $lehrveranstaltung_id);
+	$lv = new lehrveranstaltung($lehrveranstaltung_id);
+	$pruefungstermin->lv_bezeichnung = $lv->bezeichnung;
+	$pruefungstermin->lv_lehrtyp = $lv->lehrtyp_kurzbz;
+	$datum = new DateTime($pruefungstermin->von);
+	$pruefungstermin->datum = $datum->format('d.m.Y');
     foreach($pruefungstermin->anmeldungen as $a)
     {
 	$student = new student($a->uid);
@@ -822,15 +839,15 @@ function anmeldungBestaetigen($uid)
 	$html .= $p->t('pruefung/emailBodyPruefung')." ".$lv->bezeichnung."<br>";
 	if($pruefung->einzeln)
 	{
-	    $date = $datum->formatDatum($termin->von, "Y-m-d h:i:s");
+	    $date = $datum->formatDatum($termin->von, "Y-m-d H:i:s");
 	    $date = strtotime($date);
 	    $date = $date+(60*$pruefung->pruefungsintervall*($anmeldung->reihung-1));
-	    $von = date("h:i",$date);
+	    $von = date("H:i",$date);
 	    $html .= $p->t('pruefung/emailBodyTermin')." ".$datum->formatDatum($termin->von, "d.m.Y")." ".$p->t('pruefung/emailBodyUm')." ".$von."<br>";
 	    $html .= $p->t('pruefung/emailBodyDauer')." ".$pruefung->pruefungsintervall." ".$p->t('pruefung/emailBodyMinuten')."</br>";
 	}
 	else
-	    $html .= $p->t('pruefung/emailBodyTermin')." ".$datum->formatDatum($termin->von, "d.m.Y")." ".$p->t('pruefung/emailBodyUm')." ".$datum->formatDatum($termin->von, "h:i")."<br>";
+	    $html .= $p->t('pruefung/emailBodyTermin')." ".$datum->formatDatum($termin->von, "d.m.Y")." ".$p->t('pruefung/emailBodyUm')." ".$datum->formatDatum($termin->von, "H:i")."<br>";
 	$html .= $p->t('pruefung/anmeldungErfolgreich')." ".$ort->bezeichnung."<br>";
 	$html .= "<br>";
 	$html .= "<a href='".APP_ROOT."cis/private/lehre/pruefung/pruefungsanmeldung.php'>".$p->t('pruefung/emailBodyLinkZurAnmeldung')."</a><br>";

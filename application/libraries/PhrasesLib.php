@@ -17,8 +17,11 @@ class PhrasesLib
 
 		$this->ci =& get_instance();
 
+		// Loads message configuration
+		$this->ci->config->load('message');
+		
 		$this->ci->load->library('parser');
-
+		
 		$this->ci->load->model('system/Phrase_model', 'PhraseModel');
 		$this->ci->load->model('system/Phrasentext_model', 'PhrasentextModel');
 
@@ -108,7 +111,7 @@ class PhrasesLib
      *
      * @return  struct
      */
-    function getPhrases($app, $sprache, $phrase = null, $orgeinheit_kurzbz = null, $orgform_kurzbz = null)
+    function getPhrases($app, $sprache, $phrase = null, $orgeinheit_kurzbz = null, $orgform_kurzbz = null, $blockTags = null)
     {
 		if (isset($app) && isset($sprache))
 		{
@@ -120,7 +123,19 @@ class PhrasesLib
 				
 				for ($i = 0; $i < count($result->retval); $i++)
 				{
-					$result->retval[$i]->text = $parser->textileThis($result->retval[$i]->text);
+					// If no <p> tags required
+					if ($blockTags == "no")
+					{
+						// Removes tags <p> and </p> from the beginning and from the end of the string
+						$tmpText = $parser->textileThis($result->retval[$i]->text);
+						$tmpText = substr($tmpText, 3, strlen($tmpText));
+						$tmpText = substr($tmpText, 0, strlen($tmpText) - 4);
+						$result->retval[$i]->text = $tmpText;
+					}
+					else
+					{
+						$result->retval[$i]->text = $parser->textileThis($result->retval[$i]->text);
+					}
 				}
 			}
 		}
@@ -133,24 +148,7 @@ class PhrasesLib
     }
 
 	/**
-     * loadVorlagetext() - will load the best fitting Template.
-     *
-     * @param   string  $vorlage_kurzbz REQUIRED
-     * @param   string  $oe_kurzbz    	OPTIONAL
-     * @param   string  $orgform_kurzbz OPTIONAL
-     * @return  array
-     */
-    function loadVorlagetext($vorlage_kurzbz, $oe_kurzbz=null, $orgform_kurzbz=null)
-	{
-        if (empty($vorlage_kurzbz))
-        	return $this->_error($this->ci->lang->line('fhc_'.FHC_INVALIDID, false));
-
-        $vorlage = $this->ci->VorlageStudiengangModel->getVorlageStudiengang($vorlage_kurzbz, $oe_kurzbz, $orgform_kurzbz);
-        return $vorlage;
-    }
-
-	/**
-     * insertVorlagetext() - will load tbl_vorlagestudiengang for a spezific Template.
+     * insertPhraseinhalt() - will load tbl_vorlagestudiengang for a spezific Template.
      *
      * @param   string  $vorlage_kurzbz    REQUIRED
      * @return  array
@@ -162,7 +160,7 @@ class PhrasesLib
     }
 
 	/**
-     * loadVorlagetext() - will load tbl_vorlagestudiengang for a spezific Template.
+     * getVorlagetextById() - will load tbl_vorlagestudiengang for a spezific Template.
      *
      * @param   string  $vorlage_kurzbz    REQUIRED
      * @return  array
