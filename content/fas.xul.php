@@ -77,7 +77,7 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/fasoverlay.xul.php"?>';
 <script type="text/javascript" language="JavaScript" src="<?php echo APP_ROOT; ?>include/js/jquery.js"></script>
 <script type="text/javascript" language="JavaScript" src="<?php echo APP_ROOT; ?>include/js/jqSOAPClient.js"></script>
 <script type="text/javascript" language="JavaScript" src="<?php echo APP_ROOT; ?>include/js/jqXMLUtils.js"></script>
-<?php if(is_file(APP_ROOT.'addons/STPCore/js/prototype-1.6.0.3.js')) echo '<script type="text/javascript" language="JavaScript" src="'.APP_ROOT.'addons/STPCore/js/prototype-1.6.0.3.js"></script>'; ?>
+<?php if(is_file(DOC_ROOT.'addons/STPCore/js/prototype-1.6.0.3.js')) echo '<script type="text/javascript" language="JavaScript" src="'.APP_ROOT.'addons/STPCore/js/prototype-1.6.0.3.js"></script>'; ?>
 
 <?php
 // ADDONS
