@@ -54,7 +54,7 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/mitarbeiter/mitarbeiteroverlay.xul
 	seltype="single" hidecolumnpicker="false" flex="1" flags="dont-build-content"
 	enableColumnDrag="true"
     ondraggesture="nsDragAndDrop.startDrag(event,lvbgrpDDObserver);"
-	datasources="../rdf/lehrverbandsgruppe.rdf.php" ref="http://www.technikum-wien.at/lehrverbandsgruppe/alle-verbaende"
+	datasources="rdf:null" ref="http://www.technikum-wien.at/lehrverbandsgruppe/alle-verbaende"
 	ondragdrop="nsDragAndDrop.drop(event,verbandtreeDDObserver)"
 	ondrop="nsDragAndDrop.drop(event,verbandtreeDDObserver)"
 	ondragover="nsDragAndDrop.dragOver(event,verbandtreeDDObserver)"
