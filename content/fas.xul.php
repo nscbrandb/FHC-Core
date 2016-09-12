@@ -77,6 +77,7 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/fasoverlay.xul.php"?>';
 <script type="text/javascript" language="JavaScript" src="<?php echo APP_ROOT; ?>include/js/jquery.js"></script>
 <script type="text/javascript" language="JavaScript" src="<?php echo APP_ROOT; ?>include/js/jqSOAPClient.js"></script>
 <script type="text/javascript" language="JavaScript" src="<?php echo APP_ROOT; ?>include/js/jqXMLUtils.js"></script>
+<?php
 // ADDONS
 $addon_obj = new addon();
 $addon_obj->loadAddons();
