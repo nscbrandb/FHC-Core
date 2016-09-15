@@ -970,7 +970,6 @@ foreach($addon_obj->result as $addon)
 	</statusbarpanel>
 	<statusbarpanel id="statusbarpanel-db_table" label="<?php echo DB_NAME; ?>"/>
 	<statusbarpanel id="statusbarpanel-text" label="<?php echo htmlspecialchars($error_msg); ?>" flex="4" crop="right" />
-	<statusbarpanel id="statusbarpanel-user" label="<?php echo $user; ?>"/>
 	<statusbarpanel id="progress-panel" class="statusbarpanel-progress">
 		<progressmeter id="statusbar-progressmeter" class="progressmeter-statusbar" mode="determined" value="0%"/>
 	</statusbarpanel>
