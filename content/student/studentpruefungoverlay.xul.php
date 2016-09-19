@@ -19,15 +19,13 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
-
+require_once('../../config/vilesci.config.inc.php');
+require_once('../../config/global.config.inc.php');
 header("Cache-Control: no-cache");
 header("Cache-Control: post-check=0, pre-check=0",false);
 header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
 header("Pragma: no-cache");
 header("Content-type: application/vnd.mozilla.xul+xml");
-require_once('../../config/vilesci.config.inc.php');
-require_once('../../config/global.config.inc.php');
-
 
 if(defined('CIS_GESAMTNOTE_PUNKTE') && CIS_GESAMTNOTE_PUNKTE)
 	$punktehidden = 'false';

@@ -19,17 +19,17 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
-header("Cache-Control: no-cache");
-header("Cache-Control: post-check=0, pre-check=0",false);
-header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
-header("Pragma: no-cache");
-header("Content-type: application/vnd.mozilla.xul+xml");
-
 require_once('../../config/vilesci.config.inc.php');
 require_once('../../config/global.config.inc.php');
 require_once('../../include/person.class.php');
 require_once('../../include/prestudent.class.php');
 require_once('../../include/studienplan.class.php');
+
+header("Cache-Control: no-cache");
+header("Cache-Control: post-check=0, pre-check=0",false);
+header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
+header("Pragma: no-cache");
+header("Content-type: application/vnd.mozilla.xul+xml");
 
 echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
 

@@ -17,16 +17,16 @@
  *
  * Authors: Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at>
  */
+require_once('../../config/vilesci.config.inc.php');
+require_once('../../include/functions.inc.php');
+require_once('../../include/variable.class.php');
+require_once('../../include/prestudent.class.php');
+
 header("Cache-Control: no-cache");
 header("Cache-Control: post-check=0, pre-check=0",false);
 header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
 header("Pragma: no-cache");
 header("Content-type: application/vnd.mozilla.xul+xml");
-
-require_once('../../config/vilesci.config.inc.php');
-require_once('../../include/functions.inc.php');
-require_once('../../include/variable.class.php');
-require_once('../../include/prestudent.class.php');
 
 $user=get_uid();
 $variable = new variable();
