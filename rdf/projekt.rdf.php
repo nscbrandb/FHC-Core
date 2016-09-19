@@ -17,14 +17,14 @@
  *
  * Authors: Christian Paminger <christian.paminger@technikum-wien.at>
  */
-header("Content-type: application/xhtml+xml");
-echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/functions.inc.php');
 require_once('../include/benutzerberechtigung.class.php');
 require_once('../include/projekt.class.php');
 require_once('../include/datum.class.php');
 
+header("Content-type: application/xhtml+xml");
+echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 $rdf_url='http://www.technikum-wien.at/projekt/';
 
 if(isset($_GET['oe']))

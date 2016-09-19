@@ -23,13 +23,13 @@
 /**
  * Erstellt das XML fuer das AccountInfoBlatt 
  */
-// content type setzen
-header("Content-type: application/xhtml+xml");
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/functions.inc.php');
 require_once('../include/basis_db.class.php');
 require_once('../include/benutzerberechtigung.class.php');
 
+// content type setzen
+header("Content-type: application/xhtml+xml");
 if(isset($_GET['uid']))
 	$uid = $_GET['uid'];
 else 

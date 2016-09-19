@@ -21,6 +21,9 @@
  *          Gerald Simane-Sequens <gerald.simane-sequens@technikum-wien.at>.
  */
 
+// DAO
+require_once('../config/vilesci.config.inc.php');
+require_once('../include/organisationseinheit.class.php');
 header("Cache-Control: no-cache");
 header("Cache-Control: post-check=0, pre-check=0",false);
 header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
@@ -29,9 +32,6 @@ header("Pragma: no-cache");
 header("Content-type: application/xhtml+xml");
 // xml
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-// DAO
-require_once('../config/vilesci.config.inc.php');
-require_once('../include/organisationseinheit.class.php');
 
 // raumtypen holen
 $org=new organisationseinheit();

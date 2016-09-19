@@ -24,7 +24,10 @@ $projekt_phase=(isset($_GET['projekt_phase'])?$_GET['projekt_phase']:null);
 if($projekt_phase != null && (is_numeric($projekt_phase) == false ))
 	die('Ungültige ProjektphasenID'); 
 
-
+require_once('../config/vilesci.config.inc.php');
+require_once('../include/functions.inc.php');
+require_once('../include/ressource.class.php');
+require_once('../include/basis_db.class.php');
 
 // header for no cache
 header("Cache-Control: no-cache");
@@ -33,12 +36,6 @@ header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
 header("Pragma: no-cache");
 // content type setzen
 header("Content-type: application/xhtml+xml");
-
-require_once('../config/vilesci.config.inc.php');
-require_once('../include/functions.inc.php');
-require_once('../include/ressource.class.php');
-require_once('../include/basis_db.class.php');
-
 $mitarbeiter = '';
 $student='';
 $betriebsmittel='';

@@ -17,6 +17,11 @@
  *
  * Authors: Nikolaus Krondraf <nikolaus.krondraf@technikum-wien.at>
  */
+
+require_once('../config/vilesci.config.inc.php');
+require_once('../include/basis_db.class.php');
+require_once('../include/datum.class.php');
+require_once('../include/lvangebot.class.php');
 if(isset($_GET['lehrveranstaltung_id']))
 	$lv_id = $_GET['lehrveranstaltung_id'];
 else
@@ -30,11 +35,6 @@ header("Pragma: no-cache");
 header("Content-type: application/xhtml+xml");
 
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-
-require_once('../config/vilesci.config.inc.php');
-require_once('../include/basis_db.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/lvangebot.class.php');
 
 $datum_obj = new datum();
 $rdf_url = 'http://www.technikum-wien.at/lvangebot';

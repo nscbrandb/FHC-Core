@@ -20,12 +20,6 @@
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at> and
  *			Gerald Raab <gerald.raab@technikum-wien.at>.
  */
-//header("Cache-Control: no-cache");
-//header("Cache-Control: post-check=0, pre-check=0",false);
-//header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
-//header("Pragma: no-cache");
-// content type setzen
-header("Content-type: application/xhtml+xml");
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/functions.inc.php');
 require_once('../include/zeugnisnote.class.php');
@@ -35,6 +29,12 @@ require_once('../include/studiengang.class.php');
 require_once('../include/mitarbeiter.class.php');
 require_once('../include/anrechnung.class.php');
 
+//header("Cache-Control: no-cache");
+//header("Cache-Control: post-check=0, pre-check=0",false);
+//header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
+//header("Pragma: no-cache");
+// content type setzen
+header("Content-type: application/xhtml+xml");
 $datum = new datum();
 $db = new basis_db();
 $projektarbeit=array();

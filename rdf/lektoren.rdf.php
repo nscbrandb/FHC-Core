@@ -19,15 +19,15 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
+// DAO
+require_once('../config/vilesci.config.inc.php');
+require_once('../include/studiengang.class.php');
+require_once('../include/fachbereich.class.php');
 // header für no cache
 header("Cache-Control: no-cache");
 header("Cache-Control: post-check=0, pre-check=0",false);
 header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
 header("Pragma: no-cache");
-// DAO
-require_once('../config/vilesci.config.inc.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/fachbereich.class.php');
 
 if (isset($_GET['studiengang_kz']))
 { 

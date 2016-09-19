@@ -19,13 +19,6 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
-// header for no cache
-header("Cache-Control: no-cache");
-header("Cache-Control: post-check=0, pre-check=0",false);
-header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
-header("Pragma: no-cache");
-// content type setzen
-header("Content-type: application/xhtml+xml");
 
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/person.class.php');
@@ -34,6 +27,13 @@ require_once('../include/mitarbeiter.class.php');
 require_once('../include/benutzerberechtigung.class.php');
 require_once('../include/studiengang.class.php');
 require_once('../include/functions.inc.php');
+// header for no cache
+header("Cache-Control: no-cache");
+header("Cache-Control: post-check=0, pre-check=0",false);
+header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
+header("Pragma: no-cache");
+// content type setzen
+header("Content-type: application/xhtml+xml");
 
 if (isset($_GET['lektor']))
 {

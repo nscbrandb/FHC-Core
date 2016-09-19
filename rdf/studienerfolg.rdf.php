@@ -20,7 +20,6 @@
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at> and
  *			Gerald Raab <gerald.raab@technikum-wien.at>.
  */
-header("Content-type: application/xhtml+xml");
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/functions.inc.php');
 require_once('../include/zeugnisnote.class.php');
@@ -33,6 +32,7 @@ require_once('../include/prestudent.class.php');
 require_once('../include/student.class.php');
 require_once('../include/studienordnung.class.php');
 require_once('../include/studienplan.class.php');
+header("Content-type: application/xhtml+xml");
 
 $datum = new datum();
 $db = new basis_db();

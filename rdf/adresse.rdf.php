@@ -19,6 +19,10 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
+// DAO
+require_once('../config/vilesci.config.inc.php');
+require_once('../include/adresse.class.php');
+require_once('../include/datum.class.php');
 // header für no cache
 header("Cache-Control: no-cache");
 header("Cache-Control: post-check=0, pre-check=0",false);
@@ -28,10 +32,6 @@ header("Pragma: no-cache");
 header("Content-type: application/xhtml+xml");
 // xml
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-// DAO
-require_once('../config/vilesci.config.inc.php');
-require_once('../include/adresse.class.php');
-require_once('../include/datum.class.php');
 
 if(isset($_GET['person_id']))
 	$person_id = $_GET['person_id'];

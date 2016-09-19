@@ -19,6 +19,12 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
+
+require_once('../config/vilesci.config.inc.php');
+require_once('../include/lehreinheitgruppe.class.php');
+require_once('../include/studiengang.class.php');
+require_once('../include/gruppe.class.php');
+require_once('../include/lehrverband.class.php');
 // header fuer no cache
 header("Cache-Control: no-cache");
 header("Cache-Control: post-check=0, pre-check=0",false);
@@ -28,12 +34,6 @@ header("Pragma: no-cache");
 header("Content-type: application/xhtml+xml");
 // xml
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-
-require_once('../config/vilesci.config.inc.php');
-require_once('../include/lehreinheitgruppe.class.php');
-require_once('../include/studiengang.class.php');
-require_once('../include/gruppe.class.php');
-require_once('../include/lehrverband.class.php');
 
 if(isset($_GET['lehreinheit_id']) && is_numeric($_GET['lehreinheit_id']))
 	$lehreinheit_id = $_GET['lehreinheit_id'];

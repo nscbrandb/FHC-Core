@@ -19,13 +19,6 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
-// header fuer no cache
-header("Cache-Control: no-store, no-cache, must-revalidate");
-header("Cache-Control: post-check=0, pre-check=0",false);
-header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
-header("Pragma: no-cache");
-// content type setzen
-header("Content-type: application/xhtml+xml");
 
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/konto.class.php');
@@ -39,6 +32,13 @@ require_once('../include/benutzerberechtigung.class.php');
 require_once('../include/prestudent.class.php');
 require_once('../include/studienordnung.class.php');
 require_once('../include/studienplan.class.php');
+// header fuer no cache
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0",false);
+header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
+header("Pragma: no-cache");
+// content type setzen
+header("Content-type: application/xhtml+xml");
 
 if(isset($_SERVER['REMOTE_USER']))
 {

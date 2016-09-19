@@ -17,7 +17,6 @@
  *
  * Authors: Stefan Puraner <stefan.puraner@technikum-wien.at>
  */
-header("Content-type: application/xhtml+xml");
 require_once('../config/vilesci.config.inc.php');
 require_once('../config/global.config.inc.php');
 require_once('../include/functions.inc.php');
@@ -32,6 +31,7 @@ require_once('../include/lehreinheit.class.php');
 require_once('../include/lehreinheitmitarbeiter.class.php');
 require_once('../include/datum.class.php');
 require_once('../include/nation.class.php');
+header("Content-type: application/xhtml+xml");
 
 $mitarbeiter_uid = isset($_GET["mitarbeiter_uid"]) ? $_GET["mitarbeiter_uid"] : NULL;
 $vertrag_data = isset($_GET["vertrag_id"]) ? $_GET["vertrag_id"] : NULL;

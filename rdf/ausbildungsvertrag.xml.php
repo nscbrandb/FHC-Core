@@ -19,7 +19,6 @@
  *          Karl Burkhart <burkhart@technikum-wien.at>
  *          Manfred Kindl <manfred.kindl@technikum-wien.at>
  */
-header("Content-type: application/xhtml+xml");
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/functions.inc.php');
 require_once('../include/studiengang.class.php');
@@ -32,6 +31,7 @@ require_once('../include/studiensemester.class.php');
 require_once('../include/nation.class.php');
 require_once('../include/prestudent.class.php');
 require_once('../include/studienplan.class.php');
+header("Content-type: application/xhtml+xml");
 
 $uid_arr = (isset($_REQUEST['uid'])?$_REQUEST['uid']:null);
 $prestudent_arr = (isset($_REQUEST['prestudent_id'])?$_REQUEST['prestudent_id']:null);

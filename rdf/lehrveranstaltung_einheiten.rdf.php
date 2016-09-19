@@ -19,11 +19,6 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
-header("Cache-Control: no-cache, must-revalidate");
-header("Cache-Control: post-check=0, pre-check=0",false);
-header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
-header("Pragma: no-cache");
-header("Content-type: application/xhtml+xml");
 
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/lehrveranstaltung.class.php');
@@ -33,6 +28,11 @@ require_once('../include/functions.inc.php');
 require_once('../include/rdf.class.php');
 require_once('../include/studienordnung.class.php');
 require_once('../include/studienplan.class.php');
+header("Cache-Control: no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0",false);
+header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
+header("Pragma: no-cache");
+header("Content-type: application/xhtml+xml");
 
 $user = get_uid();
 

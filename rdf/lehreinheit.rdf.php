@@ -20,6 +20,12 @@
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at> and
  *          Gerald Raab <gerald.raab@technikum-wien.at>.
  */
+// DAO
+require_once('../config/vilesci.config.inc.php');
+require_once('../include/lehreinheit.class.php');
+require_once('../include/lehreinheitgruppe.class.php');
+require_once('../include/lehrveranstaltung.class.php');
+
 // header für no cache
 header("Cache-Control: no-cache");
 header("Cache-Control: post-check=0, pre-check=0",false);
@@ -29,12 +35,6 @@ header("Pragma: no-cache");
 header("Content-type: application/xhtml+xml");
 // xml
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-// DAO
-require_once('../config/vilesci.config.inc.php');
-require_once('../include/lehreinheit.class.php');
-require_once('../include/lehreinheitgruppe.class.php');
-require_once('../include/lehrveranstaltung.class.php');
-
 $lehreinheit_id = (isset($_GET['lehreinheit_id'])?$_GET['lehreinheit_id']:'');
 $lehrveranstaltung_id = (isset($_GET['lehrveranstaltung_id'])?$_GET['lehrveranstaltung_id']:'');
 $studiensemester_kurzbz = (isset($_GET['studiensemester_kurzbz'])?$_GET['studiensemester_kurzbz']:'');

@@ -20,12 +20,12 @@
 /**
  * Erstellt das XML fuer die Anwesenheitsliste
  */
-// content type setzen
-header("Content-type: application/xhtml+xml");
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/functions.inc.php');
 require_once('../include/basis_db.class.php');
 require_once('../include/ean13.function.php');
+// content type setzen
+header("Content-type: application/xhtml+xml");
 
 // Optionen abfragen
 isset($_GET['von']) ? $von = date('Y-m-d', strtotime($_GET['von'])) : $von = NULL;

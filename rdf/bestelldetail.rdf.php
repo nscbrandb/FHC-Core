@@ -19,12 +19,6 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
-// header für no cache
-header("Cache-Control: no-cache");
-header("Cache-Control: post-check=0, pre-check=0",false);
-header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
-header("Pragma: no-cache");
-// content type setzen
 // DAO
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/datum.class.php');
@@ -40,6 +34,12 @@ require_once('../include/standort.class.php');
 require_once('../include/kontakt.class.php');
 require_once('../include/wawi_aufteilung.class.php'); 
 require_once('../include/studiengang.class.php'); 
+// header für no cache
+header("Cache-Control: no-cache");
+header("Cache-Control: post-check=0, pre-check=0",false);
+header("Expires Mon, 26 Jul 1997 05:00:00 GMT");
+header("Pragma: no-cache");
+// content type setzen
 
 if (isset($_REQUEST["xmlformat"]) && $_REQUEST["xmlformat"] == "xml")
 {

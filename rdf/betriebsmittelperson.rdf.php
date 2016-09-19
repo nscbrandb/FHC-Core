@@ -19,6 +19,13 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
+// DAO
+require_once('../config/vilesci.config.inc.php');
+require_once('../include/betriebsmittelperson.class.php');
+require_once('../include/datum.class.php');
+require_once('../include/organisationseinheit.class.php');
+require_once('../include/person.class.php');
+require_once('../include/betriebsmitteltyp.class.php');
 // header für no cache
 header("Cache-Control: no-cache");
 header("Cache-Control: post-check=0, pre-check=0",false);
@@ -27,13 +34,6 @@ header("Pragma: no-cache");
 // content type setzen
 header("Content-type: application/xhtml+xml");
 
-// DAO
-require_once('../config/vilesci.config.inc.php');
-require_once('../include/betriebsmittelperson.class.php');
-require_once('../include/datum.class.php');
-require_once('../include/organisationseinheit.class.php');
-require_once('../include/person.class.php');
-require_once('../include/betriebsmitteltyp.class.php');
 
 if(isset($_GET['person_id']))
 	$person_id = $_GET['person_id'];
