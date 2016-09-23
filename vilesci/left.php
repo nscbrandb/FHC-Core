@@ -27,27 +27,12 @@
  * Array welches includiert wird.
  */
 	require_once('../config/vilesci.config.inc.php');
- 	require_once('../include/functions.inc.php');
- 	require_once('../include/benutzerberechtigung.class.php');
- 	// könnte man hier vll. auch eine Default config einbauen mit $menu Template?
- 	if (is_file('../include/'.EXT_FKT_PATH.'/vilesci_menu_main.inc.php')) require_once('../include/'.EXT_FKT_PATH.'/vilesci_menu_main.inc.php');
- 	
+ 	require('../include/functions.inc.php');
+ 	require('../include/benutzerberechtigung.class.php');
+ 	require_once('../include/'.EXT_FKT_PATH.'/vilesci_menu_main.inc.php');
+
 	if (!$uid = get_uid())
 			die('Keine UID gefunden !  <a href="javascript:history.back()">Zur&uuml;ck</a>');
-
-	// get Vilesci Menu Addons
-	require_once(dirname(__FILE__).'../../include/addon.class.php');
-	$addon_obj = new addon();
-	if($addon_obj->loadAddons())
-	{
-		if(count($addon_obj->result)>0)
-		{
-			foreach($addon_obj->result as $row)
-			{
-				if (is_file('../addons/'.$row->kurzbz.'/vilesci/vilesci_menu_main.inc.php')) require_once('../addons/'.$row->kurzbz.'/vilesci/vilesci_menu_main.inc.php');
-			}
-		}
-	}
 			
 	
 	$berechtigung=new benutzerberechtigung();
