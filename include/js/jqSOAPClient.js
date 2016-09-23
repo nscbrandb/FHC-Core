@@ -40,11 +40,11 @@ var SOAPClient = {
 					SOAPClient.Status = xData.status;
 					SOAPClient.ResponseText = xData.responseText;
 					SOAPClient.ResponseXML = xData.responseXML;
-					var jsOut = $.xmlToJSON(xData.responseXML);
+					var jsOut = jQuery.xmlToJSON(xData.responseXML);
 					callback(jsOut);
 				}
 			}
-			$.ajax({
+			jQuery.ajax({
 				 async: SOAPClient.AjaxAsync,
                  type: "POST",
 				 url: SOAPClient.Proxy,
