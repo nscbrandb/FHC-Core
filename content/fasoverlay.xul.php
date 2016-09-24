@@ -135,7 +135,7 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/mitarbeiter/mitarbeiteroverlay.xul
 	</tree>
 </vbox>
 
-<tree id="tree-lektor" onmouseup="onLektorSelect(event);"
+<tree id="tree-lektor" onmouseup="onLektorSelect(event);" onkeyup="onLektorSelect(event);"
 	seltype="multi" hidecolumnpicker="false" flex="1"
 	enableColumnDrag="true"
     ondraggesture="nsDragAndDrop.startDrag(event,mitarbeiterDDObserver);"
@@ -159,6 +159,8 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/mitarbeiter/mitarbeiteroverlay.xul
 	    <treecol id="uid" label="UID" flex="1" hidden="true"/>
 	    <splitter class="tree-splitter"/>
 	    <treecol id="studiengang_kz" label="Studiengangkz" flex="1" hidden="true"/>
+		<splitter class="tree-splitter"/>
+		<treecol id="aktiv" label="aktiv" flex="1" hidden="true"/>
 	</treecols>
 
 	<template>
@@ -166,12 +168,15 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/mitarbeiter/mitarbeiteroverlay.xul
 		<treechildren>
 	       	<treeitem uri="rdf:*">
 	         	<treerow>
-	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#kurzbz"/>
+	           		<treecell
+						properties="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#aktiv , lektoraktiv"
+						label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#kurzbz"/>
 	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#nachname"/>
 	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#vorname"/>
 	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#titelpre"/>
 	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#uid"/>
 	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#studiengang_kz"/>
+	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#aktiv"/>
 	         	</treerow>
 	    	</treeitem>
 	    </treechildren>
