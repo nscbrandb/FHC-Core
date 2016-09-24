@@ -401,8 +401,11 @@ echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
 			                       ref="http://www.technikum-wien.at/mitarbeiter/_alle" flex="1">
 				         <template>
 				            <menupopup>
-				               <menuitem uri="rdf:*" label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#nachname rdf:http://www.technikum-wien.at/mitarbeiter/rdf#vorname"
-				                         value="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#uid"/>
+								<menuitem id="arg" uri="rdf:*"
+									label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#nachname rdf:http://www.technikum-wien.at/mitarbeiter/rdf#vorname - rdf:http://www.technikum-wien.at/mitarbeiter/rdf#uid"
+									class="menuitem-iconic" image="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#aktivbild"
+									value="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#uid"
+								/>
 				            </menupopup>
 				         </template>
 			   		 	</menulist>
