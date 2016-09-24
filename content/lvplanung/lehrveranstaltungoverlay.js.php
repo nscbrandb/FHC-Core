@@ -779,6 +779,12 @@ function LeAuswahl()
 			LeDetailDisableFields(true);
 			//Details zuruecksetzen
 			LeDetailReset();
+			
+			// AddOnSTP: Selektierungsfunktion der Addons aufrufen
+			for(i in addon) {
+				if(typeof addon[i].selectLv == 'function') addon[i].selectLv(lehrveranstaltung_id);
+			}
+
 			return false;
 		}
 		else
@@ -979,7 +985,11 @@ function LeAuswahl()
 	// Notizen Laden
 	var lehreinheitnotiz = document.getElementById('lehrveranstaltung-box-notizen');
 	lehreinheitnotiz.LoadNotizTree('','','','','','','','',lehreinheit_id);
-
+	
+	// AddOnSTP: Selektierungsfunktion der Addons aufrufen
+	for(i in addon) {
+		if(typeof addon[i].selectLe == 'function') addon[i].selectLe(lehreinheit_id);
+	}
 }
 
 //******** LehreinheitMitarbeiter **********//
@@ -1240,6 +1250,12 @@ function LeMitarbeiterAuswahl()
 		document.getElementById('lehrveranstaltung-lehreinheitmitarbeiter-checkbox-bismelden').checked=false;
 
 	LeMitarbeiterGesamtkosten();
+	
+	// AddonSTP: Selektierungsfunktion der Addons aufrufen
+	for(i in addon) {
+		if(typeof addon[i].selectLeMitarbeiter == 'function') addon[i].selectLeMitarbeiter(lehreinheit_id, mitarbeiter_uid);
+	}
+
 }
 
 // ****
