@@ -26,6 +26,8 @@
 	require_once('../include/benutzerberechtigung.class.php');
 	require_once('../include/studiengang.class.php');
 	require_once('../include/functions.inc.php');
+	include_once('../addons/STPCore/addon.setup.php');
+	
 	// header for no cache
 	header("Cache-Control: no-cache");
 	header("Cache-Control: post-check=0, pre-check=0",false);
