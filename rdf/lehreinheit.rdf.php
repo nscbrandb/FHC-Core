@@ -72,6 +72,7 @@ if(isset($_GET['optional']) && $_GET['optional']=='true')
             <LEHREINHEIT:unr><![CDATA[]]></LEHREINHEIT:unr>
             <LEHREINHEIT:lvnr><![CDATA[]]></LEHREINHEIT:lvnr>
             <LEHREINHEIT:bezeichnung><![CDATA[-- keine Auswahl --]]></LEHREINHEIT:bezeichnung>
+            <LEHREINHEIT:orgform></LEHREINHEIT:orgform>
          </RDF:Description>
       </RDF:li>
       ';
@@ -154,6 +155,7 @@ function draw_row($row)
             <LEHREINHEIT:bezeichnung><![CDATA['.$lehrfach->kurzbz.'-'.$row->lehrform_kurzbz.' '.$lehrfach->bezeichnung.' '.$grp.' '.$mitarbeiter.']]></LEHREINHEIT:bezeichnung>
             <LEHREINHEIT:anzahl_studenten><![CDATA['.$anzahl_studenten.']]></LEHREINHEIT:anzahl_studenten>
 			<LEHREINHEIT:gewicht><![CDATA['.$row->gewicht.']]></LEHREINHEIT:gewicht>
+			<LEHREINHEIT:orgform><![CDATA['.$row->orgform_kurzbz.']]></LEHREINHEIT:orgform>
          </RDF:Description>
       </RDF:li>
       ';

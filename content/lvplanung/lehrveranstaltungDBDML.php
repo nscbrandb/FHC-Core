@@ -628,8 +628,15 @@ if(!$error)
 					{
 						if($lem->save())
 						{
-							$return = true;
-							$error = false;
+							// für die Info bei Vertragsbearbeitung
+							if (!empty($lem->errormsg)) {
+								$errormsg = $lem->errormsg;
+								$error = true;
+								$return = false;
+							} else {
+								$return = true;
+								$error = false;
+							}
 						}
 						else
 						{
@@ -1252,6 +1259,7 @@ if(!$error)
 					$leDAO->stundenblockung=$_POST['stundenblockung'];
 					$leDAO->wochenrythmus=$_POST['wochenrythmus'];
 					$leDAO->gewicht = $_POST['gewicht'];
+					$leDAO->orgform_kurzbz = $_POST['orgform'];
 
 					if (isset($_POST['start_kw']))
 						$leDAO->start_kw=$_POST['start_kw'];

@@ -301,6 +301,10 @@ function onVerbandSelect(event)
 	if(tree.currentIndex==-1)
 		return;
 
+LvSelectLehreinheit_id=null;   // STP-Hack Reset der markierten LE wegen Performance-Problemen
+$('lehrveranstaltung-tree').currentIndex = '';
+
+		
 	var row = { };
     var col = { };
     var child = { };
@@ -408,7 +412,7 @@ function onVerbandSelect(event)
 		// -------------- Lehrveranstaltung --------------------------
 		try
 		{
-			url = '<?php echo APP_ROOT; ?>rdf/lehrveranstaltung_einheiten.rdf.php?stg_kz='+stg_kz+'&sem='+sem+'&ver='+ver+'&grp='+grp+'&gruppe='+gruppe+'&orgform='+orgform+"&"+gettimestamp();
+			url = '<?php echo APP_ROOT; ?>addons/STPCore/rdf/lehrveranstaltung_einheiten.rdf.php?stg_kz='+stg_kz+'&sem='+sem+'&ver='+ver+'&grp='+grp+'&gruppe='+gruppe+'&orgform='+orgform+"&"+gettimestamp();
 			var treeLV=document.getElementById('lehrveranstaltung-tree');
 
 			try
@@ -434,7 +438,7 @@ function onVerbandSelect(event)
 			treeLV.database.AddDataSource(LvTreeDatasource);
 			LvTreeDatasource.addXMLSinkObserver(LvTreeSinkObserver);
 			treeLV.builder.addListener(LvTreeListener);
-			document.getElementById('lehrveranstaltung-toolbar-lehrauftrag').hidden=true;
+			//document.getElementById('lehrveranstaltung-toolbar-lehrauftrag').hidden=true;
 		}
 		catch(e)
 		{
@@ -496,6 +500,11 @@ function onVerbandSelect(event)
 			debug(e);
 		}
 	}
+	
+	// Selektierungsfunktion der Addons aufrufen
+	for(i in addon) {
+		if(typeof addon[i].selectVerband == 'function') addon[i].selectVerband(event);
+	}
 }
 
 function onFachbereichSelect(event)
@@ -539,7 +548,7 @@ function onFachbereichSelect(event)
 	netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
 	try
 	{
-		url = '<?php echo APP_ROOT; ?>rdf/lehrveranstaltung_einheiten.rdf.php?fachbereich_kurzbz='+kurzbz+'&uid='+uid+'&'+gettimestamp();
+		url = '<?php echo APP_ROOT; ?>addons/STPCore/rdf/lehrveranstaltung_einheiten.rdf.php?fachbereich_kurzbz='+kurzbz+'&uid='+uid+'&'+gettimestamp();
 		var treeLV=document.getElementById('lehrveranstaltung-tree');
 
 		try
@@ -564,7 +573,7 @@ function onFachbereichSelect(event)
 		treeLV.database.AddDataSource(LvTreeDatasource);
 		LvTreeDatasource.addXMLSinkObserver(LvTreeSinkObserver);
 		treeLV.builder.addListener(LvTreeListener);
-		document.getElementById('lehrveranstaltung-toolbar-lehrauftrag').hidden=true;
+		//document.getElementById('lehrveranstaltung-toolbar-lehrauftrag').hidden=true;
 	}
 	catch(e)
 	{
@@ -612,7 +621,7 @@ function onOrganisationseinheitSelect(event)
 	try
 	{
 		// Semesterfilter aus dem Lehrveranstaltungsoverlay wird beim Laden beruecksichtigt
-		url = '<?php echo APP_ROOT; ?>rdf/lehrveranstaltung_einheiten.rdf.php?oe_kurzbz='+kurzbz+'&sem='+LehrveranstaltungAusbildungssemesterFilter+'&'+gettimestamp();
+		url = '<?php echo APP_ROOT; ?>addons/STPCore/rdf/lehrveranstaltung_einheiten.rdf.php?oe_kurzbz='+kurzbz+'&sem='+LehrveranstaltungAusbildungssemesterFilter+'&'+gettimestamp();
 		var treeLV=document.getElementById('lehrveranstaltung-tree');
 		try
 		{
@@ -636,7 +645,7 @@ function onOrganisationseinheitSelect(event)
 		treeLV.database.AddDataSource(LvTreeDatasource);
 		LvTreeDatasource.addXMLSinkObserver(LvTreeSinkObserver);
 		treeLV.builder.addListener(LvTreeListener);
-		document.getElementById('lehrveranstaltung-toolbar-lehrauftrag').hidden=true;
+		//document.getElementById('lehrveranstaltung-toolbar-lehrauftrag').hidden=true;
 	}
 	catch(e)
 	{
@@ -663,23 +672,23 @@ function onLektorSelect(event)
 {
 	var tree=document.getElementById('tree-lektor');
 	//Wenn nichts markiert wurde -> beenden
-	if(tree.currentIndex==-1)
-		return;
+	if(tree.currentIndex==-1) return;
 
-	var row = { };
-    var col = { };
-    var child = { };
-
-    tree.treeBoxObject.getCellAt(event.pageX, event.pageY, row, col, child)
-
-    //Wenn es keine Row ist sondern ein Header oder Scrollbar dann abbrechen
-    if (!col.value)
-       	return false;
-
-    //Wenn eine andere row markiert ist als angeklickt wurde -> beenden.
-	//Dies kommt vor wenn ein Subtree geoeffnet wird
-	if(row.value!=tree.currentIndex)
-		return;
+	// !keypress dann ueber mouseevent checken
+	if (event.keyCode === undefined) {
+		var row = { };
+	    var col = { };
+	    var child = { };
+	
+	    tree.treeBoxObject.getCellAt(event.pageX, event.pageY, row, col, child)
+	
+	    //Wenn es keine Row ist sondern ein Header oder Scrollbar dann abbrechen
+	    if (!col.value) return false;
+	
+	    //Wenn eine andere row markiert ist als angeklickt wurde -> beenden.
+		//Dies kommt vor wenn ein Subtree geoeffnet wird
+		if(row.value!=tree.currentIndex) return;
+	} else if (event.keyCode != '13') return; // ansonsten auf Return/Enter testen
 
 	col = tree.columns ? tree.columns["uid"] : "uid";
 
@@ -689,7 +698,10 @@ function onLektorSelect(event)
 	//wenn direkt ein studiengang markiert wurde dann abbrechen
 	if(stg_idx==-1)
 		return;
-
+		
+	LvSelectLehreinheit_id=null;   // STP-Hack Reset der markierten LE wegen Performance-Problemen
+	$('lehrveranstaltung-tree').currentIndex = '';
+		
 	var col = tree.columns ? tree.columns["studiengang_kz"] : "studiengang_kz";
 	var stg_kz=tree.view.getCellText(stg_idx,col);
 
@@ -701,7 +713,7 @@ function onLektorSelect(event)
 	try
 	{
 		//alert(stg_kz);
-		url = '<?php echo APP_ROOT; ?>rdf/lehrveranstaltung_einheiten.rdf.php?stg_kz='+stg_kz+'&uid='+uid+'&'+gettimestamp();
+		url = '<?php echo APP_ROOT; ?>addons/STPCore/rdf/lehrveranstaltung_einheiten.rdf.php?stg_kz='+stg_kz+'&uid='+uid+'&'+gettimestamp();
 		var treeLV=document.getElementById('lehrveranstaltung-tree');
 
 		//Alte DS entfernen
@@ -726,7 +738,7 @@ function onLektorSelect(event)
 		treeLV.database.AddDataSource(LvTreeDatasource);
 		LvTreeDatasource.addXMLSinkObserver(LvTreeSinkObserver);
 		treeLV.builder.addListener(LvTreeListener);
-		document.getElementById('lehrveranstaltung-toolbar-lehrauftrag').hidden=false;
+		//document.getElementById('lehrveranstaltung-toolbar-lehrauftrag').hidden=false;
 	}
 	catch(e)
 	{

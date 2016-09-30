@@ -53,6 +53,7 @@ class lehreinheit extends basis_db
 	public $sprache;					// varchar(16)
 	public $ext_id;						// bigint
 	public $gewicht=1;					// smallint
+	public $orgform_kurzbz = null;      // varchar(3)
 
 	public $anz=0;						//Zahler fuer erweiterte Attribute
 	public $mitarbeiter_uid=array();
@@ -114,6 +115,7 @@ class lehreinheit extends basis_db
 				$this->updatevon = $row->updatevon;
 				$this->ext_id = $row->ext_id;
 				$this->gewicht = $row->gewicht;
+				$this->orgform_kurzbz = $row->orgform_kurzbz;
 				return true;
 			}
 			else
@@ -168,6 +170,7 @@ class lehreinheit extends basis_db
 				$this->updateamum = $row->updateamum;
 				$this->updatevon = $row->updatevon;
 				//$this->ext_id = $row->ext_id;
+				$this->orgform_kurzbz = $row->orgform_kurzbz;
 				$this->farbe = $row->farbe;
 				$this->lf_kurzbz= $row->lehrfach;
 				$this->lf_bez= $row->lehrfach_bez;
@@ -199,24 +202,53 @@ class lehreinheit extends basis_db
 	 * @param $studiensemester_kurzbz
 	 * @param $uid
 	 * @param $fachbereich_kurzbz
+	 * @param string $orgform       Filter
+	 * @param char $ver             Filter
+	 * @param int $grp              Filter
+	 * @param varchar $gruppe       Filter
 	 * @return boolean
 	 */
-	public function load_lehreinheiten($lehrveranstaltung_id, $studiensemester_kurzbz, $uid='', $fachbereich_kurzbz='')
+	public function load_lehreinheiten($lehrveranstaltung_id, $studiensemester_kurzbz, $uid='', $fachbereich_kurzbz='', $orgform='', $ver='', $grp='', $gruppe='')
 	{
 		$this->lehreinheiten = array();
 		$this->errormsg ='';
-
+		
 		$qry = "SELECT * FROM lehre.tbl_lehreinheit WHERE
-				lehrveranstaltung_id=".$this->db_add_param($lehrveranstaltung_id, FHC_INTEGER)."
-				AND studiensemester_kurzbz=".$this->db_add_param($studiensemester_kurzbz);
-
-		if($uid!='')
+						lehrveranstaltung_id=".$this->db_add_param($lehrveranstaltung_id, FHC_INTEGER)."
+						AND studiensemester_kurzbz=".$this->db_add_param($studiensemester_kurzbz);
+			
+		if($uid!='') 
 			$qry .= " AND lehreinheit_id IN ( SELECT lehreinheit_id FROM lehre.tbl_lehreinheitmitarbeiter WHERE mitarbeiter_uid=".$this->db_add_param($uid).")";
 
 		if($fachbereich_kurzbz!='')
 			$qry .= " AND EXISTS ( SELECT 1 FROM lehre.tbl_lehrveranstaltung JOIN public.tbl_fachbereich USING(oe_kurzbz) WHERE fachbereich_kurzbz=".$this->db_add_param($fachbereich_kurzbz)." AND lehrveranstaltung_id=tbl_lehreinheit.lehrfach_id)";
+		if($orgform!='') {			//filtern nach Orgform
+			$qry .= " AND (	   orgform_kurzbz='$orgform'
+							OR orgform_kurzbz IN (
+								SELECT DISTINCT child FROM stp.orgform_filter_childs WHERE parent='$orgform'
+							)
+						)";
+		} elseif ($gruppe != '') {	// filtern nach Spezialgruppe
+			$qry .= "  AND lehreinheit_id IN (
+								SELECT DISTINCT le.lehreinheit_id
+								  FROM lehre.tbl_lehreinheitgruppe AS leg
+							INNER JOIN lehre.tbl_lehreinheit AS le ON leg.lehreinheit_id=le.lehreinheit_id
+								 WHERE le.studiensemester_kurzbz='$studiensemester_kurzbz'
+								   AND leg.gruppe_kurzbz='$gruppe'
+						)";
+		} elseif ($ver != '') {		// filtern nach Verband (Gruppe)
+			$qry .= "  AND lehreinheit_id IN (
+								SELECT DISTINCT le.lehreinheit_id
+								  FROM lehre.tbl_lehreinheitgruppe AS leg
+							INNER JOIN lehre.tbl_lehreinheit AS le ON leg.lehreinheit_id=le.lehreinheit_id
+								 WHERE le.studiensemester_kurzbz='$studiensemester_kurzbz'
+								   AND leg.gruppe_kurzbz IS NULL
+								   AND leg.verband='$ver'
+								   AND leg.gruppe".($grp != '' ? "='$grp'" : " IS NULL")."
+							)";
+		}
 
-		$qry.= " ORDER BY lehreinheit_id;";
+		$qry.= "ORDER BY lehreinheit_id;";
 
 		if($this->db_query($qry))
 		{
@@ -245,6 +277,7 @@ class lehreinheit extends basis_db
 				$le_obj->updatevon = $row->updatevon;
 				$le_obj->ext_id = $row->ext_id;
 				$le_obj->gewicht = $row->gewicht;
+				$le_obj->orgform_kurzbz = $row->orgform_kurzbz;
 
 				$this->lehreinheiten[] = $le_obj;
 			}
@@ -391,7 +424,7 @@ class lehreinheit extends basis_db
 			//ToDo ID entfernen
 			$qry = 'BEGIN; INSERT INTO lehre.tbl_lehreinheit (lehrveranstaltung_id, studiensemester_kurzbz,
 			                                     lehrfach_id, lehrform_kurzbz, stundenblockung, wochenrythmus,
-			                                     start_kw, raumtyp, raumtypalternativ, lehre, anmerkung, unr, lvnr, insertamum, insertvon, updateamum, updatevon,  sprache, gewicht)
+			                                     start_kw, raumtyp, raumtypalternativ, lehre, anmerkung, unr, lvnr, insertamum, insertvon, updateamum, updatevon,  sprache, gewicht, orgform_kurzbz)
 			        VALUES('.$this->db_add_param($this->lehrveranstaltung_id, FHC_INTEGER).','.
 					$this->db_add_param($this->studiensemester_kurzbz).','.
 					$this->db_add_param($this->lehrfach_id, FHC_INTEGER).','.
@@ -410,7 +443,8 @@ class lehreinheit extends basis_db
 					$this->db_add_param($this->updateamum).','.
 					$this->db_add_param($this->updatevon).','.
 					$this->db_add_param($this->sprache).','.
-					$this->db_add_param($this->gewicht, FHC_INTEGER).');';
+					$this->db_add_param($this->gewicht, FHC_INTEGER).','.
+					$this->db_add_param($this->orgform_kurzbz,FHC_STRING,true).');';
 		}
 		else
 		{
@@ -431,7 +465,8 @@ class lehreinheit extends basis_db
 				   ' updateamum='.$this->db_add_param($this->updateamum).','.
 				   ' updatevon='.$this->db_add_param($this->updatevon).','.
 				   ' sprache='.$this->db_add_param($this->sprache).', '.
-				   ' gewicht='.$this->db_add_param($this->gewicht).' '.
+				   ' gewicht='.$this->db_add_param($this->gewicht).', '.
+				   ' orgform_kurzbz='.$this->db_add_param($this->orgform_kurzbz).
 			       " WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id, FHC_INTEGER).";";
 		}
 
@@ -483,159 +518,140 @@ class lehreinheit extends basis_db
 	 */
 	public function check_lva($datum,$stunde,$ort,$stpl_table)
 	{
-
+		$DB = new basis_db();
 		$this->errormsg ='';
 
-		$stg_obj = new studiengang();
-		$stg_obj->getAll();
-
-		$ignore_reservation=false;
-		$ignore_zeitsperre=false;
 		// Parameter Checken
 		// Bezeichnung der Stundenplan-Tabelle und des Keys
-		$stpl_id=$stpl_table.TABLE_ID;
-		$stpl_table='lehre.'.TABLE_BEGIN.$stpl_table;
+		$stpl_id = $stpl_table.TABLE_ID;
+		$stpl_table = 'lehre.'.TABLE_BEGIN.$stpl_table;
 
-		//Lektoren SQL
-		$sql_lkt='';
-		foreach ($this->mitarbeiter_uid as $lkt)
-			$sql_lkt.="OR mitarbeiter_uid=".$this->db_add_param($lkt).' ';
-		$sql_lkt=mb_substr($sql_lkt,3);
-		$sql_lkt="(($sql_lkt) AND mitarbeiter_uid not in (".$this->db_implode4SQL(unserialize(KOLLISIONSFREIE_USER))."))";
-
-		// Datenbank abfragen
-		$sql_query="SELECT $stpl_id FROM $stpl_table
-					WHERE datum=".$this->db_add_param($datum)." AND stunde=".$this->db_add_param($stunde)."
-					AND (ort_kurzbz=".$this->db_add_param($ort)." OR $sql_lkt)";
-		if (is_numeric($this->unr))
-			$sql_query.=" AND unr!=".$this->db_add_param($this->unr);
-
-		if (!$this->db_query($sql_query))
-		{
-			$this->errormsg=$this->db_last_error();
+		// Lektor / Ort / UNR mit gleicher lehreinheit_id => multiple Verplanung der selben Einheit
+		$qry = "SELECT 
+						$stpl_table.mitarbeiter_uid,
+						$stpl_table.ort_kurzbz,
+						$stpl_table.semester,
+						$stpl_table.verband,
+						$stpl_table.gruppe,
+						$stpl_table.gruppe_kurzbz,
+						upper(stg.typ || stg.kurzbz) AS stg
+				  FROM $stpl_table 
+			INNER JOIN public.tbl_studiengang AS stg USING(studiengang_kz)
+				 WHERE datum=".$this->db_add_param($datum)." AND stunde=".$this->db_add_param($stunde)."
+				   AND (ort_kurzbz=".$this->db_add_param($ort)." OR mitarbeiter_uid IN ('".implode("','",$this->mitarbeiter_uid)."'))
+				".(is_numeric($this->unr)?" AND (unr!=".$this->db_add_param($this->unr,FHC_INTEGER)." OR lehreinheit_id=".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER).")" : '');
+		if (!$DB->db_query($qry)) {
+			$this->errormsg = $DB->db_last_error();
+			return false;
+		} elseif ($DB->db_num_rows() > 0) {
+			while ($row = $DB->db_fetch_object()) $this->errormsg .= "Kollision LV-Plan - Lektor / Ort:\nLektor $row->mitarbeiter_uid | Ort $row->ort_kurzbz | Gruppe $row->stg$row->semester".(!empty($row->gruppe_kurzbz)?" $row->gruppe_kurzbz":"-$row->verband$row->gruppe")." | $datum ($stunde)\n";
 			return false;
 		}
-		$erg_stpl=$this->db_result;
-
-		$anzahl=$this->db_num_rows($erg_stpl);
-		//Check
-		if ($anzahl==0)
-		{
-			//Gruppen / Verbaende pruefen
-			$sql_query="SELECT $stpl_id, studiengang_kz, semester, verband, gruppe_kurzbz, stunde, gruppe FROM $stpl_table
-					WHERE datum=".$this->db_add_param($datum)." AND stunde=".$this->db_add_param($stunde);
-			if (is_numeric($this->unr))
-				$sql_query.=" AND unr!=".$this->db_add_param($this->unr)." AND (1=2 ";
-
-			for($anz=0;$anz<count($this->studiengang_kz);$anz++)
-			{
-				$sql_query.=" OR ((studiengang_kz=".$this->db_add_param($this->studiengang_kz[$anz])." AND semester=".$this->db_add_param($this->semester[$anz]).")";
-
-				if ($this->gruppe_kurzbz[$anz]!=null && $this->gruppe_kurzbz[$anz]!='' && $this->gruppe_kurzbz[$anz]!=' ')
-					$sql_query.=" OR (gruppe_kurzbz=".$this->db_add_param($this->gruppe_kurzbz[$anz]).")";
-				else
-				{
-					if ($this->verband[$anz]!=null && $this->verband[$anz]!='' && $this->verband[$anz]!=' ')
-						$sql_query.=" AND (verband=".$this->db_add_param($this->verband[$anz])." OR verband IS NULL OR verband='' OR verband=' ')";
-					if ($this->gruppe[$anz]!=null && $this->gruppe[$anz]!='' && $this->gruppe[$anz]!=' ')
-						$sql_query.=" AND (gruppe=".$this->db_add_param($this->gruppe[$anz])." OR gruppe IS NULL OR gruppe='' OR gruppe=' ')";
+	
+		// Verband / Spezialgruppe?
+		$qry = "SELECT 
+						$stpl_table.mitarbeiter_uid,
+						$stpl_table.ort_kurzbz,
+						$stpl_table.semester,
+						$stpl_table.verband,
+						$stpl_table.gruppe,
+						$stpl_table.gruppe_kurzbz,
+						upper(stg.typ || stg.kurzbz) AS stg
+				  FROM $stpl_table 
+			INNER JOIN public.tbl_studiengang AS stg USING(studiengang_kz)
+				 WHERE datum='".addslashes($datum)."' AND stunde='".addslashes($stunde)."'
+			".(is_numeric($this->unr)?" AND unr!='".addslashes($this->unr)."'" : '')."
+				   AND (false ";
+		for($i = 0; $i < count($this->studiengang_kz); $i++) {
+			if ($this->gruppe_kurzbz[$i]!=null && $this->gruppe_kurzbz[$i]!='' && $this->gruppe_kurzbz[$i]!=' ') {
+				$qry .= " OR (gruppe_kurzbz='".$this->gruppe_kurzbz[$i]."')";
+			} else {
+				$qry .= " OR ((studiengang_kz=".$this->studiengang_kz[$i]." AND semester=".$this->semester[$i].")";
+				if ($this->verband[$i]!=null && $this->verband[$i]!='' && $this->verband[$i]!=' ') {
+					$qry .= " AND (verband='".$this->verband[$i]."' OR verband IS NULL OR verband='' OR verband=' ')";
 				}
-				$sql_query.=')';
+				if ($this->gruppe[$i]!=null && $this->gruppe[$i]!='' && $this->gruppe[$i]!=' ') {
+					$qry .= " AND (gruppe='".$this->gruppe[$i]."' OR gruppe IS NULL OR gruppe='' OR gruppe=' ')";
+				}
+				$qry .= ")";
 			}
-			$sql_query.=")";
+		}
+		$qry .= ")";
+		if (!$DB->db_query($qry)) {
+			$DB->errormsg = $DB->db_last_error();
+			return false;
+		} elseif ($DB->db_num_rows() > 0) {
+			while ($row = $DB->db_fetch_object()) $this->errormsg .= "Kollision LV-Plan - Verband / Gruppe:\nLektor $row->mitarbeiter_uid | Ort $row->ort_kurzbz | Gruppe $row->stg$row->semester".(!empty($row->gruppe_kurzbz)?" $row->gruppe_kurzbz":"-$row->verband$row->gruppe")." | $datum ($stunde)\n";
+			return false;
+		}
 
-			if (!$this->db_query($sql_query))
-			{
-				$this->errormsg=$this->db_last_error();
+		global $ignore_zeitsperre, $ignore_reservierung;
+		if ($ignore_reservierung=='false') {
+			// Reservierung?
+			$qry = "SELECT	vr.uid AS mitarbeiter_uid,
+							vr.ort_kurzbz,
+							vr.titel,
+							vr.beschreibung,
+							vr.semester,
+							vr.verband,
+							vr.gruppe,
+							vr.gruppe_kurzbz,
+							upper(stg.typ || stg.kurzbz) AS stg
+					  FROM lehre.vw_reservierung AS vr
+				INNER JOIN stp.reservierung_extended USING(reservierung_id)
+				INNER JOIN public.tbl_studiengang AS stg USING(studiengang_kz)
+					 WHERE datum='".addslashes($datum)."' AND stunde='".addslashes($stunde)."' 
+					   AND (reservierung_typ_id IS NULL OR reservierung_typ_id NOT IN (18)) -- aua hier nötig??
+					   AND (
+					   		ort_kurzbz='".addslashes($ort)."'
+					   		OR (uid IN ('".implode("','",$this->mitarbeiter_uid)."') AND uid!='_DummyLektor')";
+			for ($i=0;$i<$this->anz;$i++) {
+				if ($this->gruppe_kurzbz[$i]!=null) $qry .= " OR gruppe_kurzbz='".$this->gruppe_kurzbz[$i]."'";
+				else {
+					//  ganzer Jahrgang wird immer ge-checkt
+					$qry .= "\n						OR (studiengang_kz='".addslashes($this->studiengang_kz[$i])."' AND semester='".addslashes($this->semester[$i])."'";
+					if ($this->verband[$i]!=null && $this->verband[$i]!='' && $this->verband[$i]!=' ') {
+						$qry .= "
+								AND (verband='".addslashes($this->verband[$i])."' OR verband IS NULL OR verband='' OR verband=' ')";
+					}
+					if ($this->gruppe[$i]!=null && $this->gruppe[$i]!='' && $this->gruppe[$i]!=' ') {
+						$qry .= "
+								AND (gruppe='".addslashes($this->gruppe[$i])."' OR gruppe IS NULL OR gruppe='' OR gruppe=' ')";
+					}
+					$qry .= "\n						)";
+				}
+			}
+			$qry .= "\n					)";
+
+			if (!$DB->db_query($qry)) {
+				$this->errormsg = $DB->db_last_error();
 				return false;
-			}
-			$erg_stpl=$this->db_result;
-
-			$anzahl=$this->db_num_rows($erg_stpl);
-			if($anzahl==0)
-			{
-				// Reservierungen pruefen?
-				if (!$ignore_reservation)
-				{
-					// Datenbank abfragen  	( studiengang_kz, titel, beschreibung )
-					//Lektoren SQL
-					$sql_lkt='';
-					foreach ($this->mitarbeiter_uid as $lkt)
-						$sql_lkt.="OR uid='$lkt' ";
-					$sql_lkt=mb_substr($sql_lkt,3);
-					$sql_lkt="(($sql_lkt) AND uid not in (".$this->db_implode4SQL(unserialize(KOLLISIONSFREIE_USER))."))";
-					$sql_query="SELECT reservierung_id AS id, uid AS lektor, stg_kurzbz, ort_kurzbz, semester, verband, gruppe, gruppe_kurzbz, datum, stunde
-								FROM lehre.vw_reservierung
-								WHERE datum=".$this->db_add_param($datum)." AND stunde=".$this->db_add_param($stunde)."
-								AND (ort_kurzbz=".$this->db_add_param($ort)." OR $sql_lkt)";
-
-					if (!$this->db_query($sql_query))
-					{
-						$this->errormsg=$sql_query.$this->db_last_error();
-						return false;
-					}
-					$erg_res=$this->db_result;
-					$anz_res=$this->db_num_rows($erg_res);
-					//Check
-					if ($anz_res==0)
-					{
-						// Zeitsperren pruefen?
-						if (!$ignore_zeitsperre)
-						{
-							// Datenbank abfragen  	( studiengang_kz, titel, beschreibung )
-							//Lektoren SQL
-							$sql_lkt='';
-							foreach ($this->mitarbeiter_uid as $lkt)
-								$sql_lkt.="OR mitarbeiter_uid=".$this->db_add_param($lkt)." ";
-							$sql_lkt=mb_substr($sql_lkt,3);
-							$sql_query="SELECT * FROM campus.tbl_zeitsperre
-											WHERE ($sql_lkt) AND
-												(  (vondatum<".$this->db_add_param($datum)." AND bisdatum>".$this->db_add_param($datum).")
-												OR (vondatum=".$this->db_add_param($datum)." AND bisdatum=".$this->db_add_param($datum)." AND vonstunde<=".$this->db_add_param($stunde)." AND bisstunde>=".$this->db_add_param($stunde).")
-												OR (vondatum=".$this->db_add_param($datum)." AND bisdatum>".$this->db_add_param($datum)." AND vonstunde<=".$this->db_add_param($stunde).")
-												OR (vondatum<".$this->db_add_param($datum)." AND bisdatum=".$this->db_add_param($datum)." AND bisstunde>=".$this->db_add_param($stunde).") )";
-							//echo $sql_query.'<br>';
-							if (!$this->db_query($sql_query))
-							{
-								$this->errormsg=$sql_query.$this->db_last_error();
-								return false;
-							}
-							$erg_zs=$this->db_result;
-							$anz_zs=$this->db_num_rows($erg_zs);
-							//Check
-							if ($anz_zs==0)
-								return true;
-							else
-							{
-								$row=$this->db_fetch_object($erg_zs);
-								$this->errormsg="Kollision (Zeitsperre): $row->zeitsperre_id|$row->mitarbeiter_uid|$row->zeitsperretyp_kurzbz|$row->bezeichnung|$row->vondatum/$row->vonstunde-$row->bisdatum/$row->bisstunde - $row->vertretung_uid";
-								return false;
-							}
-						}
-						return true;
-					}
-					else
-					{
-						$row=$this->db_fetch_object($erg_res);
-						$this->errormsg="Kollision (Reservierung): $row->id|$row->lektor|$row->ort_kurzbz|$row->stg_kurzbz-$row->semester$row->verband$row->gruppe$row->gruppe_kurzbz - $row->datum/$row->stunde";
-						return false;
-					}
-				}
-				return true;
-			}
-			else
-			{
-				$row=$this->db_fetch_object($erg_stpl);
-				$this->errormsg="Kollision mit StundenplanID($stpl_id): ".$row->$stpl_id." | $datum - $row->stunde | $ort | ".($row->gruppe_kurzbz!=''?$row->gruppe_kurzbz:$stg_obj->kuerzel_arr[$row->studiengang_kz]."-$row->semester$row->verband$row->gruppe");
+			} elseif ($DB->db_num_rows() > 0) {
+				while ($row = $DB->db_fetch_object()) $this->errormsg .= "Kollision Reservierung:\nLektor $row->mitarbeiter_uid | Ort $row->ort_kurzbz | Gruppe $row->stg$row->semester".(!empty($row->gruppe_kurzbz)?" $row->gruppe_kurzbz":"-$row->verband$row->gruppe")."  | Titel $row->titel - $row->beschreibung | $datum ($stunde)\n";
 				return false;
 			}
 		}
-		else
-		{
-			$row=$this->db_fetch_row($erg_stpl);
-			$this->errormsg="Kollision mit StundenplanID($stpl_id): $row[0] | $datum | $ort";
-			return false;
+		
+		if ($ignore_zeitsperre=='false') {
+			// Zeitsperre ?
+			$qry = "SELECT *
+					  FROM campus.tbl_zeitsperre
+					 WHERE mitarbeiter_uid IN ('".implode("','",$this->mitarbeiter_uid)."')
+					   AND (
+					   		(vondatum<'$datum' AND bisdatum>'$datum') 
+							OR (vondatum='$datum' AND bisdatum='$datum' AND vonstunde<=$stunde AND bisstunde>=$stunde)
+							OR (vondatum='$datum' AND bisdatum>'$datum' AND vonstunde<=$stunde)
+							OR (vondatum<'$datum' AND bisdatum='$datum' AND bisstunde>=$stunde)
+						)";	
+			if (!$DB->db_query($qry)) {
+				$this->errormsg = $DB->db_last_error();
+				return false;
+			} elseif ($DB->db_num_rows() > 0) {
+				while ($row = $DB->db_fetch_object()) $this->errormsg .= "Kollision Zeitsperre:\nLektor $row->mitarbeiter_uid | $row->bezeichnung | $row->vondatum ($row->vonstunde) - $row->bisdatum ($row->bisstunde)\n";
+				return false;
+			}
 		}
+		return true;
 	}
 
 	/**
@@ -707,50 +723,44 @@ class lehreinheit extends basis_db
 	{
 		$this->errormsg='';
 		$this->lehreinheiten=array();
-
-		$lva_stpl_view=VIEW_BEGIN.'lva_'.$db_stpl_table;
-
+		
+		$lva_stpl_view=VIEW_BEGIN.'lva_'.$db_stpl_table;		
+		
 		if (mb_strlen($studiensemester)<=0)
 		{
 			$this->errormsg='Studiensemester ist nicht gesetzt!(lehreinheit.getLehreinheitLVPL)';
 			return false;
 		}
-		else $where=" studiensemester_kurzbz=".$this->db_add_param($studiensemester);
-
-		if ($type=='lektor')
-			$where.=" AND lektor_uid=".$this->db_add_param($lektor);
-		elseif ($type=='gruppe')
-			$where.=" AND gruppe_kurzbz=".$this->db_add_param($gruppe);
-		elseif ($type=='verband')
-		{
-			$where.=" AND studiengang_kz=".$this->db_add_param($stg_kz);
-			if ($sem>0)
-				$where.=" AND semester=".$this->db_add_param($sem);
-			if (mb_strlen($ver)>0 && $ver!=' ')
-				$where.=" AND verband=".$this->db_add_param($ver);
-			if (mb_strlen($grp)>0 && $grp!=' ')
-				$where.=" AND gruppe=".$this->db_add_param($grp);
+		
+		$qry = "SELECT *, planstunden-verplant::smallint AS offenestunden
+				  FROM lehre.$lva_stpl_view
+			INNER JOIN lehre.tbl_lehrform ON $lva_stpl_view.lehrform=tbl_lehrform.lehrform_kurzbz
+				 WHERE verplanen='t'
+				   AND studiensemester_kurzbz='$studiensemester'";
+		if ($type=='lektor') $qry .= " AND lektor_uid='$lektor'";
+		elseif (!empty($orgform)) {
+			$qry .= "	AND studiengang_kz='$stg_kz'
+						AND semester='$sem'
+						AND (	   orgform_kurzbz='$orgform'
+							OR orgform_kurzbz IN (
+								SELECT DISTINCT child FROM stp.orgform_filter_childs WHERE parent='$orgform'
+							)
+						)";
+		} elseif ($type=='gruppe') {
+			$qry.=" AND gruppe_kurzbz='$gruppe'";
+		} elseif($type=='fachbereich') {
+            $qry.=" AND fachbereich_kurzbz=".$this->db_add_param($fachbereich_kurzbz);
+        } elseif ($type=='verband') {
+			$qry .= " AND studiengang_kz='$stg_kz'";
+			if ($sem>0) $qry .= " AND semester=$sem";
+			if (mb_strlen($ver)>0 && $ver!=' ') $qry .= " AND verband='$ver'";
+			if (mb_strlen($grp)>0 && $grp!=' ') $qry .= " AND gruppe='$grp' ";
 		}
-		elseif($type=='fachbereich')
+		$qry.=" ORDER BY ".($order!=''?$order:'offenestunden DESC, lehrfach, lehrform, semester, verband, gruppe, gruppe_kurzbz').";";
+
+		if(!$this->db_query($qry))
 		{
-			$where.=" AND fachbereich_kurzbz=".$this->db_add_param($fachbereich_kurzbz);
-		}
-		$sql_query='SELECT *, planstunden-verplant::smallint AS offenestunden
-			FROM
-				lehre.'.$lva_stpl_view.'
-				JOIN lehre.tbl_lehrform ON '.$lva_stpl_view.'.lehrform=tbl_lehrform.lehrform_kurzbz
-			WHERE '.$where.' AND verplanen';
-		if($orgform_kurzbz!='')
-			$sql_query.=" AND ".$this->db_add_param($orgform_kurzbz)."=(Select orgform_kurzbz FROM lehre.tbl_lehrveranstaltung WHERE lehrveranstaltung_id=(SELECT lehrveranstaltung_id FROM lehre.tbl_lehreinheit WHERE lehreinheit_id=".$lva_stpl_view.".lehreinheit_id))";
-
-		if($order=='')
-			$order='offenestunden DESC, lehrfach, lehrform, semester, verband, gruppe, gruppe_kurzbz';
-
-		$sql_query.=" ORDER BY $order;";
-
-		if(!$this->db_query($sql_query))
-		{
-			$this->errormsg=$this->db_last_error().$sql_query;
+			$this->errormsg=$this->db_last_error().$qry;
 			return false;
 		}
 		while($row = $this->db_fetch_object())

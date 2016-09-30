@@ -225,6 +225,24 @@ echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
 					<textbox id="lehrveranstaltung-detail-textbox-stundenblockung" width="50" disabled="true" />
 					<label value="     Wochenrythmus " />
 					<textbox id="lehrveranstaltung-detail-textbox-wochenrythmus" width="50" disabled="true"/>
+					<spacer flex="1"></spacer>
+					<label value="Orgform"></label>
+					<menulist
+						id="lehrveranstaltung-detail-menulist-orgform"
+						disabled="true"
+						datasources="rdf:null"
+						ref="http://www.fhstp.ac.at/orgform/liste"  >
+						<template>
+							<menupopup>
+								<menuitem
+									value="rdf:http://www.fhstp.ac.at/orgform/rdf#orgform_kurzbz"
+									label="rdf:http://www.fhstp.ac.at/orgform/rdf#orgform_kurzbz rdf:http://www.fhstp.ac.at/orgform/rdf#bez"
+									selected="rdf:http://www.fhstp.ac.at/orgform/rdf#sel"
+									uri="rdf:*"
+								/>
+							</menupopup>
+						</template>
+					</menulist>
 				</hbox>
 
 			</rows>

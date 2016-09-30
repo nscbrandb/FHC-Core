@@ -42,6 +42,7 @@ var lehrveranstaltungLvGesamtNotenSelectUID=null; //LehreinheitID des Noten Eint
 var lehrveranstaltungNotenTreeloaded=false;
 var lehrveranstaltungGesamtNotenTreeloaded=false;
 var LehrveranstaltungAusbildungssemesterFilter='';
+var LeDetailOrgform; //Orgform die nach dem Laden markiert werden soll
 // ********** Observer und Listener ************* //
 
 // ****
@@ -376,7 +377,30 @@ function LeNeu()
 	//SinkObserver hinzufuegen
 	var sink = newDs.QueryInterface(Components.interfaces.nsIRDFXMLSink);
 	sink.addXMLSinkObserver(LeDetailLehrfachSinkObserver);
+	
+	//Orgform drop down setzen
+	//ID in globale Variable speichern
+	LeDetailOrgform='';
+	orgformmenulist = document.getElementById('lehrveranstaltung-detail-menulist-orgform');
+	var rdfService = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
+	//Entfernen der alten Datasources
+	var oldDatasources = orgformmenulist.database.GetDataSources();
+	while(oldDatasources.hasMoreElements()) orgformmenulist.database.RemoveDataSource(oldDatasources.getNext());
+	//Refresh damit die entfernten DS auch wirklich entfernt werden
+	orgformmenulist.builder.rebuild();
+	//Url zusammenbauen	// Orgformen je nach STG
+	var url = '<?php echo APP_ROOT;?>addons/STPCore/rdf/orgform.rdf.php?lv_id='+lehrveranstaltung_id+'&'+gettimestamp();
+	//RDF holen
+	var newDs  = rdfService.GetDataSourceBlocking(url);
+	newDs.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
+	newDs.QueryInterface(Components.interfaces.nsIRDFXMLSink);
+	orgformmenulist.database.AddDataSource(newDs);
+	orgformmenulist.builder.rebuild();
 
+	// Orgform setzen
+	var col = tree.columns ? tree.columns["lehrveranstaltung-treecol-orgform_kurzbz"] : "lehrveranstaltung-treecol-orgform_kurzbz";
+	orgformmenulist.value = tree.view.getCellText(tree.currentIndex,col);
+	
 	document.getElementById('lehrveranstaltung-detail-textbox-lehrveranstaltung').value=lehrveranstaltung_id;
 	document.getElementById('lehrveranstaltung-detail-checkbox-new').checked=true;
 	document.getElementById('lehrveranstaltung-detail-textbox-stundenblockung').value='2';
@@ -531,6 +555,7 @@ function LeDelete()
 		if(!val.dbdml_return)
 			alert(val.dbdml_errormsg)
 
+		document.getElementById('lehrveranstaltung-tree').currentIndex=-1;	// damit beim Löschen nichts unnötig markiert wird!
 		LvTreeRefresh();
 		LeDetailReset();
 		LeDetailDisableFields(true);
@@ -609,6 +634,7 @@ function LeDetailDisableFields(val)
 	document.getElementById('lehrveranstaltung-detail-menulist-lehrform').disabled=val;
 	document.getElementById('lehrveranstaltung-detail-tree-lehreinheitgruppe').disabled=val;
 	document.getElementById('lehrveranstaltung-detail-button-save').disabled=val;
+	document.getElementById('lehrveranstaltung-detail-menulist-orgform').disabled=val
 
 	document.getElementById('lehrveranstaltung-detail-textbox-unr').disabled=val;
 	document.getElementById('lehrveranstaltung-detail-textbox-lehrveranstaltung').disabled=val;
@@ -618,7 +644,7 @@ function LeDetailDisableFields(val)
 // ****
 // * Speichert die Details
 // ****
-function LeDetailSave()
+function LeDetailSave(norefresh)
 {
 	//Werte holen
 	lvnr = document.getElementById('lehrveranstaltung-detail-textbox-lvnr').value;
@@ -636,6 +662,7 @@ function LeDetailSave()
 	studiensemester = document.getElementById('lehrveranstaltung-detail-menulist-studiensemester').value;
 	lehrform = document.getElementById('lehrveranstaltung-detail-menulist-lehrform').value;
 	gewicht = document.getElementById('lehrveranstaltung-detail-textbox-gewicht').value;
+	orgform = document.getElementById('lehrveranstaltung-detail-menulist-orgform').value;
 
 	if(lehrveranstaltung=='')
 		return false;
@@ -665,6 +692,7 @@ function LeDetailSave()
 	if (neu)
 	{
 		req.add('do','create');
+		document.getElementById('lehrveranstaltung-tree').currentIndex=-1;	// damits bei Refresh keine unnötigen Requests gibt
 	}
 	else
 	{
@@ -689,6 +717,7 @@ function LeDetailSave()
 	req.add('lehrform', lehrform);
 	req.add('anmerkung', anmerkung);
 	req.add('gewicht', gewicht);
+	req.add('orgform', orgform);
 
 	var response = req.executePOST();
 
@@ -700,12 +729,14 @@ function LeDetailSave()
 	}
 	else
 	{
-		netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-		document.getElementById('lehrveranstaltung-detail-checkbox-new').checked=false;
-		//LvTreeRefresh();
-		LvSelectLehreinheit_id=val.dbdml_data;
-		LvOpenLehrveranstaltung_id=lehrveranstaltung;
-		LvTreeDatasource.Refresh(false); //non blocking
+		if (norefresh == null) {
+			netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+			document.getElementById('lehrveranstaltung-detail-checkbox-new').checked=false;
+			//LvTreeRefresh();
+			LvSelectLehreinheit_id=val.dbdml_data;
+			LvOpenLehrveranstaltung_id=lehrveranstaltung;
+			LvTreeDatasource.Refresh(true); //non blocking
+		}
 		SetStatusBarText('Daten wurden gespeichert');
 	}
 }
@@ -717,7 +748,6 @@ function LeDetailSave()
 // ****
 function LeAuswahl()
 {
-
 	// Trick 17	(sonst gibt's ein Permission denied)
 	netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
 	var tree = document.getElementById('lehrveranstaltung-tree');
@@ -864,6 +894,7 @@ function LeAuswahl()
 	lehrform=getTargetHelper(dsource,subject,rdfService.GetResource( predicateNS + "#lehrform_kurzbz" ));
 	anzahl_studenten=getTargetHelper(dsource,subject,rdfService.GetResource( predicateNS + "#anzahl_studenten" ));
 	gewicht=getTargetHelper(dsource,subject,rdfService.GetResource( predicateNS + "#gewicht" ));
+	orgform=getTargetHelper(dsource,subject,rdfService.GetResource( predicateNS + "#orgform" ));
 
 	//Lehrfach drop down setzen
 
@@ -897,6 +928,25 @@ function LeAuswahl()
 	//var sink = newDs.QueryInterface(Components.interfaces.nsIRDFXMLSink);
 	//sink.addXMLSinkObserver(LeDetailLehrfachSinkObserver);
 
+	//Orgform drop down setzen
+	//ID in globale Variable speichern
+	LeDetailOrgform='';
+	orgformmenulist = document.getElementById('lehrveranstaltung-detail-menulist-orgform');
+	var rdfService = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
+	//Entfernen der alten Datasources
+	var oldDatasources = orgformmenulist.database.GetDataSources();
+	while(oldDatasources.hasMoreElements()) orgformmenulist.database.RemoveDataSource(oldDatasources.getNext());
+	//Refresh damit die entfernten DS auch wirklich entfernt werden
+	orgformmenulist.builder.rebuild();
+	//Url zusammenbauen	// Orgformen je nach STG
+	var url = '<?php echo APP_ROOT;?>addons/STPCore/rdf/orgform.rdf.php?le_id='+lehreinheit_id+'&'+gettimestamp();
+	//RDF holen
+	var newDs  = rdfService.GetDataSourceBlocking(url);
+	newDs.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
+	newDs.QueryInterface(Components.interfaces.nsIRDFXMLSink);
+	orgformmenulist.database.AddDataSource(newDs);
+	orgformmenulist.builder.rebuild();
+	
 	//Daten den Feldern zuweisen
 
 	document.getElementById('lehrveranstaltung-detail-textbox-unr').value=unr;
@@ -919,6 +969,7 @@ function LeAuswahl()
 	document.getElementById('lehrveranstaltung-detail-checkbox-new').checked=false;
 	document.getElementById('lehrveranstaltung-detail-textbox-lehreinheit_id').value=lehreinheit_id;
 	document.getElementById('lehrveranstaltung-detail-groupbox-caption').label='Details - Anzahl TeilnehmerInnen: '+anzahl_studenten;
+	document.getElementById('lehrveranstaltung-detail-menulist-orgform').value=orgform;
 
 	document.getElementById('lehrveranstaltung-detail-textbox-gewicht').value=gewicht;
 	//Lehreinheitmitarbeiter tree setzen
