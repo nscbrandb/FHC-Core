@@ -56,6 +56,7 @@ function phpRequestExecute()
 	try {
 		var txt = "?";
 		for(var i in this.parms) {
+			if (typeof this.parms[i] == 'function') continue;
 			txt = txt+'&'+this.parms[i].name+'='+encodeURIComponent(this.parms[i].value);
 		}
 		//alert('sende '+txt);
@@ -113,6 +114,7 @@ function phpRequestExecutePOST()
 		var txt = "";
 		for(var i in this.parms)
 		{
+			if (typeof this.parms[i] == 'function') continue;
 			txt = txt+'&'+this.parms[i].name+'='+encodeURIComponent(this.parms[i].value);
 		}
 		//alert('sende '+txt);
