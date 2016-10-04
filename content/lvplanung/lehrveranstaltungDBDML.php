@@ -281,7 +281,6 @@ if(!$error)
 							 WHERE lem.mitarbeiter_uid='$lem->mitarbeiter_uid'
 							   AND studiensemester_kurzbz='$le->studiensemester_kurzbz'
 							   AND leme.vertrag='t'";
-stpdebug($qry);
 					if($db->db_query($qry)) {
 						if($row = $db->db_fetch_object()) {
 							if($row->summe - $semesterstunden_alt + $lem->semesterstunden > $stunden_limit) {	// summe ist über limit
