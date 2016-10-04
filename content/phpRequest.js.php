@@ -1,3 +1,7 @@
+<?php
+	header('Content-Type: application/javascript');
+?>
+
 /**
 *
 * HTTP Request Klasse
@@ -56,8 +60,7 @@ function phpRequestExecute()
 	try {
 		var txt = "?";
 		for(var i in this.parms) {
-			if (typeof this.parms[i] == 'function') continue;
-			txt = txt+'&'+this.parms[i].name+'='+encodeURIComponent(this.parms[i].value);
+			if (typeof this.parms[i] !== "function") txt = txt+'&'+this.parms[i].name+'='+encodeURIComponent(this.parms[i].value);
 		}
 		//alert('sende '+txt);
 		//Two options here, only uncomment one of these
@@ -114,8 +117,7 @@ function phpRequestExecutePOST()
 		var txt = "";
 		for(var i in this.parms)
 		{
-			if (typeof this.parms[i] == 'function') continue;
-			txt = txt+'&'+this.parms[i].name+'='+encodeURIComponent(this.parms[i].value);
+			if (typeof this.parms[i] !== "function") txt = txt+'&'+this.parms[i].name+'='+encodeURIComponent(this.parms[i].value);
 		}
 		//alert('sende '+txt);
 
