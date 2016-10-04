@@ -1089,7 +1089,7 @@ function LeMitarbeiterSave()
 			alert(response);
 		else
 			alert(val.dbdml_errormsg)
-	}
+	}	else if (val.dbdml_data != '') alert(val.dbdml_data);	// STP Hack Info anzeigen
 	//else
 	//{
 		leDetailLektorUid = lektor;

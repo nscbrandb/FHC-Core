@@ -250,33 +250,6 @@ if(!$error)
 
 				$lem->new=false;
 
-				//Wenn sich der Lektor aendert und keine Kollision dadurch entsteht, dann werden die
-				//Daten automatisch im Stundenplan geaendert
-				if($lem->mitarbeiter_uid!=$lem->mitarbeiter_uid_old)
-				{
-					$koll_arr = kollision($lem->lehreinheit_id, $lem->mitarbeiter_uid, $lem->mitarbeiter_uid_old, $db_stpl_table);
-					//check kollision
-					if($koll_arr===false || $ignore_kollision=='true')
-					{
-						//Update im Stundenplan
-						$stpl_table='lehre.tbl_stundenplandev';
-						$qry_lvplanaenderung = "UPDATE $stpl_table SET mitarbeiter_uid=".$db->db_add_param($lem->mitarbeiter_uid).", updateamum=now(), updatevon=".$db->db_add_param($user)." WHERE lehreinheit_id=".$db->db_add_param($lem->lehreinheit_id, FHC_INTEGER)." AND mitarbeiter_uid=".$db->db_add_param($lem->mitarbeiter_uid_old);
-						// Das Update wird erst weiter unten durchgefuehrt wenn die restlichen Checks erfolgreich sind da es sonst zu inkonsistenzen kommt
-						if(is_array($koll_arr))
-						{
-							$errormsg="Da Kollisionen deaktiviert sind, wird die Änderung durchgeführt obwohl dadurch kollisionen entstehen. Bitte korrigieren Sie folgende Kollisionen manuell:\n";
-							$errormsg.=implode("\n",$koll_arr);
-						}
-					}
-					else
-					{
-						$return = false;
-						$errormsg = "Änderung fehlgeschlagen!\nDie Änderung des Lektors führt zu ".count($koll_arr)." Kollision(en) im LV-Plan. Deaktivieren Sie die Kollisionspruefung oder wenden Sie sich an die LV-Planung!\n";
-						$errormsg.= "zB:".$koll_arr[0];
-						$error = true;
-					}
-				}
-
 				$fixangestellt=false;
 				if(!$error)
 				{
@@ -286,95 +259,49 @@ if(!$error)
 					$ma->load($lem->mitarbeiter_uid);
 					$fixangestellt=$ma->fixangestellt;
 
-					$oe_obj = new organisationseinheit();
-					$stunden_oe_kurzbz=null;
-
-					$stg_obj = new studiengang();
-					$stg_obj->load($lva->studiengang_kz);
-
 					//Maximale Stundenanzahl ermitteln
-					if($fixangestellt)
-						list($stunden_oe_kurzbz, $max_stunden) = $oe_obj->getStundengrenze($stg_obj->oe_kurzbz, true);
-					else
-						list($stunden_oe_kurzbz, $max_stunden) = $oe_obj->getStundengrenze($stg_obj->oe_kurzbz, false);
-
+					if($fixangestellt) {
+						$stunden_warn = VEL_SEMSTD_WARN_HB;
+						$stunden_limit = VEL_SEMSTD_LIMIT_HB;
+					} else {
+						$stunden_warn = VEL_SEMSTD_WARN_NB;
+						$stunden_limit = VEL_SEMSTD_LIMIT_NB;
+					}
+					
 					//Summe der Stunden ermitteln
 					$le = new lehreinheit();
 					$le->load($lem->lehreinheit_id);
 
-					if($lem->stundensatz<=0 || $lem->faktor<=0 || $lem->bismelden==false)
-						$neue_stunden_eingerechnet=false;
-					else
-						$neue_stunden_eingerechnet=true;
-
-					if(($stundensatz_alt<=0 || $faktor_alt<=0 || $bismelden_alt==false))
-						$alte_stunden_eingerechnet=false;
-					else
-						$alte_stunden_eingerechnet=true;
-
-					//Stundenreduzierung immer moeglich
-					if(($lem->semesterstunden>$semesterstunden_alt) || $neue_stunden_eingerechnet)
-					{
-						$oe_obj = new organisationseinheit();
-						$oe_arr = $oe_obj->getChilds($stunden_oe_kurzbz);
-						$qry = "SELECT ";
-						if($alte_stunden_eingerechnet && $neue_stunden_eingerechnet)
-							$qry.=" (sum(tbl_lehreinheitmitarbeiter.semesterstunden)-($semesterstunden_alt)+($lem->semesterstunden)) as summe";
-						elseif($alte_stunden_eingerechnet && !$neue_stunden_eingerechnet)
-							$qry.=" (sum(tbl_lehreinheitmitarbeiter.semesterstunden)-($semesterstunden_alt)) as summe";
-						elseif(!$alte_stunden_eingerechnet && $neue_stunden_eingerechnet)
-							$qry.=" (sum(tbl_lehreinheitmitarbeiter.semesterstunden)+($lem->semesterstunden)) as summe";
-						elseif(!$alte_stunden_eingerechnet && !$neue_stunden_eingerechnet)
-							$qry.=" (sum(tbl_lehreinheitmitarbeiter.semesterstunden)) as summe";
-						$qry.="	FROM
-									lehre.tbl_lehreinheitmitarbeiter
-									JOIN lehre.tbl_lehreinheit USING(lehreinheit_id)
-									JOIN lehre.tbl_lehrveranstaltung USING(lehrveranstaltung_id)
-									JOIN public.tbl_studiengang USING(studiengang_kz)
-								WHERE
-									mitarbeiter_uid=".$db->db_add_param($lem->mitarbeiter_uid)." AND
-									studiensemester_kurzbz=".$db->db_add_param($le->studiensemester_kurzbz)." AND
-									faktor>0 AND
-									stundensatz>0 AND
-									bismelden";
-
-						if(count($oe_arr)>0)
-							$qry.=" AND tbl_studiengang.oe_kurzbz in(".$db->db_implode4SQL($oe_arr).")";
-
-						if($db->db_query($qry))
-						{
-							if($row = $db->db_fetch_object())
-							{
-								if($row->summe>$max_stunden)
-								{
-									if(!$fixangestellt)
-									{
-										if(!LehrauftragAufFirma($lem->mitarbeiter_uid))
-										{
-											//Warnung wenn die Stundenzahl ueberschritten wurde
-											$return = false;
-											$error = true;
-											$errormsg = "ACHTUNG: Die maximal erlaubte Semesterstundenanzahl des Lektors von $max_stunden Stunden ($stunden_oe_kurzbz) wurde ueberschritten!\n Daten wurden NICHT gespeichert!\n\n";
-										}
-									}
-									else
-									{
-										$return = true;
-										$error = false;
-										$warnung = true;
-										$errormsg = "Hinweis: Die maximal erlaubte Semesterstundenanzahl des Lektors von $max_stunden Stunden ($stunden_oe_kurzbz) wurde ueberschritten!\n Daten wurden gespeichert!\n\n";
-									}
-
-									$errormsg.=getStundenproInstitut($lem->mitarbeiter_uid, $le->studiensemester_kurzbz, $oe_arr);
+					// bei jeder Änderung checken ob die Summe OK ist (kann ja sein, dass die Grenzen verschoben wurden ;-))
+					$qry = "SELECT (sum(lem.semesterstunden)) as summe
+							  FROM lehre.tbl_lehreinheitmitarbeiter AS lem
+						INNER JOIN lehre.tbl_lehreinheit AS le USING(lehreinheit_id)
+						INNER JOIN lehre.tbl_lehrveranstaltung AS lv USING(lehrveranstaltung_id)
+						INNER JOIN stp.lehreinheit_mitarbeiter_extended AS leme ON leme.lehreinheit_id=lem.lehreinheit_id AND leme.uid=lem.mitarbeiter_uid
+							 WHERE lem.mitarbeiter_uid='$lem->mitarbeiter_uid'
+							   AND studiensemester_kurzbz='$le->studiensemester_kurzbz'
+							   AND leme.vertrag='t'";
+stpdebug($qry);
+					if($db->db_query($qry)) {
+						if($row = $db->db_fetch_object()) {
+							if($row->summe - $semesterstunden_alt + $lem->semesterstunden > $stunden_limit) {	// summe ist über limit
+								if ($semesterstunden_alt >= $lem->semesterstunden) {	// Reduktion oder andere Felder
+									$return = true;
+									$warnung = true;
+									$data .= "Die Daten wurden gespeichert, aber:\n\nACHTUNG: Die Semesterstundenanzahl des Lektors beträgt ".($row->summe - $semesterstunden_alt + $lem->semesterstunden)." Stunden.\nDie maximal erlaubte Semesterstundenanzahl von $stunden_limit Stunden wurde überschritten!\nBitte reduzieren Sie die Stunden".($semesterstunden_alt>$lem->semesterstunden?" weiter":'').".\n\n";
+								} else {
+									$return = true;
+									$error = false;
+									$warnung = true;
+									$lem->semesterstunden = $semesterstunden_alt;
+									$data .= "ACHTUNG: Die maximal erlaubte Semesterstundenanzahl von $stunden_limit Stunden ".($row->summe>$stunden_limit?"wurde bereits überschritten":"würde überschritten werden")."!\n\nEs wurden nur die Planstunden gespeichert.\n\n";
 								}
+							} elseif ($row->summe - $semesterstunden_alt + $lem->semesterstunden >= $stunden_warn) {
+								$return = true;
+								$error = false;
+								$warnung = true;
+								$data .= "Hinweis: Die Semesterstundenanzahl des Lektors beträgt ".($row->summe - $semesterstunden_alt + $lem->semesterstunden)." Stunden.\nEs können noch maximal ".($stunden_limit-($row->summe - $semesterstunden_alt + $lem->semesterstunden))." Stunden zugeordnet werden.\n\n";
 							}
-							else
-							{
-								$return = false;
-								$error=true;
-								$errormsg='Fehler beim Ermitteln der Gesamtstunden';
-							}
-
 						}
 						else
 						{
@@ -383,57 +310,46 @@ if(!$error)
 							$errormsg='Fehler beim Ermitteln der Gesamtstunden';
 						}
 					}
+					else
+					{
+						$return = false;
+						$error=true;
+						$errormsg='Fehler beim Ermitteln der Gesamtstunden';
+					}
 				}
 
 				if(!$error)
 				{
-					if($lem->save())
-					{
-						//Fixangestellte bekommen eine Warnung wenn die Stunden ueberschritten wurden. Es wird aber
-						//trotzdem gespeichert
-						if($warnung)
-						{
-							$return=false;
-							$error = true;
-						}
-						else
-						{
-							$return = true;
-							$error = false;
-						}
-
-						// Wenn eine LVPlan aenderung noetig ist, dann diese jetzt
-						// durchfuehrten
-						if($qry_lvplanaenderung!='')
-						{
-							if($db->db_query($qry_lvplanaenderung))
-							{
-								if($errormsg=='' || $errormsg=='unknown')
-								{
-									$error = false;
-									$return = true;
-								}
-								else
-								{
-									// Bei Kollisionen steht in errormsg die Kollisionsinformation
-									$error = true;
-									$return = false;
-								}
-							}
-							else
-							{
-								$error = true;
-								$return = false;
-								$errormsg = 'Fehler beim Update im LV-Plan'.$qry;
-							}
-						}
-					}
-					else
-					{
+					if($lem->save()) {
+												$return = true;
+						$error = false;
+						// für die Info bei Vertragsbearbeitung
+						if (!empty($lem->errormsg)) $data .= $lem->errormsg;
+					} else {
 						$return = false;
-						$errormsg  = $lem->errormsg;
+						$errormsg = $lem->errormsg;
 						$error = true;
 					}
+				}
+				if (!$error) {
+					//Wenn sich der Lektor aendert und keine Kollision dadurch entsteht, dann werden die
+					//Daten automatisch im Stundenplan geaendert
+					if($lem->mitarbeiter_uid!=$lem->mitarbeiter_uid_old) {	// STP-Hack bei Lektoränderung immer Ändern! egal ob Koll. oder nicht
+						//Update im Stundenplan
+						$stpl_table='lehre.tbl_stundenplandev';
+						$qry = "UPDATE $stpl_table SET mitarbeiter_uid='$lem->mitarbeiter_uid' WHERE lehreinheit_id='$lem->lehreinheit_id' AND mitarbeiter_uid='$lem->mitarbeiter_uid_old'";
+						if($db->db_query($qry)) {
+							$error = false;
+							$return = true;
+						} else {
+							$error = true;
+							$return = false;
+							$errormsg = 'Fehler beim Update im LV-Plan'.$qry;
+						}
+						//check kollision für ein Warning
+						if(kollision($lem->lehreinheit_id, $lem->mitarbeiter_uid, $lem->mitarbeiter_uid_old)) $data .= "Die Änderung wurde gespeichert, ".$db->db_affected_rows()." Datensätze in $stpl_table wurden geändert.\n\nAchtung: Die Aenderung des Lektors fuehrt aber einer Kollision im LV-Plan!\n".$errormsg;
+						else $data .= "Die Änderung wurde gespeichert, ".$db->db_affected_rows()." Datensätze in $stpl_table wurden geändert.\n";
+					}	
 				}
 			}
 		}
@@ -524,90 +440,63 @@ if(!$error)
 
 				$maxstunden=9999;
 
-				$oe_obj = new organisationseinheit();
-				$stunden_oe_kurzbz=null;
-
-				$stg_obj = new studiengang();
-				$stg_obj->load($lva->studiengang_kz);
-
+				// Bei allen Lektoren muss geprueft werden ob die Stundengrenze erreicht wurde
 				//Maximale Stundenanzahl ermitteln
-				if($fixangestellt)
-					list($stunden_oe_kurzbz, $max_stunden) = $oe_obj->getStundengrenze($stg_obj->oe_kurzbz, true);
-				else
-					list($stunden_oe_kurzbz, $max_stunden) = $oe_obj->getStundengrenze($stg_obj->oe_kurzbz, false);
+				if($fixangestellt) {
+					$stunden_warn = VEL_SEMSTD_WARN_HB;
+					$stunden_limit = VEL_SEMSTD_LIMIT_HB;
+				} else {
+					$stunden_warn = VEL_SEMSTD_WARN_NB;
+					$stunden_limit = VEL_SEMSTD_LIMIT_NB;
+				}
 
-				//Bei freien Lektoren muss geprueft werden ob die Stundengrenze erreicht wurde
-				if(!$fixangestellt && !LehrauftragAufFirma($lem->mitarbeiter_uid))
+				//Summe der Stunden ermitteln
+				$le = new lehreinheit();
+				$le->load($lem->lehreinheit_id);
+				$qry = "SELECT (sum(lem.semesterstunden)) as summe
+						  FROM lehre.tbl_lehreinheitmitarbeiter AS lem
+					INNER JOIN lehre.tbl_lehreinheit AS le USING(lehreinheit_id)
+					INNER JOIN lehre.tbl_lehrveranstaltung AS lv USING(lehrveranstaltung_id)
+					INNER JOIN stp.lehreinheit_mitarbeiter_extended AS leme ON leme.lehreinheit_id=lem.lehreinheit_id AND leme.uid=lem.mitarbeiter_uid
+						 WHERE lem.mitarbeiter_uid='$lem->mitarbeiter_uid'
+						   AND studiensemester_kurzbz='$le->studiensemester_kurzbz'
+						   AND leme.vertrag='t'";
+				if($result_std = $db->db_query($qry))
 				{
-					//Summe der Stunden ermitteln
-					$le = new lehreinheit();
-					$le->load($lem->lehreinheit_id);
-
-					$oe_obj = new organisationseinheit();
-					$oe_arr = $oe_obj->getChilds($stunden_oe_kurzbz);
-
-					$qry = "SELECT
-								sum(tbl_lehreinheitmitarbeiter.semesterstunden) as summe
-							FROM
-								lehre.tbl_lehreinheitmitarbeiter
-								JOIN lehre.tbl_lehreinheit USING(lehreinheit_id)
-								JOIN lehre.tbl_lehrveranstaltung USING(lehrveranstaltung_id)
-								JOIN public.tbl_studiengang USING(studiengang_kz)
-							WHERE
-								mitarbeiter_uid=".$db->db_add_param($lem->mitarbeiter_uid)." AND
-								studiensemester_kurzbz=".$db->db_add_param($le->studiensemester_kurzbz)." AND
-								faktor>0 AND
-								stundensatz>0 AND
-								bismelden";
-
-					if(count($oe_arr)>0)
-						$qry.=" AND tbl_studiengang.oe_kurzbz in(".$db->db_implode4SQL($oe_arr).")";
-
-					if($result_std = $db->db_query($qry))
-					{
-						if($row_std = $db->db_fetch_object($result_std))
-						{
-							//Grenze ueberschritten
-							if($row_std->summe>=$max_stunden)
-							{
-								$return = false;
-								$error = true;
-								$errormsg = "ACHTUNG: Die maximal erlaubte Semesterstundenanzahl des Lektors von $max_stunden Stunden ($stunden_oe_kurzbz) wurde ueberschritten!\n Daten wurden NICHT gespeichert!\n\n";
-								$errormsg.=getStundenproInstitut($lem->mitarbeiter_uid, $le->studiensemester_kurzbz,$oe_arr);
-							}
-							else
-							{
-								//Stunden berechnen die noch maximal unterrichtet werden darf
-								$maxstunden = $max_stunden-$row_std->summe;
-							}
-						}
-					}
+					$row_std = $db->db_fetch_object($result_std);
+				}
+				else
+				{
+					$return = false;
+					$error=true;
+					$errormsg='Fehler beim Ermitteln der Gesamtstunden ..';
 				}
 
 				if(!$error)
 				{
+					$errormsg = '';
 					//Faktor und Semesterstunden aus tbl_lehrveranstaltung holen
 					$qry = "SELECT planfaktor, semesterstunden FROM lehre.tbl_lehrveranstaltung JOIN lehre.tbl_lehreinheit USING(lehrveranstaltung_id) WHERE lehreinheit_id=".$db->db_add_param($_POST['lehreinheit_id'], FHC_INTEGER).";";
 					if($db->db_query($qry))
 					{
 						if($row = $db->db_fetch_object())
 						{
-							if($row->planfaktor!='')
-								$lem->faktor = $row->planfaktor;
-							else
-								$lem->faktor = '1.0';
-
-							if($row->semesterstunden!='')
-							{
-								//wenn es sich um einen freien Lektor handelt, und dieser nicht mehr die volle Stundenanzahl unterrichten
-								//darf, dann werden nur die restlichen zur Verfuegung stehenden Stunden zugeteilt.
-								$lem->semesterstunden = ($row->semesterstunden>$maxstunden?$maxstunden:$row->semesterstunden);
-								$lem->planstunden = ($row->semesterstunden>$maxstunden?$maxstunden:$row->semesterstunden);
-							}
-							else
-							{
-								$lem->planstunden = '0';
-								$lem->semesterstunden = '0';
+							if($row->planfaktor!='') $lem->faktor = $row->planfaktor;
+							else $lem->faktor = '1.0';
+							$lem->semesterstunden = $row->semesterstunden;
+							$lem->planstunden = $row->semesterstunden;
+							if($row->semesterstunden != '') {
+								if($row_std->summe > $stunden_limit) {	//Grenze bereits ueberschritten ?
+									if (session_get_var('show_sws_warning_ondrop',true,'true') == 'true') $data = "ACHTUNG: Die Semesterstundenanzahl des Lektors beträgt bereits $row_std->summe Stunden.\nDie maximal erlaubte Semesterstundenanzahl von $stunden_limit Stunden wurde bereits überschritten.\nDie Daten wurden gespeichert, aber die Semester- und Planstunden wurden auf 0 gesetzt!\n\n";
+									$lem->semesterstunden = '0';
+									$lem->planstunden = '0';
+								} elseif(($row_std->summe + $row->semesterstunden) > $stunden_limit) {
+									if (session_get_var('show_sws_warning_ondrop',true,'true') == 'true') $data = "ACHTUNG: Die Semesterstundenanzahl des Lektors beträgt bereits $row_std->summe Stunden.\nDie maximal erlaubte Semesterstundenanzahl von $stunden_limit Stunden würde überschritten werden.\nDie Daten wurden gespeichert, aber die Semester- und Planstunden wurden auf 0 gesetzt!\n\n";
+									$lem->semesterstunden = '0';
+									$lem->planstunden = '0';
+								} elseif(($row_std->summe + $row->semesterstunden) >= $stunden_warn) {
+									if (session_get_var('show_sws_warning_ondrop',true,'true') == 'true') $data = "Hinweis: Die Semesterstundenanzahl des Lektors beträgt nun bereits ".($row_std->summe + $row->semesterstunden)." Stunden.\nEs können noch maximal ".($stunden_limit-($row_std->summe + $row->semesterstunden))." Stunden zugeordnet werden.\n\n";
+								}
 							}
 						}
 						else

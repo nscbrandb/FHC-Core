@@ -116,7 +116,7 @@ var studentDDObserver=
 				uid = tree.view.getCellText(v,col);
 				if(uid=='')
 				{
-					alert('Es koennen nur Personen mit UID (Studenten/Mitarbeiter) verschoben werden');
+					//alert('Es koennen nur Personen mit UID (Studenten/Mitarbeiter) verschoben werden');
 					return false;
 				}
 				paramList += ';'+uid;
@@ -396,6 +396,7 @@ var LeLektorDDObserver=
 		}
 		else
 		{
+			if (val.dbdml_data != '') alert(val.dbdml_data);
 			//LektorTree Refreshen
 			LeLektorTreeRefresh();
 		}
@@ -722,6 +723,7 @@ var verbandtreeDDObserver=
 		}
 		else
 		{
+			tree.view.selection.select(row.value);
 			StudentTreeRefresh();
 		}
   	}
