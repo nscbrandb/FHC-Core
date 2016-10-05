@@ -576,7 +576,7 @@ function MitarbeiterAuswahl()
 	document.getElementById('mitarbeiter-detail-menulist-staatsbuergerschaft').value=staatsbuergerschaft;
 	document.getElementById('mitarbeiter-detail-menulist-geburtsnation').value=geburtsnation;
 	document.getElementById('mitarbeiter-detail-menulist-sprache').value=sprache;
-	document.getElementById('mitarbeiter-detail-image').src='<?php echo APP_ROOT?>content/bild.php?src=person&person_id='+person_id+'&'+gettimestamp();
+	document.getElementById('mitarbeiter-detail-image').src='<?php echo APP_ROOT?>addons/STPCore/filestore/filestore_get.php?ovr=true&fid=userpic&typ=ecampus&puid='+uid+'&'+gettimestamp();
 	document.getElementById('mitarbeiter-detail-textbox-person_id').value=person_id;
 
 	//Mitarbeiterdaten

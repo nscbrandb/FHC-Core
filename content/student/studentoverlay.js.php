@@ -1020,7 +1020,7 @@ function StudentAuswahl()
 	document.getElementById('student-detail-menulist-geburtsnation').value=geburtsnation;
 	document.getElementById('student-detail-menulist-sprache').value=sprache;
 	document.getElementById('student-detail-textbox-matrikelnummer').value=matrikelnummer;
-	document.getElementById('student-detail-image').src='<?php echo APP_ROOT?>content/bild.php?src=person&person_id='+person_id+'&'+gettimestamp();
+	document.getElementById('student-detail-image').src='<?php echo APP_ROOT?>addons/STPCore/filestore/filestore_get.php?ovr=true&fid=userpic&typ=ecampus&puid='+uid+'&'+gettimestamp();
 	document.getElementById('student-detail-textbox-person_id').value=person_id;
 	document.getElementById('student-detail-menulist-studiengang_kz').value=studiengang_kz_student;
 	document.getElementById('student-detail-textbox-semester').value=semester;
