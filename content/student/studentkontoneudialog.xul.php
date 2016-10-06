@@ -117,6 +117,10 @@ echo '<?xml-stylesheet href="'.APP_ROOT.'content/datepicker/datepicker.css" type
 						<spacer flex="1" />			
       				</hbox>
 				</row>
+				<row>
+					<label value="Rechnung" control="student-konto-neu-checkbox-rechnung"/>
+      				<checkbox id="student-konto-neu-checkbox-rechnung" checked="false" disabled="false"/>
+				</row>
 			</rows>
 	</grid>
 	<hbox>

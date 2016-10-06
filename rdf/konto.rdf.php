@@ -87,6 +87,8 @@ if(isset($_GET['buchungsnummern']))
 }
 else
 	$buchungsnummern = '';
+if(isset($_GET['typ'])) $typ = $_GET['typ'];
+else $typ = '';
 
 $studiengang_kz = (isset($_GET['studiengang_kz'])?$_GET['studiengang_kz']:'');
 
@@ -146,6 +148,8 @@ function drawrow($row)
 			<KONTO:updatevon><![CDATA[".$row->updatevon."]]></KONTO:updatevon>
 			<KONTO:insertamum><![CDATA[".$row->insertamum."]]></KONTO:insertamum>
 			<KONTO:insertvon><![CDATA[".$row->insertvon."]]></KONTO:insertvon>
+			<KONTO:rechnung><![CDATA[".($row->rechnung=='t'?'Ja':'Nein')."]]></KONTO:rechnung>
+			<KONTO:erstellt><![CDATA[".(!empty($row->renu)?$row->renu:'')."]]></KONTO:erstellt>
 		</RDF:Description>";
 }
 
@@ -243,6 +247,8 @@ elseif ($xmlformat=='xml')
 			<updateamum><![CDATA[".$row->updateamum."]]></updateamum>
 			<updatevon><![CDATA[".$row->updatevon."]]></updatevon>
 			<insertamum><![CDATA[".$row->insertamum."]]></insertamum>
+			<rechnung><![CDATA[".$row->rechnung."]]></rechnung>
+			<erstellt><![CDATA[".$row->erstellt."]]></erstellt>
 		</buchung>";
 	}
 	function drawperson_xml($row)
@@ -288,6 +294,7 @@ elseif ($xmlformat=='xml')
 		}
 
 		echo "
+		<logopath>".DOC_ROOT."addons/STPCore/skin/images/</logopath>
   		<person>
 			<person_id><![CDATA[".$pers->person_id."]]></person_id>
 			<anrede><![CDATA[".$pers->anrede."]]></anrede>

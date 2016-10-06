@@ -60,6 +60,8 @@ class konto extends basis_db
 	public $aktiv;
 	public $credit_points;
 	public $zahlungsreferenz;
+	public $rechnung;       // STP-Addon: Buchung kommt auf eine Rechnung
+	public $renu;           // STP-Addon: Buchung wurde bereits verrechnet
 
 	/**
 	 * Konstruktor
@@ -86,8 +88,11 @@ class konto extends basis_db
 			return false;
 		}
 
-		$qry = "SELECT tbl_konto.*, anrede, titelpost, titelpre, nachname, vorname, vornamen, credit_points
-			FROM public.tbl_konto JOIN public.tbl_person USING (person_id) WHERE buchungsnr=".$this->db_add_param($buchungsnr, FHC_INTEGER);
+		$qry = "SELECT tbl_konto.*, anrede, titelpost, titelpre, nachname, vorname, vornamen, credit_points, rechnung, renu
+				  FROM public.tbl_konto
+			INNER JOIN public.tbl_person USING (person_id)
+			 LEFT JOIN stp.konto_rechnung USING(buchungsnr)
+				 WHERE buchungsnr=".$this->db_add_param($buchungsnr, FHC_INTEGER);
 
 		if($this->db_query($qry))
 		{
@@ -116,6 +121,8 @@ class konto extends basis_db
 				$this->vornamen = $row->vornamen;
 				$this->credit_points = $row->credit_points;
 				$this->zahlungsreferenz = $row->zahlungsreferenz;
+				$this->rechnung = $row->rechnung;
+				$this->renu = $row->renu;
 				return true;
 			}
 			else
@@ -191,7 +198,7 @@ class konto extends basis_db
 		{
 
 			//Neuen Datensatz einfuegen
-			$qry='BEGIN;INSERT INTO public.tbl_konto (person_id, studiengang_kz, studiensemester_kurzbz, buchungsnr_verweis, betrag, buchungsdatum, buchungstext, mahnspanne, buchungstyp_kurzbz, updateamum, updatevon, insertamum, insertvon, credit_points) VALUES('.
+			$qry='BEGIN;INSERT INTO public.tbl_konto (person_id, studiengang_kz, studiensemester_kurzbz, buchungsnr_verweis, betrag, buchungsdatum, buchungstext, mahnspanne, buchungstyp_kurzbz, updateamum, updatevon, insertamum, insertvon, ext_id, credit_points) VALUES('.
 			     $this->db_add_param($this->person_id, FHC_INTEGER).', '.
 			     $this->db_add_param($this->studiengang_kz, FHC_INTEGER).', '.
 			     $this->db_add_param($this->studiensemester_kurzbz).', '.
@@ -205,6 +212,7 @@ class konto extends basis_db
 			     $this->db_add_param($this->updatevon).', '.
 			     $this->db_add_param($this->insertamum).', '.
 			     $this->db_add_param($this->insertvon).', '.
+			     $this->db_add_param($this->ext_id).', '.
 				 $this->db_add_param($this->credit_points).');';
 		}
 		else
@@ -224,6 +232,7 @@ class konto extends basis_db
 				   ' updatevon='.$this->db_add_param($this->updatevon).','.
 				   ' insertamum='.$this->db_add_param($this->insertamum).','.
 				   ' insertvon='.$this->db_add_param($this->insertvon).','.
+				   ' ext_id='.$this->db_add_param($this->ext_id).','.
 				   ' credit_points='.$this->db_add_param($this->credit_points).
 				   " WHERE buchungsnr='".$this->db_add_param($this->buchungsnr, FHC_INTEGER)."';";
 
@@ -239,7 +248,13 @@ class konto extends basis_db
 						if($row = $this->db_fetch_object())
 						{
 							$this->buchungsnr = $row->id;
-
+							$qry = "INSERT INTO stp.konto_rechnung (buchungsnr,rechnung) VALUES (
+									".$this->db_add_param($this->buchungsnr, FHC_INTEGER).",".$this->db_add_param($this->rechnung, FHC_BOOLEAN).")";
+							if (!$this->db_query($qry) || $this->db_affected_rows() != 1) {
+								$this->errormsg = 'Fehler beim Setzen des Rechnungsflags';
+								$this->db_query('ROLLBACK;');
+								return false;
+							}
 							//Zahlungsreferenz generieren
 							if(strlen($this->buchungsnr_verweis) == 0)
 							{
@@ -262,6 +277,15 @@ class konto extends basis_db
 					{
 						$this->errormsg = 'Fehler beim Auslesen der Sequence';
 						$this->db_query('ROLLBACK;');
+						return false;
+					}
+				} else {
+					$qry = "UPDATE stp.konto_rechnung SET
+								rechnung=".$this->db_add_param($this->rechnung, FHC_BOOLEAN).",
+								renu=".$this->db_add_param($this->renu, FHC_INTEGER)."
+							 WHERE buchungsnr=".$this->db_add_param($this->buchungsnr, FHC_INTEGER);
+					if (!$this->db_query($qry) || $this->db_affected_rows() != 1) {
+						$this->errormsg = 'Fehler beim Setzen des Rechnungsflags';
 						return false;
 					}
 				}
@@ -340,8 +364,9 @@ class konto extends basis_db
 		if($filter=='offene')
 		{
 			//Alle Buchungen und 'darunterliegende' holen die noch offen sind
-			$qry = "SELECT tbl_konto.*, anrede, titelpost, titelpre, nachname, vorname, vornamen
+			$qry = "SELECT tbl_konto.*, anrede, titelpost, titelpre, nachname, vorname, vornamen, rechnung, renu
 					FROM public.tbl_konto JOIN public.tbl_person USING (person_id)
+					LEFT JOIN stp.konto_rechnung USING(buchungsnr)
 					WHERE (buchungsnr in (SELECT buchungsnr FROM public.tbl_konto as konto_a WHERE
 									(betrag + (SELECT CASE WHEN sum(betrag) is null THEN 0
 											            ELSE sum(betrag) END
@@ -354,8 +379,9 @@ class konto extends basis_db
 									AND person_id=".$this->db_add_param($person_id, FHC_INTEGER).")) $stgwhere ORDER BY buchungsdatum";
 		}
 		else
-			$qry = "SELECT tbl_konto.*, anrede, titelpost, titelpre, nachname, vorname, vornamen
+			$qry = "SELECT tbl_konto.*, anrede, titelpost, titelpre, nachname, vorname, vornamen, rechnung, renu
 					FROM public.tbl_konto JOIN public.tbl_person USING (person_id)
+					LEFT JOIN stp.konto_rechnung USING(buchungsnr)
 					WHERE person_id=".$this->db_add_param($person_id, FHC_INTEGER)." $stgwhere ORDER BY buchungsdatum";
 
 		if($this->db_query($qry))
@@ -385,6 +411,8 @@ class konto extends basis_db
 				$buchung->nachname = $row->nachname;
 				$buchung->vorname = $row->vorname;
 				$buchung->vornamen = $row->vornamen;
+				$buchung->rechnung = $row->rechnung;
+				$buchung->renu = $row->renu;
 
 				if($buchung->buchungsnr_verweis!='')
 				{
@@ -492,7 +520,7 @@ class konto extends basis_db
 						AND tbl_benutzer.uid = tbl_student.student_uid
 						AND tbl_benutzer.person_id = tbl_konto.person_id
 						AND tbl_konto.studiengang_kz=tbl_student.studiengang_kz
-						AND tbl_konto.buchungstyp_kurzbz = 'Studiengebuehr' ORDER BY buchungsnr";
+						AND tbl_konto.buchungstyp_kurzbz = 'StdGeb' ORDER BY buchungsnr";
 
 		if($this->db_query($subqry))
 		{
@@ -586,7 +614,7 @@ class konto extends basis_db
 						AND tbl_benutzer.uid = tbl_student.student_uid
 						AND tbl_benutzer.person_id = tbl_konto.person_id
 						AND tbl_konto.studiengang_kz=tbl_student.studiengang_kz
-						AND tbl_konto.buchungstyp_kurzbz = 'Studiengebuehr' ORDER BY buchungsnr DESC";
+						AND tbl_konto.buchungstyp_kurzbz = 'StdGeb' ORDER BY buchungsnr DESC";
 
 		if($result = $this->db_query($subqry))
 		{

@@ -1426,7 +1426,7 @@ if(!$error)
 														$db->db_query('BEGIN;');
 
 														//Matrikelnummer und UID generieren
-														$matrikelnr = generateMatrikelnummer($prestd->studiengang_kz, $hlp->result[0]->studiensemester_kurzbz);
+														$matrikelnr = generateMatrikelnummer($prestd->studiengang_kz, $hlp->result[0]->studiensemester_kurzbz, $hlp->result[0]->orgform_kurzbz);
 														$jahr = substr($matrikelnr,0, 2);
 														$stg = $prestd->studiengang_kz;
 														$stg_obj = new studiengang();
@@ -1907,8 +1907,7 @@ if(!$error)
 
 			if($buchung->load($_POST['buchungsnr']))
 			{
-				if(!$rechte->isBerechtigt('assistenz',$buchung->studiengang_kz,'suid') &&
-				   !$rechte->isBerechtigt('admin',$buchung->studiengang_kz, 'suid'))
+				if(!$rechte->isBerechtigt('student/konto:begrenzt',$buchung->studiengang_kz,'suid'))
 				{
 					$error = true;
 					$return = false;
@@ -1924,6 +1923,7 @@ if(!$error)
 					$buchung->studiensemester_kurzbz = $_POST['studiensemester_kurzbz'];
 					$buchung->studiengang_kz = $_POST['studiengang_kz'];
 					$buchung->credit_points = $_POST['credit_points'];
+					$buchung->rechnung = $_POST['rechnung']=='true'?true:false;
 					$buchung->new = false;
 					$buchung->updateamum = date('Y-m-d H:i:s');
 					$buchung->updatevon = $user;
@@ -1977,8 +1977,7 @@ if(!$error)
 					if($buchung->load($buchungsnr))
 					{
 						//Berechtigung pruefen
-						if(!$rechte->isBerechtigt('assistenz',$buchung->studiengang_kz,'suid') &&
-						   !$rechte->isBerechtigt('admin',$buchung->studiengang_kz, 'suid'))
+						if(!$rechte->isBerechtigt('student/konto',$buchung->studiengang_kz,'suid') && !$rechte->isBerechtigt('student/konto/gegenbuchung',$buchung->studiengang_kz,'suid'))
 						{
 							$error = true;
 							$return = false;
@@ -1997,6 +1996,7 @@ if(!$error)
 								$buchung->new = true;
 								$buchung->insertamum = date('Y-m-d H:i:s');
 								$buchung->insertvon = $user;
+								$buchung->rechnung = false;
 
 								if($buchung->save())
 								{
@@ -2018,7 +2018,7 @@ if(!$error)
 					}
 					else
 					{
-						$errormsg .= "\n".'Buchung wurde nicht gefunden';
+						$errormsg .= "\n".'Buchung wurde nicht gefunden: '.$_POST['buchungsnr'];
 						$return = false;
 					}
 				}
@@ -2035,7 +2035,7 @@ if(!$error)
 		else
 		{
 			$return = false;
-			$errormsg  = 'Fehlerhafte Parameteruebergabe';
+			$errormsg  = 'Fehlerhafte Parameteruebergabe '.$_POST['buchungsnr'];
 		}
 	}
 	elseif(isset($_POST['type']) && $_POST['type']=='deletebuchung')
@@ -2047,12 +2047,15 @@ if(!$error)
 
 			if($buchung->load($_POST['buchungsnr']))
 			{
-				if(!$rechte->isBerechtigt('assistenz',$buchung->studiengang_kz,'suid') &&
-				   !$rechte->isBerechtigt('admin',$buchung->studiengang_kz, 'suid'))
+				if(!$rechte->isBerechtigt('student/konto',$buchung->studiengang_kz,'suid'))
 				{
 					$error = true;
 					$return = false;
 					$errormsg = 'Sie haben keine Schreibrechte fuer diesen Studiengang';
+				} elseif (!is_null($buchung->rechnung) && $buchung->rechnung == 't') {
+					$error = true;
+					$return = false;
+					$errormsg = 'Diese Buchung ist für eine Rechnungserstellung markiert und kann nicht gelöscht werden';
 				}
 				else
 				{
@@ -2076,7 +2079,7 @@ if(!$error)
 		else
 		{
 			$return = false;
-			$errormsg  = 'Fehlerhafte Parameteruebergabe';
+			$errormsg  = 'Fehlerhafte Parameteruebergabe '.$_POST['buchungsnr'];
 		}
 	}
 	elseif(isset($_POST['type']) && $_POST['type']=='neuebuchung')
@@ -2086,8 +2089,7 @@ if(!$error)
 		//Personen werden durch ';' getrennt
 		$person_ids = explode(';',$_POST['person_ids']);
 		$errormsg = '';
-		if(!$rechte->isBerechtigt('assistenz',$_POST['studiengang_kz'],'suid') &&
-		   !$rechte->isBerechtigt('admin',$_POST['studiengang_kz'], 'suid'))
+		if(!$rechte->isBerechtigt('student/konto:begrenzt',$_POST['studiengang_kz'],'suid'))
 		{
 			$error = true;
 			$return = false;
@@ -2112,6 +2114,7 @@ if(!$error)
 					$buchung->credit_points = $_POST["credit_points"];
 					$buchung->insertamum = date('Y-m-d H:i:s');
 					$buchung->insertvon = $user;
+					$buchung->rechnung = ($_POST['rechnung']=='true'?true:false);
 					$buchung->new = true;
 
 					if($buchung->save())

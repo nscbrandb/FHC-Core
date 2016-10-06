@@ -904,6 +904,7 @@ function StudentAuswahl()
 	var tree = document.getElementById('student-tree');
 
 	if (tree.currentIndex==-1) return;
+	if (tree.view.selection.getRangeCount() > 1 && $('student-tab-noten').selected == false) return;        // verhindert langes Laden bei Mehrfachauswahl
 
 	try
 	{
@@ -1157,7 +1158,7 @@ function StudentAuswahl()
 		//Hierbei werden einige der Tabs nicht angezeigt und auch nicht geladen!
 
 		document.getElementById('student-tab-zeugnis').collapsed=true;
-		document.getElementById('student-tab-betriebsmittel').collapsed=true;
+		document.getElementById('student-tab-betriebsmittel').collapsed=false;
 		document.getElementById('student-tab-io').collapsed=true;
 		document.getElementById('student-tab-noten').collapsed=true;
 		document.getElementById('student-tab-pruefung').collapsed=true;
@@ -1307,7 +1308,7 @@ function StudentAuswahl()
 	{
 		// *** Zeugnis ***
 		zeugnistree = document.getElementById('student-zeugnis-tree');
-		url='<?php echo APP_ROOT;?>rdf/akte.rdf.php?person_id='+person_id+"&dokument_kurzbz=Zeugnis&"+gettimestamp();
+		url='<?php echo APP_ROOT;?>rdf/akte.rdf.php?person_id='+person_id+"&"+gettimestamp();
 
 		try
 		{
@@ -2373,6 +2374,8 @@ function StudentKontoAuswahl()
 	buchungstyp_kurzbz = getTargetHelper(dsource,subject,rdfService.GetResource( predicateNS + "#buchungstyp_kurzbz" ));
 	credit_points = getTargetHelper(dsource,subject,rdfService.GetResource( predicateNS + "#credit_points" ));
 	zahlungsreferenz = getTargetHelper(dsource,subject,rdfService.GetResource( predicateNS + "#zahlungsreferenz" ));
+	rechnung = getTargetHelper(dsource,subject,rdfService.GetResource( predicateNS + "#rechnung" ));
+	erstellt = getTargetHelper(dsource,subject,rdfService.GetResource( predicateNS + "#erstellt" ));
 
 	document.getElementById('student-konto-textbox-betrag').value=betrag;
 	document.getElementById('student-konto-textbox-buchungsdatum').value=buchungsdatum;
@@ -2384,6 +2387,10 @@ function StudentKontoAuswahl()
 	document.getElementById('student-konto-menulist-studiengang_kz').value=studiengang_kz;
 	document.getElementById('student-konto-textbox-credit_points').value=credit_points;
 	document.getElementById('student-konto-textbox-zahlungsreferenz').value=zahlungsreferenz;
+	if(rechnung=='Ja') document.getElementById('student-konto-checkbox-rechnung').checked=true;
+	else document.getElementById('student-konto-checkbox-rechnung').checked=false;
+	if(erstellt=='Ja') document.getElementById('student-konto-checkbox-erstellt').checked=true;
+	else document.getElementById('student-konto-checkbox-erstellt').checked=false;
 }
 
 // ****
@@ -2585,6 +2592,7 @@ function StudentKontoDisableFields(val)
 	document.getElementById('student-konto-button-loeschen').disabled=val;
 	document.getElementById('student-konto-button-zahlungsbestaetigung').disabled=val;
 	document.getElementById('student-konto-textbox-gegenbuchungsdatum').disabled=val;
+	document.getElementById('addon-stpcore-student-konto-button-rechnung').disabled=val;
 	StudentKontoDetailDisableFields(true);
 }
 
@@ -2602,6 +2610,7 @@ function StudentKontoDetailDisableFields(val)
 	document.getElementById('student-konto-menulist-buchungstyp').disabled=val;
 	document.getElementById('student-konto-menulist-studiensemester').disabled=val;
 	document.getElementById('student-konto-menulist-studiengang_kz').disabled=val;
+	document.getElementById('student-konto-checkbox-rechnung').disabled=val;
 	document.getElementById('student-konto-button-speichern').disabled=val;
 }
 
@@ -2621,6 +2630,7 @@ function StudentKontoDetailSpeichern()
 	studiensemester_kurzbz = document.getElementById('student-konto-menulist-studiensemester').value;
 	studiengang_kz = document.getElementById('student-konto-menulist-studiengang_kz').value;
 	credit_points = document.getElementById('student-konto-textbox-credit_points').value;
+	rechnung = document.getElementById('student-konto-checkbox-rechnung').checked;
 
 	if(buchungsdatum!='' && !CheckDatum(buchungsdatum))
 	{
@@ -2641,6 +2651,7 @@ function StudentKontoDetailSpeichern()
 	req.add('studiensemester_kurzbz', studiensemester_kurzbz);
 	req.add('studiengang_kz', studiengang_kz);
 	req.add('credit_points', credit_points);
+	req.add('rechnung', rechnung);
 
 	var response = req.executePOST();
 
@@ -2791,6 +2802,7 @@ function StudentKontoNeuSpeichern(dialog, person_ids, studiengang_kz)
 	buchungstyp_kurzbz = dialog.getElementById('student-konto-neu-menulist-buchungstyp').value;
 	studiensemester_kurzbz = dialog.getElementById('student-konto-neu-menulist-studiensemester').value;
 	credit_points = dialog.getElementById('student-konto-neu-textbox-credit_points').value;
+	rechnung = dialog.getElementById('student-konto-neu-checkbox-rechnung').checked;
 
 	if(buchungsdatum!='' && !CheckDatum(buchungsdatum))
 	{
@@ -2809,6 +2821,7 @@ function StudentKontoNeuSpeichern(dialog, person_ids, studiengang_kz)
 	req.add('buchungstyp_kurzbz', buchungstyp_kurzbz);
 	req.add('studiensemester_kurzbz', studiensemester_kurzbz);
 	req.add('credit_points', credit_points);
+	req.add('rechnung', rechnung);
 
 	var response = req.executePOST();
 
