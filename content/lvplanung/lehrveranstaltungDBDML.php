@@ -240,6 +240,7 @@ if(!$error)
 				$lem->mitarbeiter_uid = $_POST['mitarbeiter_uid'];
 				$lem->mitarbeiter_uid_old = $_POST['mitarbeiter_uid_old'];
 				$lem->semesterstunden = $_POST['semesterstunden'];
+				$lem->semesterstunden_old = $semesterstunden_alt;
 				$lem->planstunden = $_POST['planstunden'];
 				$lem->stundensatz = $_POST['stundensatz'];
 				$lem->faktor = $_POST['faktor'];
@@ -249,7 +250,6 @@ if(!$error)
 				$lem->updatevon = $user;
 
 				$lem->new=false;
-
 				$fixangestellt=false;
 				if(!$error)
 				{

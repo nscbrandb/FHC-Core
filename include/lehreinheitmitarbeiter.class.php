@@ -200,6 +200,7 @@ class lehreinheitmitarbeiter extends basis_db
 	 */
 	public function save($new=null)
 	{
+		global $S;
 		if(is_null($new))
 			$new = $this->new;
 
@@ -210,9 +211,49 @@ class lehreinheitmitarbeiter extends basis_db
 		if(!$this->planstunden=='')
 			$this->planstunden = (int)mb_str_replace(',', '.', $this->planstunden);
 		$this->semesterstunden = mb_str_replace(',', '.', $this->semesterstunden);
+		
+		/**
+		* STP Hack Vertragserstellung:
+		* sobald der Vertrag des Lektor in Bearbeitung STG (Ausnahme für LOVE, damit nicht alle Freigaben pro STG gelöscht werden müssen einezelne Stunden korr. zu können) ist gibt`s keine Änderungen mehr!
+		*/
+		if ($S->rechte->isBerechtigt('stp/vel/vertrag/admin')) {
+		$qry = "SELECT *
+				  FROM stp.vel_vertragseinheit AS ve
+			INNER JOIN lehre.tbl_lehrveranstaltung AS lv ON ve.lehrveranstaltung_id=lv.lehrveranstaltung_id
+				 WHERE ve.mitarbeiter_uid IN ('$this->mitarbeiter_uid','$this->mitarbeiter_uid_old')
+				   AND ve.studiensemester_kurzbz=(SELECT studiensemester_kurzbz FROM lehre.tbl_lehreinheit WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER).")
+					AND (
+						(
+							ve.studiengang_kz=(SELECT studiengang_kz FROM lehre.tbl_lehreinheit INNER JOIN lehre.tbl_lehrveranstaltung USING(lehrveranstaltung_id) WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER).")
+							AND ve.status<".VEL_STAT_IP_STG."
+						) OR (
+							ve.studiengang_kz<>(SELECT studiengang_kz FROM lehre.tbl_lehreinheit INNER JOIN lehre.tbl_lehrveranstaltung USING(lehrveranstaltung_id) WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER).")
+							AND ve.status<".VEL_STAT_IP_GF."
+						)
+					)";
+		} else {	// ohne Berechtigung global auf Bearbeitung LOVE checken
+			$qry = "SELECT *
+					  FROM stp.vel_vertragseinheit AS ve
+				INNER JOIN lehre.tbl_lehrveranstaltung AS lv ON ve.lehrveranstaltung_id=lv.lehrveranstaltung_id
+					 WHERE ve.mitarbeiter_uid IN ('$this->mitarbeiter_uid','$this->mitarbeiter_uid_old')
+					   AND ve.studiensemester_kurzbz=(SELECT studiensemester_kurzbz FROM lehre.tbl_lehreinheit WHERE lehreinheit_id='".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER)."')
+					   AND ve.status<".VEL_STAT_IP_LOVE;
+		}
+		if ($this->db_query($qry)) {
+			if($this->db_num_rows()>0) $locked = true;
+			else $locked = false;
+		} else {
+			$this->errormsg='Fehler beim Prüfen des Lehrauftrages';
+			return false;
+		}
 
 		if($new)
 		{
+			if ($locked) {
+				$this->errormsg="Für $this->mitarbeiter_uid ist bereits ein Vertrag in Bearbeitung!\n\nEs werden nur mehr Planstunden gespeichert!.\nWenn sich auch die Semesterstunden ändern sollen dann muss die Personalabteilung informiert werden!\n\n";
+				$this->semesterstunden = 0;
+			}
+
 			//Pruefen ob dieser Mitarbeiter schon zugeordnet ist
 			$qry = "SELECT * FROM lehre.tbl_lehreinheitmitarbeiter WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id, FHC_INTEGER)." AND mitarbeiter_uid=".$this->db_add_param($this->mitarbeiter_uid).';';
 			if($this->db_query($qry))
@@ -247,6 +288,10 @@ class lehreinheitmitarbeiter extends basis_db
 		}
 		else
 		{
+			if ($locked) {
+				$this->errormsg="Für ".($this->mitarbeiter_uid_old=='' || $this->mitarbeiter_uid_old==$this->mitarbeiter_uid?$this->mitarbeiter_uid:"$this->mitarbeiter_uid und/oder $this->mitarbeiter_uid_old")." ist bereits ein Vertrag in Bearbeitung!\n\nEs werden nur mehr Planstunden gespeichert!.\nWenn sich auch die Semesterstunden ändern sollen dann muss die Personalabteilung informiert werden!\n\n";
+				$this->semesterstunden = $this->semesterstunden_old;
+			}
 			if($this->mitarbeiter_uid_old=='')
 				$this->mitarbeiter_uid_old = $this->mitarbeiter_uid;
 
@@ -369,11 +414,64 @@ class lehreinheitmitarbeiter extends basis_db
 	 */
 	public function delete($lehreinheit_id, $mitarbeiter_uid)
 	{
+		global $S;
+
 		if(!is_numeric($lehreinheit_id))
 		{
 			$this->errormsg = 'Lehreinheit_id ist ungueltig';
 			return false;
 		}
+		/**
+		* STP Hack Vertragserstellung:
+		* sobald der Vertrag des Lektor in Bearbeitung STG (Ausnahme für LOVE, damit nicht alle Freigaben pro STG gelösht werden müssen einezelne Stunden korr. zu können) ist gibt`s keine Änderungen mehr!
+		*/
+		$qry = "SELECT vertrag
+				  FROM stp.lehreinheit_mitarbeiter_extended
+				 WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER)."
+				   AND uid=".$this->db_add_param($this->mitarbeiter_uid);
+		if ($this->db_query($qry)) {
+			if($this->db_num_rows()>0) {
+				$vertrag = $this->db_result(null,0,'vertrag');
+				if ($vertrag == 't') {
+					if ($S->rechte->isBerechtigt('stp/vel/vertrag/admin')) {
+					$qry = "SELECT *
+							  FROM stp.vel_vertragseinheit AS ve
+						INNER JOIN lehre.tbl_lehrveranstaltung AS lv ON ve.lehrveranstaltung_id=lv.lehrveranstaltung_id
+							 WHERE ve.mitarbeiter_uid=".$this->db_add_param($this->mitarbeiter_uid)."
+							   AND ve.studiensemester_kurzbz=(SELECT studiensemester_kurzbz FROM lehre.tbl_lehreinheit WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER).")
+								AND (
+									(
+										ve.studiengang_kz=(SELECT studiengang_kz FROM lehre.tbl_lehreinheit INNER JOIN lehre.tbl_lehrveranstaltung USING(lehrveranstaltung_id) WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER).")
+										AND ve.status<".VEL_STAT_IP_STG."
+									) OR (
+										ve.studiengang_kz<>(SELECT studiengang_kz FROM lehre.tbl_lehreinheit INNER JOIN lehre.tbl_lehrveranstaltung USING(lehrveranstaltung_id) WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER).")
+										AND ve.status<".VEL_STAT_IP_GF."
+									)
+								)";
+					} else {	// ohne Berechtigung global auf Bearbeitung LOVE checken
+						$qry = "SELECT *
+								  FROM stp.vel_vertragseinheit AS ve
+							INNER JOIN lehre.tbl_lehrveranstaltung AS lv ON ve.lehrveranstaltung_id=lv.lehrveranstaltung_id
+								 WHERE ve.mitarbeiter_uid=".$this->db_add_param($this->mitarbeiter_uid)."
+								   AND ve.studiensemester_kurzbz=(SELECT studiensemester_kurzbz FROM lehre.tbl_lehreinheit WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER).")
+								   AND ve.status<".VEL_STAT_IP_LOVE;
+					}
+					if ($this->db_query($qry)) {
+						if($this->db_num_rows()>0) {
+							$this->errormsg="Für $mitarbeiter_uid ist bereits ein Vertrag in Bearbeitung!\n\nIn diesem Semester dürfen keine Zuteilungen mehr gelöscht werden.";
+							return false;
+						}
+					} else {
+						$this->errormsg='Fehler beim Prüfen des Lehrauftrages';
+						return false;
+					}
+				}
+			}
+		} else {
+			$this->errormsg='Fehler beim Prüfen des Lehrauftrages';
+			return false;
+		}
+
 		$qry_del = "DELETE FROM lehre.tbl_lehreinheitmitarbeiter WHERE lehreinheit_id=".$this->db_add_param($lehreinheit_id, FHC_INTEGER)." AND mitarbeiter_uid=".$this->db_add_param($mitarbeiter_uid).";";
 		$qry = "SELECT * FROM lehre.tbl_lehreinheitmitarbeiter WHERE lehreinheit_id=".$this->db_add_param($lehreinheit_id, FHC_INTEGER)." AND mitarbeiter_uid=".$this->db_add_param($mitarbeiter_uid).";";
 		if($this->db_query($qry))
@@ -539,3 +637,5 @@ class lehreinheitmitarbeiter extends basis_db
 	}
 
 }
+
+?>

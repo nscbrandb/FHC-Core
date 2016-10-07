@@ -397,9 +397,10 @@ var LeLektorDDObserver=
 		else
 		{
 			if (val.dbdml_data != '') alert(val.dbdml_data);
-			//LektorTree Refreshen
-			LeLektorTreeRefresh();
+			
 		}
+		//LektorTree Refreshen
+		LeLektorTreeRefresh();
   	}
 };
 /***** Drag Observer fuer STPL-Verschiebung *****/
