@@ -27,7 +27,7 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/lvplanung/stpl-semester-overlay.xu
 	seltype="single" hidecolumnpicker="false" flex="1"
 	enableColumnDrag="true"
     ondraggesture="nsDragAndDrop.startDrag(event,lvbgrpDDObserver);"
-	datasources="../rdf/lehrverbandsgruppe.rdf.php?prestudent=false" ref="http://www.technikum-wien.at/lehrverbandsgruppe/alle-verbaende"
+	datasources="rdf:null" ref="http://www.technikum-wien.at/lehrverbandsgruppe/alle-verbaende"
 	ondragdrop="nsDragAndDrop.drop(event,verbandtreeDDObserver)"
 	ondragover="nsDragAndDrop.dragOver(event,verbandtreeDDObserver)"
 	ondragenter="nsDragAndDrop.dragEnter(event,verbandtreeDDObserver)"

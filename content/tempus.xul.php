@@ -63,7 +63,15 @@ echo '<?xml-stylesheet href="datepicker/datepicker.css" type="text/css"?>';
 <script type="text/javascript" language="JavaScript" src="<?php echo APP_ROOT; ?>include/js/jquery.js"></script>
 <script type="text/javascript" language="JavaScript" src="<?php echo APP_ROOT; ?>include/js/jqSOAPClient.js"></script>
 <script type="text/javascript" language="JavaScript" src="<?php echo APP_ROOT; ?>include/js/jqXMLUtils.js"></script>
-
+<?php
+// ADDONS
+$addon_obj = new addon();
+$addon_obj->loadAddons();
+foreach($addon_obj->result as $addon)
+{
+	echo '<script type="application/x-javascript" src="'.APP_ROOT.'addons/'.$addon->kurzbz.'/content/init.js.php" />';
+}
+?>
 <commandset id="maincommands">
   <command id="menu-file-close:command" oncommand="closeWindow();"/>
   <command id="menu-properties-studiensemester:command" oncommand="studiensemesterChange();"/>

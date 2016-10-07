@@ -83,6 +83,9 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/lvplanung/stpl-details-overlay.xul
 			image="../skin/images/refresh.png"
 			oncommand="onJumpDate(0);"
 		/>
+		<!-- STP-HACK Datepicker-->
+		<separator orient="horizontal" class="thin" />
+		<box class="WPDatum" id="addon-stpcore-tempus-jumpdate"/>
 	</toolbar>
 </toolbox>
 
