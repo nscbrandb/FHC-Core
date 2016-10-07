@@ -217,6 +217,7 @@ class variable extends basis_db
 			return false;
 		}
 
+		$this->variable = new stdClass();
 		while($row=$this->db_fetch_object())
 		{
 			$this->variable->{$row->name}=$row->wert;
