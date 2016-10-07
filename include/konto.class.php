@@ -121,7 +121,7 @@ class konto extends basis_db
 				$this->vornamen = $row->vornamen;
 				$this->credit_points = $row->credit_points;
 				$this->zahlungsreferenz = $row->zahlungsreferenz;
-				$this->rechnung = $row->rechnung;
+				$this->rechnung = $row->rechnung=='t'?true:false;
 				$this->renu = $row->renu;
 				return true;
 			}

@@ -122,12 +122,20 @@ class akte extends basis_db
 	 */
 	public function delete($akte_id)
 	{
+		global $S;
 		//akte_id auf gueltigkeit pruefen
 		if(!is_numeric($akte_id) || $akte_id == '')
 		{
 			$this->errormsg = 'akte_id muss eine gueltige Zahl sein';
 			return false;
 		}
+       if (!$this->load($akte_id)) {
+               $this->errormsg = 'Dokument nicht gefunden';
+               return false;
+       } elseif ($this->dokument_kurzbz == 'Rechnung' && !$S->rechte->isBerechtigt('admin')) {
+               $this->errormsg = 'Eine Rechnung darf nicht gelöscht werden!';
+               return false;
+       }
 
 		$qry = "DELETE FROM public.tbl_akte WHERE akte_id=".$this->db_add_param($akte_id, FHC_INTEGER);
 
