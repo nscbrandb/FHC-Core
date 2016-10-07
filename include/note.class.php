@@ -182,7 +182,7 @@ class note extends basis_db
 				$n->aktiv = $this->db_parse_bool($row->aktiv);
 				$n->lehre = $this->db_parse_bool($row->lehre);
 
-				$this->result[] = $n;
+				$this->result[$row->note] = $n;
 			}
 			return true;
 		}
