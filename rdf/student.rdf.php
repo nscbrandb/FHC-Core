@@ -626,11 +626,13 @@ if($xmlformat=='rdf')
 				FROM
 				    public.tbl_person JOIN tbl_prestudent USING (person_id) LEFT JOIN tbl_student using(prestudent_id)
 				WHERE
-				    COALESCE(nachname,'')||' '||COALESCE(vorname,'') ~* '".addslashes($filter)."' OR
-				    COALESCE(vorname,'')||' '||COALESCE(nachname,'') ~* '".addslashes($filter)."' OR
-				    student_uid ~* '".addslashes($filter)."' OR
-				    matrikelnr = '".addslashes($filter)."' OR
-				    svnr = '".addslashes($filter)."';";
+				   nachname||' '||vorname ~* ".$db->db_add_param($filter)." OR
+                   vorname||' '||nachname ~* ".$db->db_add_param($filter)." OR
+                   student_uid ~* ".$db->db_add_param($filter)." OR
+                   matrikelnr = ".$db->db_add_param($filter)." OR
+                   ".(is_int((int)$filter)?" public.tbl_person.person_id = ".$db->db_add_param((int)$filter,FHC_INTEGER)." OR":'')."
+                   ".(is_int((int)$filter)?" public.tbl_prestudent.prestudent_id = ".$db->db_add_param((int)$filter,FHC_INTEGER)." OR":'')."
+                   svnr = ".$db->db_add_param($filter);
 			if($db->db_query($qry))
 			{
 			    while($row = $db->db_fetch_object())
@@ -717,13 +719,21 @@ else
 //			$stg_typ = new studiengang();
 //			$stg_typ->getStudiengangTyp($studiengang->typ);
 //			$typ=$stg_typ->bezeichnung;
+			$typ='';
+			$typEng='';
 			switch($studiengang->typ)
 			{
 				case 'd':	$typ = 'FH-Diplom-Studiengang';
+							$typEng = 'Diplom';
 							break;
 				case 'm':	$typ = 'FH-Master-Studiengang';
+							$typEng = 'Master';
 							break;
 				case 'b':	$typ = 'FH-Bachelor-Studiengang';
+							$typEng = 'Bachelor';
+							break;
+				case 'l':   $typ = 'FH-Lehrgang';
+							$typEng = 'Certification Course';
 							break;
 				default:	$typ = 'FH-Studiengang';
 			}
@@ -755,6 +765,16 @@ else
 			//$aktstsem = $stsem->getaktorNext();
 
 			$stsem->load($ss);
+// STP-Hack Semesterüberlappung ..
+			$jahr = substr($ss,2,4);
+			if (strtolower(substr($ss,0,2)) == 'ss') {
+				$s_begin = "15.02.".$jahr;
+				$s_ende = "31.10.".$jahr;
+			} else {
+				$s_begin = "15.08.".$jahr;
+				$s_ende = "31.03.".($jahr + 1);
+			}
+// STP-Hack Ende
 
 			$qry = "SELECT * FROM public.tbl_prestudentstatus WHERE prestudent_id='$student->prestudent_id' AND studiensemester_kurzbz='$ss' ORDER BY datum DESC";
 			$semester=0;
@@ -906,6 +926,10 @@ else
 				<max_semester><![CDATA['.$studiengang->max_semester.']]></max_semester>
 				<anmerkungpre><![CDATA['.$prestudent->anmerkung.']]></anmerkungpre>
 				<aktiv><![CDATA['.$student->aktiv.']]></aktiv>
+				<studiengang_artEng><![CDATA['.$typEng.']]></studiengang_artEng>
+				<studiensemester_beginn_en><![CDATA['.str_replace(array("WS","SS"),array("Winter Term ","Summer Term "),$studiensemester).']]></studiensemester_beginn_en>
+				<studiensemester_aktuell_en><![CDATA['.str_replace(array("WS","SS"),array("Winter Term ","Summer Term "),$stsem->studiensemester_kurzbz).']]></studiensemester_aktuell_en>
+				<studienende_aktuell><![CDATA['.$s_ende.']]></studienende_aktuell>
 	    	</student>';
 		}
 	}
