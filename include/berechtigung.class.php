@@ -110,7 +110,7 @@ class berechtigung extends basis_db
 	 */
 	public function getRollen()
 	{
-		$qry = 'SELECT * FROM system.tbl_rolle';
+		$qry = 'SELECT * FROM system.tbl_rolle ORDER BY rolle_kurzbz';
 
 		if($this->db_query($qry))
 		{
