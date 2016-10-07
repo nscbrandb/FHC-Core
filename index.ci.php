@@ -301,6 +301,7 @@ switch (ENVIRONMENT)
 
 // First load the FHC-Config-Files ...
 require_once 'config/global.config.inc.php';
+$LOGIN_REQUIRED = false;
 require_once 'config/vilesci.config.inc.php';
 
 // ... and the vendor autoload
