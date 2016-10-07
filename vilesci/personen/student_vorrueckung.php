@@ -328,7 +328,7 @@ if (isset($ss_arr) && is_array($ss_arr))
 }
 $outp.="		</select>";
 $outp.= '<BR>Ausbildungssemester der Anzeige: -- ';
-for ($i=0;$i<=$s[$stg_kz]->max_sem;$i++)
+for ($i=0;$i<=($s[$stg_kz]->max_sem +1);$i++)
 {
 	$outp.= '<A href="'.$_SERVER['PHP_SELF'].'?stg_kz='.$stg_kz.'&semester='.$i.'&semesterv='.$semesterv.'&studiensemester_kurzbz='.$studiensemester_kurzbz.'&studiensemester_kurzbz_akt='.$studiensemester_kurzbz_akt.'&studiensemester_kurzbz_zk='.$studiensemester_kurzbz_zk.'">'.$i.'</A> -- ';
 }
@@ -351,7 +351,7 @@ if (isset($ss_arr) && is_array($ss_arr))
 }
 $outp.="		</select>\n";
 $outp.= '<BR>Ausgangs-Ausbildungssemester: &nbsp;&nbsp;-- ';
-for ($j=0;$j<=$s[$stg_kz]->max_sem;$j++)
+for ($j=0;$j<=($s[$stg_kz]->max_sem +1);$j++)
 {
 	$outp.= '<A href="'.$_SERVER['PHP_SELF'].'?stg_kz='.$stg_kz.'&semester='.$semester.'&semesterv='.$j.'&studiensemester_kurzbz='.$studiensemester_kurzbz.'&studiensemester_kurzbz_akt='.$studiensemester_kurzbz_akt.'&studiensemester_kurzbz_zk='.$studiensemester_kurzbz_zk.'">'.$j.'</A> -- ';
 }
