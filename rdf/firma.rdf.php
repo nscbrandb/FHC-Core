@@ -49,6 +49,8 @@ else
 	$firmentyp_kurzbz='';
 
 $datum = new datum();
+if(isset($_GET['df'])) $df = $_GET['df'];
+else $df = '';
 
 $firma = new firma();
 
@@ -70,6 +72,8 @@ if(isset($_GET['optional']) && $_GET['optional']=='true')
          <RDF:Description  id=""  about="" >
             <FIRMA:firma_id><![CDATA[]]></FIRMA:firma_id>
             <FIRMA:name><![CDATA[-- keine Auswahl --]]></FIRMA:name>
+			<FIRMA:namelang><![CDATA[-- keine Auswahl --]]></FIRMA:namelang>
+			<FIRMA:nameschule><![CDATA[-- keine Auswahl --]]></FIRMA:nameschule>
             <FIRMA:anmerkung><![CDATA[]]></FIRMA:anmerkung>
             <FIRMA:firmentyp_kurzbz><![CDATA[]]></FIRMA:firmentyp_kurzbz>
          </RDF:Description>
@@ -79,8 +83,13 @@ if(isset($_GET['optional']) && $_GET['optional']=='true')
 
 if($firma_id!='')
 {
-	$firma->load($firma_id);
-	draw_rdf($firma);
+	if ($df != '') {
+		$firma->searchFirma('', '',false,$firma_id);
+		draw_rdf($firma->result[0]);
+	} else {
+		$firma->load($firma_id);
+		draw_rdf($firma);
+	}
 }
 elseif($firmentyp_kurzbz!='' || $filter!='')
 {
@@ -104,6 +113,8 @@ function draw_rdf($row)
          <RDF:Description  id="'.$row->firma_id.'"  about="'.$rdf_url.'/'.$row->firma_id.'" >
             <FIRMA:firma_id><![CDATA['.$row->firma_id.']]></FIRMA:firma_id>
             <FIRMA:name><![CDATA['.$row->name.']]></FIRMA:name>
+			<FIRMA:namelang><![CDATA['.$row->name.' (Typ: '.$row->firmentyp_kurzbz.' | id: '.$row->firma_id.')]]></FIRMA:namelang>
+			<FIRMA:nameschule><![CDATA['.sprintf('%-8s',$row->firma_id).$row->name.(isset($row->nation)?'  --  '.$row->nation.'-'.$row->plz.' '.$row->gemeinde.', '.$row->strasse:'').']]></FIRMA:nameschule>
             <FIRMA:anmerkung><![CDATA['.$row->anmerkung.']]></FIRMA:anmerkung>
             <FIRMA:firmentyp_kurzbz><![CDATA['.$row->firmentyp_kurzbz.']]></FIRMA:firmentyp_kurzbz>
          </RDF:Description>

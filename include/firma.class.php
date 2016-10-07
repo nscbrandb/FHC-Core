@@ -649,7 +649,7 @@ class firma extends basis_db
 	 * Laedt alle Firmen Standorte, und Adressen nach Suchstring und/oder eines bestimmen Firmentyps
 	 * @return true wenn ok, false im Fehlerfall
 	 */
-	public function searchFirma($filter='',$firmentyp_kurzbz='', $standorte=false)
+	public function searchFirma($filter='',$firmentyp_kurzbz='', $standorte=false, $firma_id=null)
 	{
 		$this->result = array();
 		$this->errormsg = '';
@@ -662,29 +662,31 @@ class firma extends basis_db
 		$qry.=" FROM public.tbl_firma";
 		$qry.=" LEFT JOIN public.tbl_standort USING(firma_id) ";
 		$qry.=" LEFT JOIN public.tbl_adresse  on ( tbl_adresse.adresse_id=tbl_standort.adresse_id ) ";
-		$qry.=" WHERE 1=1";
-
-		if($filter!='')
-			$qry.= " and ( lower(tbl_firma.name) like lower('%".$this->db_escape($filter)."%')
-					OR lower(kurzbz) like lower('%".$this->db_escape($filter)."%')
-
-					OR lower(tbl_adresse.name) like lower('%".$this->db_escape($filter)."%')
-					OR lower(plz) like lower('%".$this->db_escape($filter)."%')
-					OR lower(ort) like lower('%".$this->db_escape($filter)."%')
-					OR lower(strasse) like lower('%".$this->db_escape($filter)."%')
-
-					OR lower(bezeichnung) like lower('%".$this->db_escape($filter)."%')
-					OR lower(anmerkung) like lower('%".$this->db_escape($filter)."%')
-					".(is_numeric($filter)?" OR tbl_firma.firma_id='".$this->db_escape($filter)."'":'')."
-					OR tbl_firma.firma_id IN (SELECT firma_id FROM public.tbl_firmatag
-											  WHERE firma_id=tbl_firma.firma_id AND lower(tag) like lower('%".$this->db_escape($filter)."%'))
-					 ) ";
-
-		if($firmentyp_kurzbz!='')
-			$qry.=" and firmentyp_kurzbz=".$this->db_add_param($firmentyp_kurzbz);
-
-		//if($filter=='' && $firmentyp_kurzbz=='')
-		//	$qry.=" limit 500 ";
+		if ($firma_id == null) {
+			$qry.=" WHERE 1=1";
+	
+			if($filter!='')
+				$qry.= " and ( lower(tbl_firma.name) like lower('%".$this->db_escape($filter)."%')
+						OR lower(kurzbz) like lower('%".$this->db_escape($filter)."%')
+	
+						OR lower(tbl_adresse.name) like lower('%".$this->db_escape($filter)."%')
+						OR lower(plz) like lower('%".$this->db_escape($filter)."%')
+						OR lower(ort) like lower('%".$this->db_escape($filter)."%')
+						OR lower(strasse) like lower('%".$this->db_escape($filter)."%')
+	
+						OR lower(bezeichnung) like lower('%".$this->db_escape($filter)."%')
+						OR lower(anmerkung) like lower('%".$this->db_escape($filter)."%')
+						".(is_numeric($filter)?" OR tbl_firma.firma_id='".$this->db_escape($filter)."'":'')."
+						OR tbl_firma.firma_id IN (SELECT firma_id FROM public.tbl_firmatag
+												  WHERE firma_id=tbl_firma.firma_id AND lower(tag) like lower('%".$this->db_escape($filter)."%'))
+						 ) ";
+	
+			if($firmentyp_kurzbz!='')
+				$qry.=" and firmentyp_kurzbz=".$this->db_add_param($firmentyp_kurzbz);
+	
+			//if($filter=='' && $firmentyp_kurzbz=='')
+			//	$qry.=" limit 500 ";
+		} else $qry .= " WHERE tbl_firma.firma_id=".$this->db_add_param($firma_id,FHC_INTEGER);
 		$qry.=") as a ORDER BY name;";
 
 		if($this->db_query($qry))
