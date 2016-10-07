@@ -68,7 +68,7 @@ echo '
 if($filter)
 	$qry = "SELECT * FROM tbl_gruppe WHERE LOWER(gruppe_kurzbz) LIKE '%" . $filter . "%'";
 else
-	$qry = "SELECT * FROM public.tbl_benutzergruppe JOIN tbl_gruppe using(gruppe_kurzbz) WHERE uid='".addslashes($uid)."' AND (studiensemester_kurzbz='".addslashes($studiensemester_kurzbz)."' OR studiensemester_kurzbz is null)";
+	$qry = "SELECT * FROM public.tbl_benutzergruppe JOIN tbl_gruppe using(gruppe_kurzbz) WHERE uid='".addslashes($uid)."' AND (studiensemester_kurzbz='".addslashes($studiensemester_kurzbz)."' OR studiensemester_kurzbz is null) AND gruppe_kurzbz NOT LIKE '-%'";
 
 $db = new basis_db();
 
