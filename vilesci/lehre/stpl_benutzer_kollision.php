@@ -127,21 +127,40 @@ if($dontloadcontent)
 if($stg_kz=='')
 {
 	$qry = "SELECT datum, stunde, student_uid, count(student_uid) AS anzahl
-			FROM lehre.vw_".$db_stpl_table."_student_unr
-			WHERE datum>=".$db->db_add_param($beginn)." AND datum<=".$db->db_add_param($ende)."
+			FROM (
+				SELECT * 
+				FROM  lehre.vw_".$db_stpl_table."_student_unr
+				WHERE datum>='$beginn' AND datum<='$ende'
+				UNION 
+				SELECT r.reservierung_id,r.datum,r.stunde,bg.uid
+				FROM campus.tbl_reservierung AS r
+				Inner Join public.tbl_benutzergruppe AS bg ON r.gruppe_kurzbz = bg.gruppe_kurzbz
+				WHERE  datum>='$beginn' AND datum<='$ende'
+				) AS unteranfrage
+			WHERE  datum>='$beginn' AND datum<='$ende'
 			GROUP BY datum, stunde, student_uid
 			HAVING count(student_uid)>1
-			ORDER BY datum, stunde, student_uid LIMIT 30; 
+			ORDER BY datum, stunde, student_uid; 
 		   ";
 }
 else 
 {
 	$qry = "SELECT datum, stunde, student_uid, count(student_uid) AS anzahl
-			FROM lehre.vw_".$db_stpl_table."_student_unr JOIN public.tbl_student USING(student_uid)
-			WHERE datum>=".$db->db_add_param($beginn)." AND datum<=".$db->db_add_param($ende)." AND studiengang_kz=".$db->db_add_param($stg_kz)."
+			FROM (
+				SELECT unr, datum, stunde, student_uid
+				FROM  lehre.vw_".$db_stpl_table."_student_unr JOIN public.tbl_student USING(student_uid)
+				WHERE datum>='$beginn' AND datum<='$ende' AND studiengang_kz='$stg_kz'
+				UNION 
+				SELECT r.reservierung_id,r.datum,r.stunde,bg.uid
+				FROM campus.tbl_reservierung AS r
+				Inner Join public.tbl_benutzergruppe AS bg ON r.gruppe_kurzbz = bg.gruppe_kurzbz
+				JOIN public.tbl_student AS st  ON st.student_uid = bg.uid
+				WHERE  datum>='$beginn' AND datum<='$ende' AND st.studiengang_kz='$stg_kz'
+				) AS unteranfrage
+			WHERE  datum>='$beginn' AND datum<='$ende'
 			GROUP BY datum, stunde, student_uid
 			HAVING count(student_uid)>1
-			ORDER BY datum, stunde, student_uid LIMIT 30; 
+			ORDER BY datum, stunde, student_uid; 
 		   ";
 }
 //echo $qry;
