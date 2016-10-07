@@ -97,7 +97,7 @@ class lvgesamtnote extends basis_db
 				$this->updateamum = $row->updateamum;
 				$this->updatevon = $row->updatevon;
 				$this->insertamum = $row->insertamum;
-				$this->inservon = $row->insertvon;
+				$this->insertvon = $row->insertvon;
 				$this->bemerkung = $row->bemerkung;
 				$this->freigabevon_uid = $row->freigabevon_uid;
 				$this->punkte = $row->punkte;
