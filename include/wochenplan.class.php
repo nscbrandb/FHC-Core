@@ -32,7 +32,7 @@
 require_once(dirname(__FILE__).'/../config/global.config.inc.php');
 require_once(dirname(__FILE__).'/basis_db.class.php');
 require_once(dirname(__FILE__).'/lehrstunde.class.php');
-require_once(dirname(__FILE__).'/ferien.class.php');
+require_once(dirname(__FILE__).'/stp/lib/ferien_stp.class.php');
 require_once(dirname(__FILE__).'/benutzerberechtigung.class.php');
 require_once(dirname(__FILE__).'/studiengang.class.php');
 require_once(dirname(__FILE__).'/mitarbeiter.class.php');
@@ -62,6 +62,7 @@ class wochenplan extends basis_db
 	public $ver;			// @brief Verband (A,B,C,...)
 	public $grp;			// @brief Gruppe (1,2)
 	public $lva;			// @brief ID der Lehrveranstaltung
+	public $orgform;        // @brief Orgform-Filter (VZ,VBB, BB ...)
 
 	public $pers_uid;		// @brief Account Name der Person (PK)
 	public $pers_titelpost;	// @brief Titel der Person
@@ -151,7 +152,7 @@ class wochenplan extends basis_db
 	 * @param $grp
 	 * @param $gruppe
 	 */
-	public function load_data($type, $uid, $ort_kurzbz=NULL, $studiengang_kz=NULL, $sem=NULL, $ver=NULL, $grp=NULL, $gruppe=NULL, $fachbereich_kurzbz=NULL, $lva=NULL)
+	public function load_data($type, $uid, $ort_kurzbz=NULL, $studiengang_kz=NULL, $sem=NULL, $ver=NULL, $grp=NULL, $gruppe=NULL, $fachbereich_kurzbz=NULL, $lva=NULL, $orgform=NULL)
 	{
 		// Parameter Checken
 		// Typ des Stundenplans
@@ -195,6 +196,7 @@ class wochenplan extends basis_db
 			$this->sem=$sem;
 			$this->ver=$ver;
 			$this->grp=$grp;
+			$this->orgform=$orgform;
 		}
 
 		// Einheit
@@ -203,8 +205,10 @@ class wochenplan extends basis_db
 			$this->errormsg='Fehler: Kurzbezeichnung der Gruppe ist nicht gesetzt';
 			return false;
 		}
-		elseif ($type=='gruppe')
+		elseif ($type=='gruppe') {
+			$this->stg_kz=$studiengang_kz;
 			$this->gruppe_kurzbz=$gruppe;
+		}
 
 
 		if($type=='fachbereich')
@@ -399,7 +403,7 @@ class wochenplan extends basis_db
 
 		// Stundenplandaten ermittlen
 		$this->wochenplan=new lehrstunde();
-		$anz=$this->wochenplan->load_lehrstunden($this->type,$this->datum_begin,$this->datum_end,$this->pers_uid,$this->ort_kurzbz,$this->stg_kz,$this->sem,$this->ver,$this->grp,$this->gruppe_kurzbz, $stpl_view, null,$this->fachbereich_kurzbz,$this->lva, $alle_unr_mitladen);
+		$anz=$this->wochenplan->load_lehrstunden($this->type,$this->datum_begin,$this->datum_end,$this->pers_uid,$this->ort_kurzbz,$this->stg_kz,$this->sem,$this->ver,$this->grp,$this->gruppe_kurzbz, $stpl_view, null,$this->fachbereich_kurzbz,$this->lva, $alle_unr_mitladen, $this->orgform);
 		if ($anz<0)
 		{
 			$this->errormsg=$this->wochenplan->errormsg;
@@ -426,8 +430,10 @@ class wochenplan extends basis_db
 				$this->std_plan[$tag][$stunde][$idx]=new stdClass();
 			$this->std_plan[$tag][$stunde][$idx]->unr=$this->wochenplan->lehrstunden[$i]->unr;
 			$this->std_plan[$tag][$stunde][$idx]->reservierung=$this->wochenplan->lehrstunden[$i]->reservierung;
-			if ($this->wochenplan->lehrstunden[$idx]->reservierung)
+			if ($this->std_plan[$tag][$stunde][$idx]->reservierung) {
 				$this->std_plan[$tag][$stunde][$idx]->lehrfach=$this->wochenplan->lehrstunden[$i]->titel;
+				$this->std_plan[$tag][$stunde][$idx]->info=$this->wochenplan->lehrstunden[$i]->info;
+			}
 			else
 			{
 				$this->std_plan[$tag][$stunde][$idx]->lehrfach=$this->wochenplan->lehrstunden[$i]->lehrfach;
@@ -435,6 +441,7 @@ class wochenplan extends basis_db
 				$this->std_plan[$tag][$stunde][$idx]->lehrfach_id=$this->wochenplan->lehrstunden[$i]->lehrfach_id;
 				$this->std_plan[$tag][$stunde][$idx]->farbe=$this->wochenplan->lehrstunden[$i]->farbe;
 				$this->std_plan[$tag][$stunde][$idx]->titel=$this->wochenplan->lehrstunden[$i]->titel;
+				$this->std_plan[$tag][$stunde][$idx]->lehrfach_bez=$this->wochenplan->lehrstunden[$i]->lehrfach_bez;
 			}
 			$this->std_plan[$tag][$stunde][$idx]->titel=$this->wochenplan->lehrstunden[$i]->titel;
 			$this->std_plan[$tag][$stunde][$idx]->stundenplan_id=$this->wochenplan->lehrstunden[$i]->stundenplan_id;
@@ -1121,8 +1128,22 @@ class wochenplan extends basis_db
 	public function draw_week_xul($semesterplan, $uid, $wunsch=null, $ignore_kollision=false, $kollision_student=false, $max_kollision=0)
 	{
 		//echo $wunsch;
-		global $cfgStdBgcolor;
+		global $cfgStdBgcolor,$S;
+		
+		$db_stpl_table = session_get_var('db_stpl_table',true,'stundenplandev');
+		
 		$count=0;
+
+		// STP Hacks
+		$tooltips = array();
+		session_refresh_vars(); // lieber mal ein Update machen, ev. haben sich Vars in einem anderen Window geändert ..
+		$stdsem = $S->vars['semester_aktuell']->wert;
+		$check_koll = $S->vars['ignore_kollision']->wert == 'false' ? true : false;
+		$check_koll_zsp = $S->vars['ignore_zeitsperre']->wert == 'false' ? true : false;
+		$check_koll_res = $S->vars['ignore_reservierung']->wert == 'false' ? true : false;
+		$check_koll_stud = $S->vars['kollision_student']->wert == 'true' ? true : false;
+		$this->kollisionen = array();   // globales Kollisionsarray, wird mit datum / stunde / info zum Typ befüllt ...
+		
 		$berechtigung=new benutzerberechtigung();
 		$berechtigung->getBerechtigungen($uid);
 		// Stundentafel abfragen
@@ -1138,20 +1159,42 @@ class wochenplan extends basis_db
     				<menuitem label="Ressourcen zuordnen" oncommand="TimeTableWeekMarkiere(document.popupNode);BetriebsmittelZuordnen(document.popupNode);" />
 					<menuitem label="Raumvorschlag" oncommand="StplSearchRoom(document.popupNode);" />
     				<menuitem label="Entfernen" oncommand="TimeTableWeekMarkiere(document.popupNode);TimetableDeleteEntries()" />
+    				'.($check_koll_stud ? '<menuitem label="Kollision Student" oncommand="StpPopUpCollision(document.popupNode)" />' :'').'
   				</menupopup>
 			</popupset>';
-
+		if (!$semesterplan) {	// Details zur Ansicht
+			echo '<row style="background-color:white; border:1px solid black;"><label style="font-weight: bold;">';
+			switch ($this->type) {
+				case 'lektor':
+					echo "Lektor:</label><label>$this->pers_nachname $this->pers_vorname ($this->pers_uid)";
+					break;
+				case 'ort':
+					echo "Ort:</label><label>$this->ort_bezeichnung (max. ".(!empty($this->ort_max_person)?$this->ort_max_person:'??')." Personen)";
+					break;
+				case 'verband':
+					echo 'Verband:</label><label>'.strtoupper($this->stg_kurzbz).(!empty($this->sem)?"-$this->sem$this->ver$this->grp":'');
+					if (!empty($this->orgform)) echo '</label><label style="font-weight: bold;">Orgform:</label><label>'.$this->orgform;
+					break;
+				case 'gruppe':
+					echo "Spezialgruppe:</label><label>$this->gruppe_kurzbz";
+					break;
+				default:
+					echo "Type:</label><label>$this->type";
+					break;
+			}
+			echo '</label></row>';
+		}
 		//Tabelle zeichnen
 		echo '<grid flex="1">';
 		echo '<columns>';
-		echo '	<column style="background-color:lightblue; border:1px solid black" />';
+		echo '	<column/>';
 		for ($i=0;$i<$num_rows_stunde; $i++)
 			echo '	<column />';
 		echo '</columns>';
 		echo '<rows>';
 
 		// Kopfzeile darstellen
-		echo '<row style="background-color:lightgreen; border:1px solid black">'.$this->crlf;
+		echo '<row class="wpheader">'.$this->crlf;
 		echo '<vbox>
 			<label align="center">Stunde</label>
 			<label id="TimeTableWeekData" class="kalenderwoche"
@@ -1162,19 +1205,18 @@ class wochenplan extends basis_db
 				ver="'.$this->ver.'"
 				grp="'.$this->grp.'"
 				gruppe="'.$this->gruppe_kurzbz.'"
+				orgform="'.$this->orgform.'"
 				ort="'.$this->ort_kurzbz.'"
 				pers_uid="'.$this->pers_uid.'"
 				kw="'.$this->kalenderwoche.'"
 				align="left">KW:'.$this->kalenderwoche.'</label>
 			</vbox>'.$this->crlf; //<html:br />Beginn<html:br />Ende
-		$stunden_arr=array();
+
 		for ($i=0;$i<$num_rows_stunde; $i++)
 		{
 			$row=$this->db_fetch_object($result_stunde,$i);
 			$beginn=mb_substr($row->beginn,0,5);
 			$ende=mb_substr($row->ende,0,5);
-			$stunden_arr[$row->stunde]['beginn']=$beginn;
-			$stunden_arr[$row->stunde]['ende']=$ende;
 			$stunde=$row->stunde;
 			echo '<vbox><label align="center">'.$stunde.'<html:br />
 						<html:small>'.$beginn.'<html:br />
@@ -1189,16 +1231,168 @@ class wochenplan extends basis_db
 		$datum=$this->datum;
 
 		// Ferien holen
-		$ferien=new ferien();
-		if ($this->type=='verband')
-			$ferien->getAll($this->stg_kz);
-		else
-			$ferien->getAll();
-		for ($i=1; $i<=TAGE_PRO_WOCHE; $i++)
-		{
-			$isferien=$ferien->isferien($datum);
-			echo '<row><vbox>';
-			echo '<html:div><html:small>'.date("l",$datum).'<html:br /></html:small>'.date("j.m. y",$datum).'</html:div>';
+		$ferien = new ferien_stp();
+		
+		if ($check_koll) {	
+			// Ort - nur im Orte-Tab
+			if ($this->type == 'ort') {
+/*
+				// keine Kollanzeige beim Ort - sieht man eh im Plan ;)
+				$qry = "SELECT datum,stunde FROM (
+							SELECT DISTINCT lvp.unr,lvp.datum,lvp.stunde
+							  FROM lehre.vw_$db_stpl_table AS lvp
+							 WHERE datum BETWEEN to_timestamp($datum)::timestamp::date AND (to_timestamp($datum) + interval '1 week')::timestamp::date
+							   AND ort_kurzbz='Audimax'
+						".($check_koll_res && !empty($koll_res_ids)?"
+						UNION
+							SELECT DISTINCT r.reservierung_id*1000,r.datum,r.stunde
+							 FROM campus.tbl_reservierung AS r
+							WHERE datum BETWEEN to_timestamp($datum)::timestamp::date AND (to_timestamp($datum) + interval '1 week')::timestamp::date
+							  AND ort_kurzbz='Audimax'" : '')."
+						) AS tmp
+					GROUP BY datum, stunde
+					  HAVING count(*)>1";
+//stpdebug($qry);
+				if ($this->db_query($qry)) {
+					while ($row = $this->db_fetch_object()) $this->kollisionen[$row->datum][$row->stunde]['ort'] = '';
+				}
+*/
+			}
+			// Lektor
+			if ($this->type == 'lektor') {
+				// keine Kollanzeige beim Lektor - sieht man eh im Plan ;)
+			}		
+			// Verband 
+			if ($this->type == 'verband' || $this->type == 'gruppe') {
+				$qry = "SELECT datum,stunde,array_to_string(array_agg(unr),',') AS unr FROM (
+							SELECT DISTINCT lvp.unr||'@LVP: '||lvp.lehrfach||'@'||lvp.verband||'§'||lvp.gruppe||'§'||(CASE WHEN lvp.gruppe_kurzbz IS NULL THEN '' ELSE lvp.gruppe_kurzbz END) AS unr,lvp.datum,lvp.stunde
+							  FROM lehre.vw_stundenplandev AS lvp
+							 WHERE datum BETWEEN to_timestamp($datum)::timestamp::date AND (to_timestamp($datum) + interval '1 week')::timestamp::date
+							   AND lvp.studiengang_kz=$this->stg_kz
+							   ".($this->sem!=null && $this->sem!=''?" AND lvp.semester=$this->sem":'')."
+					".($check_koll_res?"
+						UNION
+							SELECT DISTINCT (r.reservierung_id*1000)||'@RES: '||r.titel||'@'||(CASE WHEN r.verband IS NULL THEN '' ELSE r.verband END)||'§'||(CASE WHEN r.gruppe IS NULL THEN '' ELSE r.gruppe END)||'§'||(CASE WHEN r.gruppe_kurzbz IS NULL THEN '' ELSE r.gruppe_kurzbz END) AS unr,r.datum,r.stunde
+							  FROM campus.tbl_reservierung AS r
+							 WHERE datum BETWEEN to_timestamp($datum)::timestamp::date AND (to_timestamp($datum) + interval '1 week')::timestamp::date
+							   AND r.studiengang_kz=$this->stg_kz
+							   ".($this->sem!=null && $this->sem!=''?" AND r.semester=$this->sem":'')."
+						" : '')."
+						) AS tmp
+					GROUP BY datum, stunde
+				   HAVING count(*)>1
+				 ORDER BY datum,stunde";
+
+				if ($this->db_query($qry)) {
+					// globales Kollisionsarray befüllen
+					while ($row = $this->db_fetch_object()) {
+						unset($kunrs);
+						$unrs = explode(',',$row->unr);
+						foreach ($unrs as $unr) {
+							$helpy = explode('@',$unr);		// helper-Array bauen
+							$kunrs[$helpy[0]] = new stdClass();
+							$kunrs[$helpy[0]]->txt = $helpy[1];
+							$ve = explode('§',$helpy[2]);
+							$kunrs[$helpy[0]]->ver = $ve;
+						}
+//stpdebug($kunrs);
+						// koll-info für unr mit allen anderen unrs wenns eine ist ;)
+						foreach ($kunrs as $kunr=>$v) {
+							foreach ($kunrs as $kunrsother=>$kval) {
+								if ($kunrsother != $kunr
+									&& (
+										(empty($v->ver[0]) && empty($v->ver[2]))		// bin der ganze Jahrgang ==> muss Kollision sein!
+									 || (empty($kval->ver[0]) && empty($kval->ver[2]))	// Vergleich ist der ganze Jahrgang ==> muss auch Kollision sein!
+									 || (empty($v->ver[2]) && (empty($v->ver[1]) || empty($kval->ver[1])) && $v->ver[0] == $kval->ver[0])	// gleicher Verband und eine der Gruppen ist leer
+									 || (empty($v->ver[2]) && $v->ver[0] == $kval->ver[0] && $v->ver[1] == $kval->ver[1])	// gleicher Verband und Gruppe
+									 || (!empty($v->ver[2]) && $v->ver[2] == $kval->ver[2])	// gleiche Spezialgruppe
+									)
+								) {
+									if (!isset($this->kollisionen[$row->datum][$row->stunde][$kunr]['ver'])) $this->kollisionen[$row->datum][$row->stunde][$kunr]['ver'] = '';
+									$this->kollisionen[$row->datum][$row->stunde][$kunr]['ver'] .= $kval->txt."\n";
+								}
+							}
+						}
+					}
+				}
+			}
+		
+			// Studi - global prüfen? nämlich nur die, die gerade angezeigt werde? dann muss ma die Abfrage umschreiben!
+			// studsem holen, brauchen wir für die Studi-Checks!
+			if ($check_koll_stud && ($this->type == 'verband' || $this->type == 'gruppe')) {
+				$qry = "SELECT datum,stunde,array_to_string(array_agg(unr),',') AS unr,uid FROM (
+								SELECT DISTINCT lvp.unr||'@LVP: '||lvp.lehrfach AS unr,lvp.datum,lvp.stunde,CASE WHEN bg.uid IS NOT NULL THEN bg.uid ELSE slv.student_uid END AS uid
+								  FROM lehre.vw_$db_stpl_table AS lvp
+							 LEFT JOIN public.tbl_benutzergruppe AS bg
+									ON lvp.gruppe_kurzbz IS NOT NULL
+								   AND lvp.gruppe_kurzbz = bg.gruppe_kurzbz
+								   AND (bg.studiensemester_kurzbz IS NULL OR bg.studiensemester_kurzbz='$stdsem')
+							 LEFT JOIN public.tbl_studentlehrverband AS slv
+									ON lvp.gruppe_kurzbz IS NULL
+								   AND slv.studiensemester_kurzbz='$stdsem'
+								   AND lvp.studiengang_kz=slv.studiengang_kz
+								   AND lvp.semester=slv.semester
+								   AND (lvp.verband IS NULL OR lvp.verband='' OR lvp.verband=slv.verband)
+								   AND (lvp.gruppe IS NULL OR lvp.gruppe='' OR lvp.gruppe=slv.gruppe)
+								 WHERE datum BETWEEN to_timestamp($datum)::timestamp::date AND (to_timestamp($datum) + interval '1 week')::timestamp::date
+					".($check_koll_res?"
+							UNION
+								SELECT DISTINCT (r.reservierung_id*1000)||'@RES: '||r.titel AS unr,r.datum,r.stunde,CASE WHEN bg.uid IS NOT NULL THEN bg.uid ELSE slv.student_uid END AS uid
+								  FROM campus.tbl_reservierung AS r
+							 LEFT JOIN public.tbl_studentlehrverband AS slv
+									ON r.gruppe_kurzbz IS NULL
+								   AND slv.studiensemester_kurzbz='$stdsem'
+								   AND r.studiengang_kz=slv.studiengang_kz
+								   AND r.semester=slv.semester
+								   AND (r.verband IS NULL OR r.verband=slv.verband)
+								   AND (r.gruppe IS NULL OR r.gruppe=slv.gruppe)
+							 LEFT JOIN public.tbl_benutzergruppe AS bg ON r.gruppe_kurzbz = bg.gruppe_kurzbz AND (bg.studiensemester_kurzbz IS NULL OR bg.studiensemester_kurzbz='$stdsem')
+								 WHERE datum BETWEEN to_timestamp($datum)::timestamp::date AND (to_timestamp($datum) + interval '1 week')::timestamp::date
+						" : '')."
+						) AS tmp
+					WHERE uid IN (
+					".($this->type == 'verband' ? "
+							SELECT student_uid FROM public.tbl_studentlehrverband WHERE studiensemester_kurzbz='$stdsem'
+							   AND studiengang_kz=$this->stg_kz
+							   ".(!empty($this->sem)?" AND semester='$this->sem'":'')."
+							   ".(!empty($this->ver)?" AND verband='$this->ver'":'')."
+							   ".(!empty($this->grp)?" AND gruppe='$this->grp'":'')."
+					" : "
+						SELECT uid FROM public.tbl_benutzergruppe WHERE gruppe_kurzbz='$this->gruppe_kurzbz' AND (studiensemester_kurzbz IS NULL OR studiensemester_kurzbz='$stdsem')
+					")."
+					)
+					GROUP BY datum, stunde, uid
+					  HAVING count(uid)>1";
+
+				if ($this->db_query($qry)) {
+					// globales Kollisionsarray befüllen
+					while ($row = $this->db_fetch_object()) {
+						unset($kunrs);
+						$unrs = explode(',',$row->unr);
+						foreach ($unrs as $unr) {
+							$helpy = explode('@',$unr);
+							$kunrs[$helpy[0]] = $helpy[1];	// helper-Array bauen
+						}
+						// koll-info für unr mit allen anderen unrs
+						foreach ($kunrs as $kunr=>$v) {
+							$this->kollisionen[$row->datum][$row->stunde][$kunr]['stud'][$row->uid] = $row->uid.' mit ';
+							foreach ($kunrs as $kunrsother=>$kval) {
+								if ($kunrsother != $kunr) $this->kollisionen[$row->datum][$row->stunde][$kunr]['stud'][$row->uid] .= $kval.',';
+							}
+						}
+					}
+				}
+			}
+		}
+
+		for ($i=1; $i<=TAGE_PRO_WOCHE; $i++) {
+			$ferien->bgcol = '';
+			$ferien->tooltip = '';
+			if ($this->type=='verband') $ferien->getferien($datum,$this->stg_kz,$this->sem);
+			else $ferien->getferien($datum);
+
+			echo '<row><vbox class="wp_cwd">';
+			echo '<html:div><html:small>'.strftime("%A",$datum).'<html:br /></html:small>'.date("j.m. y",$datum).'</html:div>';
 			echo '</vbox>';
 			for ($k=0; $k<$num_rows_stunde; $k++)
 			{
@@ -1217,7 +1411,7 @@ class wochenplan extends basis_db
 						{
 							if($tooltip!='')
 								$tooltip.=', ';
-							$tooltip.=$sperren->zeitsperretyp_kurzbz.' - '.$sperren->bezeichnung;
+							$tooltip.=$sperren->bezeichnung.' '.' | geändert am '.preg_replace('/([0-9]{4})-([0-9]{2})-([0-9]{2})/','\3.\2.\1',$sperren->updateamum).' von '.$sperren->updatevon;
 						}
 					}
 				}
@@ -1226,29 +1420,16 @@ class wochenplan extends basis_db
 				if ($index=='')
 					$index=1;
 				$bgcolor=$cfgStdBgcolor[$index+3];
-
-				// Sonntag wie Ferien markieren
-				if($i==7)
-					$bgcolor='#FFFF55';
-
-				if ($isferien)
-				{
-					$bgcolor='#FFFF55';
-
-					//Wenn Ferien eingetragen sind, dann die Bezeichnung im Tooltiptext anzeigen
-					foreach($ferien->getFerien($datum) as $bezeichnung)
-					{
-						if($tooltip!='')
-							$tooltip.=', ';
-						$tooltip .= $bezeichnung;
-					}
+				if($index !== -3) {
+					if (!empty($ferien->bgcol)) $bgcolor = '#'.$ferien->bgcol;
+					if (!empty($ferien->tooltip)) $tooltip = ($tooltip != '' ? ', ':'').preg_replace('/, $/','',$ferien->tooltip);
 				}
-				echo '<vbox class="stplweek_vbox" style="border:1px solid black; background-color:'.$bgcolor.'"';
-				if($tooltip!='')
+				echo '<vbox style="border:1px solid black; background-color:'.$bgcolor.'"';
+				if ($tooltip!='')
 				{
-					echo ' tooltiptext="'.$this->convert_html_chars($tooltip).'"';
+					echo ' tooltiptext="'.str_replace(array('"','&'),array('&quot;','&amp;'),$tooltip).'"';
 				}
-				echo '
+				echo '					
 					ondragdrop="nsDragAndDrop.drop(event,boardObserver)"
 					ondragover="nsDragAndDrop.dragOver(event,boardObserver)"
 		  			ondragenter="nsDragAndDrop.dragEnter(event,boardObserver)"
@@ -1258,365 +1439,253 @@ class wochenplan extends basis_db
 					grp="'.$this->grp.'" gruppe="'.$this->gruppe_kurzbz.'"
 					pers_uid="'.$this->pers_uid.'" stpltype="'.$this->type.'">';
 
-				if (isset($this->std_plan[$i][$j][0]->lehrfach))
-				{
+				if (isset($this->std_plan[$i][$j][0]->lehrfach)) {
 					// Daten aufbereiten
-					if (isset($lvb))
-						unset($lvb);
-					//$lvb=array();
-					$kollision=-1;
-					unset($kollisionsmeldungen);
-					if (isset($a_unr))
-						unset($a_unr);
-					if (isset($a_lvb))
-						unset($a_lvb);
-					foreach ($this->std_plan[$i][$j] as $lehrstunde)
-					{
-						$a_unr[]=$lehrstunde->unr;
-						$a_lvb[$lehrstunde->unr][]=$lehrstunde->sem.$lehrstunde->ver.$lehrstunde->grp;
-					}
-
-					// Unterrichtsnummer (Kollision?)
-					$a_unr=array_unique($a_unr);
-					$kollision+=count($a_unr);
-					//Kollisionspruefung Studentenebene
-					if($kollision_student=='true')
-					{
-						$kollision=0;
-						$studiensemester = getStudiensemesterFromDatum(date('Y-m-d',$datum));
-
-						$qry = "SELECT datum, stunde, student_uid, count(student_uid) AS anzahl
-								FROM (
-									SELECT sub_stpl_uid.unr, sub_stpl_uid.datum, sub_stpl_uid.stunde, sub_stpl_uid.student_uid
-									FROM (  SELECT stpl.unr, stpl.datum, stpl.stunde, tbl_benutzergruppe.uid AS student_uid
-									               FROM lehre.tbl_stundenplandev stpl
-									          JOIN public.tbl_benutzergruppe USING (gruppe_kurzbz)
-									         WHERE tbl_benutzergruppe.studiensemester_kurzbz::text = ".$this->db_add_param($studiensemester)."
-									         GROUP BY stpl.unr, stpl.datum, stpl.stunde, tbl_benutzergruppe.uid
-									UNION
-									             SELECT stpl.unr, stpl.datum, stpl.stunde, tbl_studentlehrverband.student_uid
-									               FROM lehre.tbl_stundenplandev stpl
-									          JOIN public.tbl_studentlehrverband ON stpl.gruppe_kurzbz IS NULL AND stpl.studiengang_kz = tbl_studentlehrverband.studiengang_kz AND stpl.semester = tbl_studentlehrverband.semester AND (stpl.verband = tbl_studentlehrverband.verband OR stpl.verband = ' '::bpchar AND stpl.verband <> tbl_studentlehrverband.verband) AND (stpl.gruppe = tbl_studentlehrverband.gruppe OR stpl.gruppe = ' '::bpchar AND stpl.gruppe <> tbl_studentlehrverband.gruppe)
-									         WHERE tbl_studentlehrverband.studiensemester_kurzbz::text = ".$this->db_add_param($studiensemester)."
-											GROUP BY stpl.unr, stpl.datum, stpl.stunde, tbl_studentlehrverband.student_uid) sub_stpl_uid
-									GROUP BY sub_stpl_uid.unr, sub_stpl_uid.datum, sub_stpl_uid.stunde, sub_stpl_uid.student_uid
-
-								) as a
-								WHERE datum='".date('Y-m-d',$datum)."' AND stunde=".$this->db_add_param($j)."
-								GROUP BY datum, stunde, student_uid
-								HAVING count(student_uid)>1 ";
-
-								if(count($a_unr)>0)
-								{
-									// Nur die Eintraege als kollision anzeigen, die auch aktuell im Tempus sichtbar sind
-									// Dazu werden die UNRs der betroffenen Studierenden zuerst ein ein Array gruppiert und danach
-									// verglichen ob die angezeigte UNR dabei ist.
-									// Etwas kompliziert aber performanter als wenn die betroffenen UNRs zusätzlich zum WHERE hinzugefügt werden
-
-									$qry.=" AND array_agg(unr) && ARRAY[".implode('::bigint,',$a_unr)."::bigint] ";
-									// ==>  AND array_agg(unr) && ARRAY[123::bigint,345::bigint]
-								}
-								$qry.="ORDER BY datum, stunde, student_uid LIMIT 1;";
-
-						if($stud_result = $this->db_query($qry))
-						{
-							if($this->db_num_rows($stud_result)>0)
-							{
-								$kollision++;
-								$stud_row = $this->db_fetch_object($stud_result);
-								foreach($a_unr as $kollision_unr)
-									$kollisionsmeldungen[$kollision_unr][]=' Studentenkollision '.$stud_row->student_uid;
-							}
-						}
-
-					}
-					else
-					{
-
-						//Kollisionspruefung LVB Ebene
-						// Ist es bei LVB-Ansicht wirklich eine Kollision?
-						if ($kollision>0 && $this->type=='verband')
-						{
-							$kollision=0;
-							$a=0;
-							foreach ($a_unr as $unr)
-							{
-								$lvb_unr_arr[$a]=$unr;
-								$lvb[$a++]=$a_lvb[$unr];
-							}
-							for ($a=0;$a<count($lvb)-1;$a++)
-								for ($b=0;$b<count($lvb[$a]);$b++)
-									for ($c=$a+1;$c<count($lvb);$c++)
-										for ($d=0;$d<count($lvb[$c]);$d++)
-										{
-											$s1=mb_substr($lvb[$a][$b],0,1);
-											$s2=mb_substr($lvb[$c][$d],0,1);
-											$v1=trim(mb_substr($lvb[$a][$b],1,1));
-											$v2=trim(mb_substr($lvb[$c][$d],1,1));
-											$g1=trim(mb_substr($lvb[$a][$b],2,1));
-											$g2=trim(mb_substr($lvb[$c][$d],2,1));
-											if ($s1==$s2 || !$s1 || $s1=='' || $s1=='0' || !$s2 || $s2=='' || $s2=='0')
-												if ($v1==$v2 || !$v1 || $v1=='' || $v1=='0' || !$v2 || $v2=='' || $v2=='0')
-													if ($g1==$g2 || !$g1 || $g1=='' || $g1=='0' || !$g2 || $g2=='' || $g2=='0')
-													{
-														$kollision++;
-														$kollisionsmeldungen[$lvb_unr_arr[$a]][]=' Gruppe '.trim($lvb[$a][$b]).' / '.trim($lvb[$c][$d]);
-														$kollisionsmeldungen[$lvb_unr_arr[$c]][]=' Gruppe '.trim($lvb[$a][$b]).' / '.trim($lvb[$c][$d]);
-													}
-										}
-						}
-					}
-
-					// Kollision anzeigen?
-					if ($ignore_kollision)
-						$kollision=0;
+					if (isset($lvb)) unset($lvb);
+					if (isset($info)) unset($info);
+					if (isset($a_unr)) unset($a_unr);
+					
+					foreach ($this->std_plan[$i][$j] as $lehrstunde) $a_unr[] = $lehrstunde->unr;
+					$a_unr = array_unique($a_unr);
+					
 					//Daten aufbereiten
-					foreach ($a_unr as $unr)
-					{
+					foreach ($a_unr as $unr) {
 						// Daten vorbereiten
-						if (isset($lektor))
-							unset($lektor);
-						if (isset($lehrverband))
-							unset($lehrverband);
-						if (isset($lehrfach))
-							unset($lehrfach);
-						if (isset($ort))
-							unset($ort);
-						if (isset($updateamum))
-							unset($updateamum);
-						if (isset($updatevon))
-							unset($updatevon);
-						$farbe='';
-						$tooltip_anmerkung=array();
+						if (isset($lektor)) unset($lektor);
+						if (isset($lehrverband)) unset($lehrverband);
+						if (isset($lehrfach)) unset($lehrfach);
+						if (isset($lehrfach_bez)) unset($lehrfach_bez);
+						if (isset($ort)) unset($ort);
+						if (isset($updateamum)) unset($updateamum);
+						if (isset($updatevon)) unset($updatevon);
 						$paramList='';
 						$z=0;
-						$reservierung=false;
-						$stundenplan_ids=array();
-						$titel='';
-
-						if(isset($raumcheck))
-							unset($raumcheck);
-
-						if(isset($lktcheck))
-							unset($lktcheck);
-
-						foreach ($this->std_plan[$i][$j] as $lehrstunde)
-						{
-							if ($lehrstunde->unr==$unr)
-							{
+						$reservierung = false;
+						unset($info);
+						foreach ($this->std_plan[$i][$j] as $lehrstunde) {
+							if ($lehrstunde->unr == $unr) {
 								// Lektoren
-								$lektor[]=$lehrstunde->lektor;
+								$lektor[] = $lehrstunde->lektor;
 								// Lehrverband
 								$lvb=$lehrstunde->stg.'-'.$lehrstunde->sem;
-								if ($lehrstunde->ver!=null && $lehrstunde->ver!='0' && $lehrstunde->ver!='')
-								{
-									$lvb.=$lehrstunde->ver;
-									if ($lehrstunde->grp!=null && $lehrstunde->grp!='0' && $lehrstunde->grp!='')
-										$lvb.=$lehrstunde->grp;
+								if ($lehrstunde->ver!=null && $lehrstunde->ver!='0' && $lehrstunde->ver!='') {
+									$lvb .= $lehrstunde->ver;
+									if ($lehrstunde->grp!=null && $lehrstunde->grp!='0' && $lehrstunde->grp!='') $lvb .= $lehrstunde->grp;
 								}
-								if (count($lehrstunde->gruppe_kurzbz)>0)
-									$lvb=$lehrstunde->gruppe_kurzbz;
+								if (count($lehrstunde->gruppe_kurzbz) >0 ) $lvb=$lehrstunde->gruppe_kurzbz;
 								$lehrverband[]=$lvb;
 								// Lehrfach
-								$lf=htmlspecialchars($lehrstunde->lehrfach);
-								if (isset($lehrstunde->lehrform))
-									$lf.='-'.$lehrstunde->lehrform;
-								$lehrfach[]=$lf;
-								$ort[]=$lehrstunde->ort;
-								$stg_kz=$lehrstunde->stg_kz;
-								$updateamum[]=mb_substr($lehrstunde->updateamum,0,16);
-								$updatevon[]=$lehrstunde->updatevon;
-								if ($lehrstunde->reservierung)
-								{
-									$paramList.='&amp;reservierung_id'.$z++.'='.$lehrstunde->stundenplan_id;
-									$reservierung=true;
+								$lf = htmlspecialchars($lehrstunde->lehrfach);
+								if (isset($lehrstunde->lehrform)) $lf.='-'.$lehrstunde->lehrform;
+								$lehrfach[] = $lf;
+								$ort[] = $lehrstunde->ort;
+								$stg_kz = $lehrstunde->stg_kz;
+								$updateamum[] = mb_substr($lehrstunde->updateamum,0,16);
+								$updatevon[] = $lehrstunde->updatevon;
+								if ($lehrstunde->reservierung) {
+									$paramList .= '&amp;reservierung_id'.$z++.'='.$lehrstunde->stundenplan_id;
+									$reservierung = true;
+									$koll_unr = $lehrstunde->stundenplan_id * 1000;	// für Kollisionsanzeige
+								} else {
+									$paramList .= '&amp;stundenplan_id'.$z++.'='.$lehrstunde->stundenplan_id;
+									$koll_unr = $unr;
 								}
-								else
-								{
-									if(!in_array($lehrstunde->stundenplan_id, $stundenplan_ids))
-									{
-										$paramList.='&amp;stundenplan_id'.$z++.'='.$lehrstunde->stundenplan_id;
-										$stundenplan_ids[]=$lehrstunde->stundenplan_id;
-									}
-								}
-								if(isset($lehrstunde->farbe) && $farbe=='')
-									$farbe=$lehrstunde->farbe;
-								$titel.=htmlspecialchars($lehrstunde->titel);
-								$anmerkung=htmlspecialchars($lehrstunde->anmerkung);
-								$tooltip_anmerkung[]=$titel.' '.$anmerkung;
+								if(isset($lehrstunde->farbe)) $farbe = $lehrstunde->farbe;
+								$titel = htmlspecialchars($lehrstunde->titel);
+								$anmerkung = htmlspecialchars($lehrstunde->anmerkung);
+								$lehrfach_bez[] = isset($lehrstunde->lehrfach_bez) ? htmlspecialchars($lehrstunde->lehrfach_bez) : '';
+								if(isset($lehrstunde->info)) $info = unserialize($lehrstunde->info);
+								if (isset($info) && preg_match('/^-anm-[0-9]*$/',$lehrstunde->gruppe_kurzbz)) $picadd = '<image src="../../include/stp/skin/images/teilnehmer.png" />';
+								else $picadd = '';
 							}
-
-							if(isset($raumcheck[$lehrstunde->ort]) && $raumcheck[$lehrstunde->ort]!=$lehrstunde->unr)
-							{
-								$kollision++;
-								$kollisionsmeldungen[$lehrstunde->unr][]=" Ort ".$lehrstunde->ort;
-								$kollisionsmeldungen[$raumcheck[$lehrstunde->ort]][]=" Ort ".$lehrstunde->ort;
-							}
-							else
-								$raumcheck[$lehrstunde->ort]=$lehrstunde->unr;
-
-							if(isset($lktcheck[$lehrstunde->lektor]) && $lktcheck[$lehrstunde->lektor]!=$lehrstunde->unr)
-							{
-								if(!in_array($lehrstunde->lektor_uid, unserialize(KOLLISIONSFREIE_USER)))
-								{
-									$kollision++;
-									$kollisionsmeldungen[$lehrstunde->unr][]=" LektorIn ".$lehrstunde->lektor; //." ".$lehrstunde->unr."!=".$lktcheck[$lehrstunde->lektor];
-									$kollisionsmeldungen[$lktcheck[$lehrstunde->lektor]][]=" LektorIn ".$lehrstunde->lektor; //." ".$lehrstunde->unr."!=".$lktcheck[$lehrstunde->lektor];
-								}
-							}
-							else
-								$lktcheck[$lehrstunde->lektor]=$lehrstunde->unr;
 						}
 						// Lektoren
-						//if ($this->type!='lektor')
-						$lektor=array_unique($lektor);
+						$lektor = array_unique($lektor);
 						sort($lektor);
-						$lkt='';
-						foreach ($lektor as $l)
-							$lkt.=$l.'<html:br />';
+						$lkt = '';
+						foreach ($lektor as $l) $lkt.=$l.'<html:br />';
 
 						// Lehrverband
-						//if ($this->type!='verband')
-						$lehrverband=array_unique($lehrverband);
+						$lehrverband = array_unique($lehrverband);
 						sort($lehrverband);
-						$lvb='';
-						foreach ($lehrverband as $l)
-							$lvb.=$l.'<html:br />';
+						$lvb = '';
+						foreach ($lehrverband as $l) $lvb .= $l.'<html:br />';
 
 						// Lehrfach
-						//if ($this->type=='verband')
-						$lehrfach=array_unique($lehrfach);
+						$lehrfach = array_unique($lehrfach);
 						sort($lehrfach);
-						$lf='';
-						foreach ($lehrfach as $l)
-							$lf.=$l.'<html:br />';
+						$lehrfach_bez=array_unique($lehrfach_bez);
+						sort($lehrfach_bez);
+						$lf = '';
+						foreach ($lehrfach as $l) $lf .= $l.'<html:br />';
 
 						// Ort
-						//if ($this->type=='verband')
-
 						$ort=array_unique($ort);
 						sort($ort);
-						$orte='';
-						foreach ($ort as $o)
-							$orte.=$o.'<html:br />';
+						$orte = '';
+						foreach ($ort as $o) $orte .= $o.'<html:br />';
 
 						// Update Von
-						$updatevon=array_unique($updatevon);
+						$updatevon = array_unique($updatevon);
 						sort($updatevon);
-						$updatevonam='Geaendert von ';
-						foreach ($updatevon as $u)
-							$updatevonam.=$u.', ';
+						$updatevonam = 'von ';
+						foreach ($updatevon as $u) $updatevonam .= $u.', ';
 
 						// Update Am
 						$updateamum=array_unique($updateamum);
 						sort($updateamum);
 						$updatevonam.='am ';
-						foreach ($updateamum as $u)
-							$updatevonam.=$u.' ';
-
-						// Blinken oder nicht ?
-						if (isset($kollisionsmeldungen[$unr])
-					    || (isset($kollisionsmeldung) && count($kollisionsmeldungen, COUNT_RECURSIVE)==0 && $kollision>0))
-						{
-							$blink_ein='<html:blink>';// .$kollision;
+						foreach ($updateamum as $u) $updatevonam.=$u.' ';
+						
+						if (isset($this->kollisionen[date('Y-m-d',$datum)][$j][$koll_unr])) {	// irgendeine Kollision gibts
+							$blink_ein='<html:blink>';
 							$blink_aus='</html:blink>';
-						}
-						else
-						{
+						} else {
 							$blink_ein='';
 							$blink_aus='';
 						}
-
+						
 						$stg_obj = new studiengang();
 						$stg_obj->load($stg_kz);
-						$tooltip_anmerkung = array_unique($tooltip_anmerkung);
-						$tooltip_gesamt = '('.$updatevonam.') '.implode(',',$tooltip_anmerkung);
 
-						if(isset($kollisionsmeldungen[$unr]))
-							$tooltip_gesamt .= ' Kollision wegen:'.implode(',',array_unique($kollisionsmeldungen[$unr]));
-
-						// Ausgabe
-						echo '<button id="buttonSTPL'.$count.'"
-							tooltiptext="'.$this->convert_html_chars($tooltip_gesamt).'"
-							style="border:1px solid transparent;'.((isset($farbe) && $farbe!='')?'background-color:#'.$farbe:'').';-moz-appearance:none"
-							styleOrig="border:1px solid transparent;'.((isset($farbe) && $farbe!='')?'background-color:#'.$farbe:'').';-moz-appearance:none" ';
-						if ($berechtigung->isBerechtigt('lehre/lvplan',$stg_obj->oe_kurzbz,'uid'))
-							echo ' context="stplPopupMenue" ';
-						if ($berechtigung->isBerechtigt('lehre/lvplan',$stg_obj->oe_kurzbz,'u'))
-							echo 'ondraggesture="nsDragAndDrop.startDrag(event,listObserver)" ';
-						//onclick="return onStplSearchRoom(event, event.target);"
-						$button_orte = $this->ort_kurzbz;
-						if($button_orte=='')
-							$button_orte=$ort[0];
-						echo 'ondragdrop="nsDragAndDrop.drop(event,boardObserver)"
-							ondragover="nsDragAndDrop.dragOver(event,boardObserver)"
-							oncommand="TimeTableWeekClick(event)"
-							ondblclick="TimeTableWeekDblClick(event)"
-							aktion="stpl"
-							unr="'.$unr.'"
-							markiert="false"
-							elem="stundenplan'.$i.$j.'"
-							idList="'.$paramList.'" stpltype="'.$this->type.'"
-							stg_kz="'.$this->stg_kz.'" sem="'.$this->sem.'" ver="'.$this->ver.'"
-							grp="'.$this->grp.'" gruppe="'.$this->gruppe_kurzbz.'"
-							datum="'.date("Y-m-d",$datum).'" stunde="'.$j.'" wochentag="'.$i.'"
-							pers_uid="'.$this->pers_uid.'" ort_kurzbz="'.$button_orte.'">';
-
-						echo '<label align="center">'.$blink_ein;
-						$count++;
-						//echo $lf;
-						echo mb_substr($lf, 0,-strlen('<html:br />'));
-						if($titel!='' && !$reservierung)
-						{
-							echo '<image src="../../skin/images/sticky.png" tooltip="'.$titel.'"/>';
-						}
-
-						// Zugeteilte Ressourcen Anzeigen
-						$betriebsmittel = new betriebsmittel();
-						if($betriebsmittel->getBetriebsmittelStundenplan($stundenplan_ids))
-						{
-							if(count($betriebsmittel->result)>0)
-							{
-								$ressourceinfo='';
-								foreach($betriebsmittel->result as $row)
-									$ressourceinfo.=$row->beschreibung.' ';
-								echo '<image src="../../skin/images/group.png" tooltip="'.$this->convert_html_chars($ressourceinfo).'"/>';
+						if (!isset($tooltips["$unr-$i-$j"])) {
+							$tooltips["$unr-$i-$j"] = '<html:div><html:div style="padding: 2px;
+										color:'.(isset($info)&&isset($info->tt_titlecol)?'#'.$info->tt_titlecol:'#FFFFFF').';
+										background-color:'.(isset($info)&&isset($info->tt_titlebg)?'#'.$info->tt_titlebg:'#4F4F4F').
+									'">';
+							$tooltips["$unr-$i-$j"] .= ($reservierung?(isset($info)?trim($info->header):'Reservierung'):'Lehrveranstaltungsdetails');
+							$tooltips["$unr-$i-$j"] .= '</html:div>';
+							$tooltips["$unr-$i-$j"] .= '<html:div style="
+										color:'.(isset($info)&&isset($info->tt_bodycol)?'#'.$info->tt_bodycol:'#000000').';
+										background-color:'.(isset($info)&&isset($info->tt_bodybg)?'#'.$info->tt_bodybg:'#FFFFFF').
+									'">';
+							$tooltips["$unr-$i-$j"] .= '<html:table>';
+							$tooltips["$unr-$i-$j"] .= '<html:tr><html:td style="width: 110px"><html:b>Ort:</html:b></html:td><html:td style="width: 300px">'.$ort[0].'</html:td></html:tr>';
+							$tooltips["$unr-$i-$j"] .= '<html:tr><html:td><html:b>Datum:</html:b></html:td><html:td>'.date("d.m.Y",$datum).'</html:td></html:tr>';
+							$tooltips["$unr-$i-$j"] .= '<html:tr style="font-size: 1px;"><html:td colspan="2"><html:hr /></html:td></html:tr>';
+	
+							// Ausgabe
+							if ($reservierung && isset($info)) {
+								if (!empty($info->lines)) {
+									foreach ($info->lines as $l=>$r) {
+										$tooltips["$unr-$i-$j"] .= '<html:tr><html:td><html:b><![CDATA['.$l.':]]></html:b></html:td><html:td><![CDATA['.$r.']]></html:td></html:tr>';
+									}
+								} else {
+									$tooltips["$unr-$i-$j"] .= '<html:tr><html:td><html:b>Titel:</html:b></html:td><html:td><![CDATA['.$titel.']]></html:td></html:tr>';
+									$tooltips["$unr-$i-$j"] .= '<html:tr><html:td><html:b>Beschreibung:</html:b></html:td><html:td>'.$anmerkung.'</html:td></html:tr>';
+								}
+							} else {
+								if ($reservierung) $tooltips["$unr-$i-$j"] .= '<html:tr><html:td><html:b>Titel:</html:b></html:td><html:td><![CDATA['.$titel.']]></html:td></html:tr>';
+								$tooltips["$unr-$i-$j"] .= '<html:tr><html:td><html:b>Bezeichnung:</html:b></html:td><html:td><![CDATA['.implode(',',$lehrfach_bez).']]></html:td></html:tr>';
+								$tooltips["$unr-$i-$j"] .= '<html:tr><html:td><html:b>Anmerkung:</html:b></html:td><html:td><![CDATA['.$anmerkung.']]></html:td></html:tr>';
 							}
+							$tooltips["$unr-$i-$j"] .= '<html:tr style="font-size: 1px;"><html:td colspan="2"><html:hr /></html:td></html:tr>';
+							$tooltips["$unr-$i-$j"] .= '<html:tr><html:td><html:b>'.($reservierung?'reserviert':'geändert').' von:</html:b></html:td><html:td><![CDATA['.implode('',$updatevon).']]></html:td></html:tr>';
+							$tooltips["$unr-$i-$j"] .= '<html:tr><html:td><html:b>'.($reservierung?'reserviert':'geändert').' am:</html:b></html:td><html:td><![CDATA['.convdate_from_db($updateamum[0]).']]></html:td></html:tr>'; 
+							if (isset($this->kollisionen[date('Y-m-d',$datum)][$j][$koll_unr])) {	// Kollision
+								$tooltips["$unr-$i-$j"] .= '<html:tr style="font-size: 1px;"><html:td colspan="2"><html:hr /></html:td></html:tr>';
+								$tooltips["$unr-$i-$j"] .= '<html:tr><html:td style="color: #FF0000;"><html:b>Kollision</html:b></html:td><html:td><![CDATA[';
+								if (isset($this->kollisionen[date('Y-m-d',$datum)][$j][$koll_unr]['ver'])) $tooltips["$unr-$i-$j"] .= $this->kollisionen[date('Y-m-d',$datum)][$j][$koll_unr]['ver'];
+								if (isset($this->kollisionen[date('Y-m-d',$datum)][$j][$koll_unr]['stud'])) $tooltips["$unr-$i-$j"] .= implode("\n",$this->kollisionen[date('Y-m-d',$datum)][$j][$koll_unr]['stud']);
+								$tooltips["$unr-$i-$j"] .= ']]></html:td></html:tr>';
+							}
+							$tooltips["$unr-$i-$j"] .= '</html:table>';
+							$tooltips["$unr-$i-$j"] .= '</html:div></html:div>';
 						}
+						if ($reservierung && isset($info)) $bbgcolor = $bgcolor;
+						else $bbgcolor = isset($farbe) && $farbe!=''?'#'.$farbe:$bgcolor;
+						echo '<button id="buttonSTPL'.$count.'"';
+						echo ' tooltip="'."$unr-$i-$j".'"';
+						echo ' style="border:1px solid transparent;background-color:'.$bbgcolor.';"';
+						echo ' styleOrig="border:1px solid transparent;background-color:'.$bbgcolor.';"';					
 
-						echo '<html:br />';
-						echo $lvb;
-						if ($this->type!='lektor')
-							echo $lkt;
-						if ($this->type!='ort')
-							echo $orte;
-
-						if(LVPLAN_ANMERKUNG_ANZEIGEN)
-							echo $anmerkung;
-
-						echo $blink_aus;
-
-						echo '</label>';
+						// keine VA-Reservierung
+						if (!($reservierung && isset($info) && isset($info->rtyp) && $info->rtyp=='va')) {
+							if ($berechtigung->isBerechtigt('lehre/lvplan',$stg_obj->oe_kurzbz,'uid')) echo ' context="stplPopupMenue" ';
+							if ($berechtigung->isBerechtigt('lehre/lvplan',$stg_obj->oe_kurzbz,'u')) echo 'ondraggesture="nsDragAndDrop.startDrag(event,listObserver)" ';
+							//onclick="return onStplSearchRoom(event, event.target);"
+							echo ' ondragdrop="nsDragAndDrop.drop(event,boardObserver)"
+								ondragover="nsDragAndDrop.dragOver(event,boardObserver)"
+								oncommand="TimeTableWeekClick(event)"
+								ondblclick="TimeTableWeekDblClick(event)"
+								aktion="stpl"
+								unr="'.$unr.'"
+								markiert="false"
+								elem="stundenplan'.$i.$j.'"
+								idList="'.$paramList.'" stpltype="'.$this->type.'"
+								stg_kz="'.$this->stg_kz.'" sem="'.$this->sem.'" ver="'.$this->ver.'"
+								grp="'.$this->grp.'" gruppe="'.$this->gruppe_kurzbz.'"
+								datum="'.date("Y-m-d",$datum).'" stunde="'.$j.'" wochentag="'.$i.'"
+								orgform="'.$this->orgform.'"
+								pers_uid="'.$this->pers_uid.'" ort_kurzbz="'.$this->ort_kurzbz.'">';
+						} else echo ' datum="'.date("Y-m-d",$datum).'" stunde="'.$j.'" wochentag="'.$i.'">';
+						
+						if (isset($info)) {
+							if (isset($info->bg_col)) $bg_col = "#$info->bg_col";
+							elseif (isset($info->farbe)) $bg_col = "#$info->farbe";	// backward-combatibility
+							else $bg_col = '#FFFFFF';
+							
+							if (isset($info->col)) $col = "#$info->col";
+							else $col = '#000000';
+							
+							if ($info->typ == 'PR' && !isset($info->border)) $border ='2px dotted #FF0000';
+							elseif (isset($info->border)) $border = $info->border;
+							else $border = 'none';
+							
+							$out = '<html:div class="le_stp" style="font-size: 8pt; color: '.$col.'; background: '.$bg_col.'; border: '.$border.'">';
+							$out .= $blink_ein;
+							$out .= $picadd;
+							if (isset($info->title)) {
+								if (is_array($info->title)) {
+									foreach ($info->title as $tline) $out .= str_replace('&nbsp;','',$tline)."<html:br />"."\n";
+								} else $out .= "$info->title<html:br />"."\n";
+							} else $out .= $lf;
+							if ($info->typ == 'PR') $out .= $info->kurzbz."<html:br />"."\n";
+							// wenns eine Resevierung mit Verband / Gruppe gibt => immer zuletzt auswerfen
+							if (isset($info->lines)) {
+								$out .= isset($info->lines['Gruppe'])?$info->lines['Gruppe']."<html:br />"."\n":'';
+								$out .= isset($info->lines['Verband'])?$info->lines['Verband']."<html:br />"."\n":'';
+								$out .= isset($info->lines['Gruppe / Verband'])?$info->lines['Gruppe / Verband']."<html:br />"."\n":'';
+							}
+							if ($this->type!='lektor') $out .= $lkt;
+							if ($this->type!='ort') $out .= $orte;
+							echo '<label align="center">';
+							$out .= $blink_aus;
+							$out .= '</html:div>';
+							echo $out;
+							echo '</label>';
+						} else {
+							echo '<label align="center">'.$blink_ein;
+							echo mb_substr($lf, 0,-strlen('<html:br />'));
+							if($titel != '' && !$reservierung) echo '<image src="../../skin/images/sticky.png"/>';
+							echo '<html:br />';
+							if (isset($info) && isset($info->kurzbz)) echo $info->kurzbz.'<html:br />';
+							else echo $lvb;
+							if ($this->type != 'lektor') echo $lkt;
+							if ($this->type != 'ort') echo $orte;
+								
+							if(LVPLAN_ANMERKUNG_ANZEIGEN) echo $anmerkung;
+								
+							echo $blink_aus;
+							echo '</label>';
+						}
 						echo '</button>';
+						$count++;
 					}
 				}
-				if (isset($this->std_plan[$i][$j][0]->frei_orte))
-				{
+				if (isset($this->std_plan[$i][$j][0]->frei_orte)) {
 					//orte sortieren => AnzahlKollisionen ASC, Ort_kurzbz ASC
 					$keys=array();
-					$values=array();
-					foreach ($this->std_plan[$i][$j][0]->frei_orte as $key=>$value)
-					{
+					$values=array();			
+					foreach ($this->std_plan[$i][$j][0]->frei_orte as $key=>$value) {
 						$keys[]=$key;
 						$values[]=$value;
 					}
 					array_multisort($values, SORT_ASC, $keys, SORT_ASC, $this->std_plan[$i][$j][0]->frei_orte);
-
-					foreach ($this->std_plan[$i][$j][0]->frei_orte as $f_ort=>$anzahl)
-					{
-						if($anzahl<=$max_kollision)
-						{
-							echo '<label value="'.$f_ort.($anzahl>0?' ('.$anzahl.')':'').'"
+					
+					foreach ($this->std_plan[$i][$j][0]->frei_orte as $f_ort=>$anzahl) {
+						if($anzahl<=$max_kollision) {
+							echo '<label value="'.$f_ort.($anzahl>0?'('.$anzahl.')':'').'"
 								styleOrig=""
 								ondragenter="nsDragAndDrop.dragEnter(event,boardObserver)"
 								ondragexit="nsDragAndDrop.dragExit(event,boardObserver)"
@@ -1630,32 +1699,21 @@ class wochenplan extends basis_db
 						}
 					}
 				}
-
-				if(defined('TEMPUS_TAGESINFO_FORMAT'))
-					$tagesinfo = TEMPUS_TAGESINFO_FORMAT;
-				else
-					$tagesinfo = '%t %s';
-				$tagesinfo = str_replace('%t',date("D",$datum),$tagesinfo);
-				$tagesinfo = str_replace('%b',$stunden_arr[$j]['beginn'],$tagesinfo);
-				$tagesinfo = str_replace('%e',$stunden_arr[$j]['ende'],$tagesinfo);
-				$tagesinfo = str_replace('%s',$j,$tagesinfo);
-				echo '<description class="stplweek_tagesinfo">'.$tagesinfo.'</description>';
 				echo '</vbox>'.$this->crlf;
 			}
 			echo "</row>";
 			$datum=jump_day($datum, 1);
 		}
+		foreach ($tooltips as $ttunr=>$det) echo '<tooltip id="'.$ttunr.'" orient="vertical" noautohide="true">'.$det.'</tooltip>';
 
 		// Fuszzeile darstellen
-		if (!$semesterplan)
-		{
+		if (!$semesterplan) {
 			echo '<row style="background-color:lightgreen; border:1px solid black">'.$this->crlf;
 			echo '<vbox>
 				<label align="center">Stunde</label>
 				<label align="left" class="kalenderwoche">KW:'.$this->kalenderwoche.'</label>
 				</vbox>'.$this->crlf; //<html:br />Beginn<html:br />Ende
-			for ($i=0;$i<$num_rows_stunde; $i++)
-			{
+			for ($i=0;$i<$num_rows_stunde; $i++) {
 				$row=$this->db_fetch_object($result_stunde,$i);
 				$beginn=mb_substr($row->beginn,0,5);
 				$ende=mb_substr($row->ende,0,5);

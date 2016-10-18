@@ -234,7 +234,7 @@ class lehrstunde extends basis_db
 	 * @param gruppe_kurzbz
 	 *
 	 */
-	public function load_lehrstunden($type, $datum_von, $datum_bis, $uid, $ort_kurzbz=NULL, $studiengang_kz=NULL, $sem=NULL, $ver=NULL, $grp=NULL, $gruppe_kurzbz=NULL, $stpl_view='stundenplan', $idList=null, $fachbereich_kurzbz=null, $lva=NULL, $alle_unr_mitladen=false)
+	public function load_lehrstunden($type, $datum_von, $datum_bis, $uid, $ort_kurzbz=NULL, $studiengang_kz=NULL, $sem=NULL, $ver=NULL, $grp=NULL, $gruppe_kurzbz=NULL, $stpl_view='stundenplan', $idList=null, $fachbereich_kurzbz=null, $lva=NULL, $alle_unr_mitladen=false, $orgform=NULL)
 	{
 		$num_rows_einheit=0;
 		// Parameter Checken
@@ -434,6 +434,11 @@ class lehrstunde extends basis_db
 					$sql_query.=" OR gruppe_kurzbz=".$this->db_add_param($row->gruppe_kurzbz);
 				}
 				$sql_query.=')';
+				if (!empty($orgform)) $sql_query.= " AND (	   orgform_kurzbz='$orgform'
+					OR orgform_kurzbz IN (
+						SELECT DISTINCT child FROM stp.orgform_filter_childs WHERE parent='$orgform'
+					)
+				)";
 			}
 			$sql_query_orderby=' ORDER BY  datum, stunde, studiengang_kz, semester, verband, gruppe, gruppe_kurzbz, uid';
 			$sql_query_stdplan.=$sql_query . $sql_query_lva . $sql_query_orderby;
@@ -505,6 +510,7 @@ class lehrstunde extends basis_db
 			$stunde->ver=$row->verband;
 			$stunde->grp=$row->gruppe;
 			$stunde->gruppe_kurzbz=$row->gruppe_kurzbz;
+			$stunde->orgform=$row->orgform_kurzbz;
 			$stunde->titel=$row->titel;
 			$stunde->anmerkung=$row->anmerkung;
 			$stunde->anmerkung_lehreinheit=$row->anmerkung_lehreinheit;
@@ -519,9 +525,9 @@ class lehrstunde extends basis_db
 		if ($type!='idList' && $type!='fachbereich')
 		{
 			// Datenbankabfrage generieren
-			$sql_query_reservierung='SELECT * FROM campus.vw_reservierung';
-			$sql_query_reservierung.=$sql_query . $sql_query_orderby;
-
+			$sql_query_reservierung='SELECT stp.vw_reservierung.*,stg.typ,stg.kurzbz FROM stp.vw_reservierung LEFT JOIN public.tbl_studiengang AS stg USING(studiengang_kz)';
+			$sql_query_reservierung .= $sql_query;
+			if ($type=='verband') $sql_query_reservierung .= ' AND studiengang_kz>0 ORDER BY  datum, stunde, studiengang_kz, semester, verband, gruppe, gruppe_kurzbz, uid';
 			//Datenbankabfrage
 			if (!$this->db_query($sql_query_reservierung))
 			{
@@ -540,7 +546,12 @@ class lehrstunde extends basis_db
 				$stunde=new lehrstunde();
 				$stunde->reservierung=true;
 				$stunde->stundenplan_id=$row->reservierung_id;
-				$stunde->unr=0;
+				$resunr = $row->uid.$row->ort_kurzbz.$row->titel;
+				if (!empty($row->info)) {
+					$info = unserialize($row->info);
+					if (isset($info->unr)) $resunr = $info->unr;
+				}
+				$stunde->unr=clean_param($resunr,PARAM_ALPHANUM);
 				$stunde->lektor_uid=$row->uid;
 				$stunde->lektor_kurzbz=$row->uid;
 				$stunde->datum=$row->datum;
@@ -550,7 +561,7 @@ class lehrstunde extends basis_db
 				$stunde->lehrfach=$row->titel;
 				$stunde->lehrfach_bez=$row->beschreibung;
 				$stunde->studiengang_kz=$row->studiengang_kz;
-				$stunde->studiengang=$row->stg_kurzbz;
+				$stunde->studiengang=mb_strtoupper($row->typ.$row->kurzbz);
 				$stunde->sem=$row->semester;
 				$stunde->ver=$row->verband;
 				$stunde->grp=$row->gruppe;
@@ -558,7 +569,10 @@ class lehrstunde extends basis_db
 				$stunde->titel=$row->titel;
 				$stunde->anmerkung=$row->beschreibung;
 				$stunde->anmerkung_lehreinheit=$row->beschreibung;
-				$stunde->farbe='';
+				$stunde->farbe='FFFFFF';
+				$stunde->info = $row->info;
+				$stunde->updateamum = $row->insertamum;
+				$stunde->updatevon = $row->insertvon;
 				$this->lehrstunden[]=$stunde;
 			}
 		}
@@ -653,8 +667,8 @@ class lehrstunde extends basis_db
 			$sql_query.=" OR (uid=".$this->db_add_param($this->lektor_uid)." AND uid not in (".$this->db_implode4SQL(unserialize(KOLLISIONSFREIE_USER))."))";
 
 		//Wenn eine Kollisionspruefung auf Studentenebene durchgefuehrt wird, werden die LVB nicht gecheckt
-		if($kollision_student=='false')
-		{
+		//if($kollision_student=='false')
+		//{
 			$sql_query.=" OR (studiengang_kz=".$this->db_add_param($this->studiengang_kz)." AND semester=".$this->db_add_param($this->sem);
 			if($this->gruppe_kurzbz!=null && $this->gruppe_kurzbz!='' && $this->gruppe_kurzbz!=' ')
 			{
@@ -669,7 +683,7 @@ class lehrstunde extends basis_db
 			}
 
 			$sql_query.=")";
-		}
+		//}
 		$sql_query.=") AND unr!=".$this->db_add_param($this->unr);
 
 		if (!$erg_stpl = $this->db_query($sql_query))
@@ -773,8 +787,11 @@ class lehrstunde extends basis_db
 						reservierung_id AS id, uid AS lektor, stg_kurzbz, ort_kurzbz,
 						semester, verband, gruppe, gruppe_kurzbz, datum, stunde
 					FROM lehre.vw_reservierung
+					INNER JOIN stp.reservierung_extended USING(reservierung_id)
 					WHERE
 						datum=".$this->db_add_param($this->datum)." AND
+						-- keine Kollision für Restyp AUA :-)
+						(reservierung_typ_id IS NULL OR reservierung_typ_id NOT IN (18)) AND
 						stunde=".$this->db_add_param($this->stunde)." AND
 						(ort_kurzbz=".$this->db_add_param($this->ort_kurzbz)." OR ";
 
@@ -994,7 +1011,6 @@ class lehrstunde extends basis_db
 
 		$qry.="GROUP BY stpl.datum, stpl.unr, stpl.lehreinheit_id, lehrfach.bezeichnung
 					ORDER BY stpl.datum,  min(stpl.stunde), stpl.unr, stpl.lehreinheit_id";
-
 		if($result = $this->db_query($qry))
 		{
 			while($row = $this->db_fetch_object($result))

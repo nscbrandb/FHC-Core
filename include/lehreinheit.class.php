@@ -738,12 +738,12 @@ class lehreinheit extends basis_db
 				 WHERE verplanen='t'
 				   AND studiensemester_kurzbz='$studiensemester'";
 		if ($type=='lektor') $qry .= " AND lektor_uid='$lektor'";
-		elseif (!empty($orgform)) {
+		elseif (!empty($orgform_kurzbz)) {
 			$qry .= "	AND studiengang_kz='$stg_kz'
 						AND semester='$sem'
-						AND (	   orgform_kurzbz='$orgform'
+						AND (	   orgform_kurzbz='$orgform_kurzbz'
 							OR orgform_kurzbz IN (
-								SELECT DISTINCT child FROM stp.orgform_filter_childs WHERE parent='$orgform'
+								SELECT DISTINCT child FROM stp.orgform_filter_childs WHERE parent='$orgform_kurzbz'
 							)
 						)";
 		} elseif ($type=='gruppe') {

@@ -114,12 +114,13 @@ if (isset($idList))
 	$type='idList';
 else
 	$idList=null;
-
+$orgform = optional_param('orgform',null,PARAM_NOTAGS);
+	
 $error_msg='';
 $error_msg.=loadVariables($uid);
 $alle_unr_mitladen=true;
 $lehrstunden=new lehrstunde();
-$anz=$lehrstunden->load_lehrstunden($type,$datum,$datum_bis,$pers_uid,$ort_kurzbz,$stg_kz,$sem,$ver,$grp,$einheit,$db_stpl_table,$idList,null, null, $alle_unr_mitladen);
+$anz=$lehrstunden->load_lehrstunden($type,$datum,$datum_bis,$pers_uid,$ort_kurzbz,$stg_kz,$sem,$ver,$grp,$einheit,$db_stpl_table,$idList,null, null, $alle_unr_mitladen,$orgform);
 if ($anz<0)
 {
 	$errormsg=$lehrstunden->errormsg;
@@ -158,9 +159,10 @@ function getAnzahl($studiengang_kz, $semester, $verband, $gruppe, $gruppe_kurzbz
 	}
 	else 
 	{
-		$qry = "SELECT count(*) as anzahl FROM public.tbl_benutzergruppe 
-				WHERE studiensemester_kurzbz='".addslashes($studiensemester_kurzbz)."'
-				AND gruppe_kurzbz='".addslashes($gruppe_kurzbz)."'";
+		$qry = "SELECT count(*) as anzahl
+				  FROM public.tbl_benutzergruppe 
+				 WHERE gruppe_kurzbz='".addslashes($gruppe_kurzbz)."'
+				   AND (studiensemester_kurzbz IS NULL OR studiensemester_kurzbz='".addslashes($studiensemester_kurzbz)."')";
 	}
 	
 	if($res_anz = $db->db_query($qry))
@@ -228,6 +230,7 @@ if (is_array($lehrstunden->lehrstunden))
 				<LEHRSTUNDE:anzahlstudenten><![CDATA[<?php echo $anzahl;  ?>]]></LEHRSTUNDE:anzahlstudenten>
 				<LEHRSTUNDE:gruppe_bezeichnung><![CDATA[<?php echo $gruppenbezeichnung;  ?>]]></LEHRSTUNDE:gruppe_bezeichnung>
 				<LEHRSTUNDE:gruppe_beschreibung><![CDATA[<?php echo $gruppenbeschreibung;  ?>]]></LEHRSTUNDE:gruppe_beschreibung>
+				<LEHRSTUNDE:orgform><?php echo $ls->orgform  ?></LEHRSTUNDE:orgform>
   	    	</RDF:Description>
   			</RDF:li>
 			<?php

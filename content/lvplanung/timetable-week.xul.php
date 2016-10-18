@@ -20,8 +20,6 @@
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  *          Gerald Simane-Sequens <gerald.simane-sequens@technikum-wien.at>.
  */
-header("Content-type: application/vnd.mozilla.xul+xml");
-
 require_once('../../config/vilesci.config.inc.php');
 require_once('../../include/globals.inc.php');
 require_once('../../include/functions.inc.php');
@@ -31,6 +29,8 @@ require_once('../../include/zeitwunsch.class.php');
 require_once('../../include/wochenplan.class.php');
 require_once('../../include/reservierung.class.php'); 
 require_once('../../include/log.class.php'); 
+
+header("Content-type: application/vnd.mozilla.xul+xml");
 
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 echo '<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>';
@@ -162,6 +162,7 @@ else
 <script type="application/x-javascript" src="<?php echo APP_ROOT; ?>content/dragboard.js.php"/>
 <script type="application/x-javascript" src="<?php echo APP_ROOT; ?>content/functions.js.php"/>
 <script type="application/x-javascript" src="<?php echo APP_ROOT; ?>content/phpRequest.js.php" />
+<script type="application/x-javascript" src="<?php echo APP_ROOT_STPCORE; ?>js/stpcore.js.php"/>
 <?php
 if (isset($semesterplan) && $semesterplan)
 	echo '<script type="application/x-javascript" src="'.APP_ROOT.'content/lvplanung/stpl-semester-overlay.js.php"/>';
@@ -349,6 +350,48 @@ if ($aktion=='stpl_move' || $aktion=='stpl_set')
 			$error_msg.='Fehler: '.$log->errormsg;
 		
 	}
+
+	// Reservierungs-Hack
+	if (isset($res_idx)) {
+		if ($S->rechte->isBerechtigt('stp/moveres')) {
+			$qry = "SELECT stunde FROM campus.tbl_reservierung WHERE reservierung_id='".$res_id[0]."'";
+			if ($DB->db_query($qry) && $DB->db_num_rows() == 1) {
+				$undo = '';
+				$sql = '';
+				$diffStunde = $new_stunde - $DB->db_result(null,0,'stunde');
+				$diffStunde = $diffStunde > 0 ? "+".$diffStunde : ($diffStunde == 0 ? '' : $diffStunde);
+				foreach ($res_idx as $resid) {
+					if ($DB->db_query("SELECT * FROM campus.tbl_reservierung WHERE reservierung_id='$resid'") && $DB->db_num_rows() == 1) {
+						$old = $DB->db_fetch_object();
+						// Stunde berechnen
+						$qry = "BEGIN";
+						$qry = "UPDATE campus.tbl_reservierung SET ort_kurzbz='$ort',datum='$new_datum',stunde=(stunde".$diffStunde.") WHERE reservierung_id='$resid'";
+						if ($DB->db_query($qry) && $DB->db_affected_rows() == 1) {
+							
+							$qry_ext = "UPDATE stp.reservierung_extended SET updateamum=now(),updatevon='".$S->uid."' WHERE reservierung_id='$resid'";
+							if ($DB->db_query($qry_ext) && $DB->db_affected_rows() == 1) {
+								$sql .= "$qry;$qry_ext";
+								$undo .= "UPDATE campus.tbl_reservierung SET ort_kurzbz='$old->ort_kurzbz',datum='$old->datum',stunde='$old->stunde' WHERE reservierung_id='$resid';";
+								$undo .= "UPDATE stp.reservierung_extended SET updateamum=NULL,updatevon=NULL WHERE reservierung_id='$resid';";
+								$DB->db_query('COMMIT');
+							}
+							else $DB->db_query('ROLLBACK');
+						} else $error_msg.='Fehler: '.$DB->errormsg;
+					} else $error_msg.='Fehler: '.$DB->errormsg;
+				}
+				if($undo !='' && $sql != '') {
+					$log = new log();
+					$log->executetime = date('Y-m-d H:i:s');
+					$log->sqlundo = $undo;
+					$log->sql = $sql;
+					$log->beschreibung = 'Reservierungsverscheibung '.$new_datum.'('.$new_stunde.') '.$ort;
+					$log->mitarbeiter_uid = $uid;
+					if(!$log->save(true)) $error_msg.='Fehler: '.$log->errormsg;
+					
+				}
+			}
+		} else $error_msg .= 'Reservierungen können nicht verschoben werden';
+	}
 }
 // ****************** STPL Delete *******************************
 elseif ($aktion=='stpl_delete_single' || $aktion=='stpl_delete_block')
@@ -449,7 +492,7 @@ elseif ($aktion=='lva_single_set')
 
 			//$error_msg.='test'.$le_id.($lva[$i]->errormsg).($lva[$i]->stundenblockung);
 			for ($j=0;$j<$lva[$z]->stundenblockung && $error_msg=='';$j++)
-				if (!$lva[$z]->check_lva($new_datum,$new_stunde+$j,$new_ort,$db_stpl_table) && !$ignore_kollision)
+				if (!$ignore_kollision && !$lva[$z]->check_lva($new_datum,$new_stunde+$j,$new_ort,$db_stpl_table))
 					$kollision_msg.=$lva[$z]->errormsg."\n";
 			$z++;
 		}
@@ -479,11 +522,7 @@ elseif ($aktion=='lva_multi_set')
 	if($rechte->isBerechtigt('lehre/lvplan',null,'ui'))
 	{
 		// Ferien holen
-		$ferien=new ferien();
-		if ($type=='verband')
-			$ferien->getAll($stg_kz);
-		else
-			$ferien->getAll(0);
+		$ferien = new ferien_stp();
 	
 		// Ende holen
 		if (!$result_semester=$db->db_query("SELECT * FROM public.tbl_studiensemester WHERE studiensemester_kurzbz=".$db->db_add_param($semester_aktuell).";"))
@@ -568,7 +607,7 @@ elseif ($aktion=='lva_multi_set')
 					$lva[$i]=new lehreinheit();
 					$lva[$i]->loadLE($lva_id[$i]);
 					for ($j=0;$j<$block;$j++)
-						if (!$lva[$i]->check_lva($new_datum,$new_stunde+$j,$new_ort,$db_stpl_table) && !$ignore_kollision)
+						if (!$ignore_kollision && !$lva[$i]->check_lva($new_datum,$new_stunde+$j,$new_ort,$db_stpl_table))
 							$kollision_msg.=$lva[$i]->errormsg;
 				}
 				// LVAs setzen
@@ -577,7 +616,7 @@ elseif ($aktion=='lva_multi_set')
 						if (!$lva[$i]->save_stpl($new_datum,$new_stunde+$j,$new_ort,$db_stpl_table,$uid))
 							$error_msg.=$lva[$i]->errormsg;
 				$d=jump_week($d,$wochenrythmus);
-				while ($ferien->isferien($d))
+				while ($ferien->isferien($d,$stg_kz,$sem))
 					$d=jump_week($d,$wochenrythmus);
 				// Es kann sein, dass die Zeitumstellung (1 Stunde) Probleme macht
 				// Falls 23 Uhr eine Stunde nach vor
@@ -659,9 +698,8 @@ else
 $stdplan->user=$user;
 // aktueller Benutzer
 $stdplan->user_uid=$uid;
-
 // Zusaetzliche Daten laden
-if (! $stdplan->load_data($type,$pers_uid,$ort,$stg_kz,$sem,$ver,$grp,$gruppe,$fachbereich_kurzbz) && $error_msg!='')
+if (! $stdplan->load_data($type,$pers_uid,$ort,$stg_kz,$sem,$ver,$grp,$gruppe,$fachbereich_kurzbz,null,$orgform) && $error_msg!='')
 	$error_msg.=$stdplan->errormsg;
 
 // Stundenplan einer Woche laden
