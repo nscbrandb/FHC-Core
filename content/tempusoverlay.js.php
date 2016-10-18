@@ -34,9 +34,10 @@ function auswahlValues()
 	this.grp=null;
 	this.gruppe=null;
 	this.lektor_uid=null;
+	this.orgform=null;
 }
 
-function onVerbandSelect()
+function onVerbandSelect(event)
 {
 	document.getElementById('tempus-lva-filter').value='';
 	netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
@@ -44,9 +45,24 @@ function onVerbandSelect()
 	var tree=document.getElementById('tree-verband');
 	if(tree.currentIndex==-1)
 		return;
+	
+	LvSelectLehreinheit_id=null;	// STP-Hack Reset der markierten LE wegen Performance-Problemen
+	$('lehrveranstaltung-tree').currentIndex = '';
+	var row = { };
+	var col = { };
+	var child = { };
+	tree.treeBoxObject.getCellAt(event.pageX, event.pageY, row, col, child);
+	if (!col.value) return false;
+	if (row.value!=tree.currentIndex) return;
 
 	var col=tree.columns ? tree.columns["stg_kz"] : "stg_kz";
 	var stg_kz=tree.view.getCellText(tree.currentIndex,col);
+	
+	if (stg_kz=='-') return;
+	
+	// Progressmeter starten. Ab jetzt keine 'return's mehr.
+	document.getElementById('statusbar-progressmeter').setAttribute('mode','undetermined');
+	
 	col=tree.columns ? tree.columns["sem"] : "sem";
 	var sem=tree.view.getCellText(tree.currentIndex,col);
 	col=tree.columns ? tree.columns["ver"] : "ver";
@@ -63,8 +79,12 @@ function onVerbandSelect()
 	var orgform=tree.view.getCellText(tree.currentIndex,col);
 
 	var daten=window.TimeTableWeek.document.getElementById('TimeTableWeekData');
-	var datum=parseInt(daten.getAttribute("datum"));
-	var attributes="&stg_kz="+stg_kz+"&sem="+sem+"&ver="+ver+"&grp="+grp+"&gruppe="+gruppe;
+	if (daten != null) var datum=parseInt(daten.getAttribute("datum"));
+	else {
+		x = new Date(datum*1000);
+		var datum = x.getUTCDate()+'.'+(x.getUTCMonth()+1)+'.'+x.getUTCFullYear();
+	}
+	var attributes="&stg_kz="+stg_kz+"&sem="+sem+"&ver="+ver+"&grp="+grp+"&gruppe="+gruppe+"&orgform="+orgform;
 	var url = "<?php echo APP_ROOT; ?>content/lvplanung/timetable-week.xul.php";
 	if (gruppe!=null && gruppe!=0 &gruppe!='')
 		var type="?type=gruppe";
@@ -82,6 +102,7 @@ function onVerbandSelect()
 	currentAuswahl.ver=ver;
 	currentAuswahl.grp=grp;
 	currentAuswahl.gruppe=gruppe;
+	currentAuswahl.orgform=orgform;
 
 	// Semesterplan
 	var semesterplan=document.getElementById('tabpanels-main');
@@ -111,7 +132,7 @@ function onVerbandSelect()
 	try
 	{
 		stsem = getStudiensemester();
-		url = "<?php echo APP_ROOT; ?>rdf/student.rdf.php?studiengang_kz="+stg_kz+"&semester="+sem+"&verband="+ver+"&gruppe="+grp+"&gruppe_kurzbz="+gruppe+"&studiensemester_kurzbz="+stsem+"&typ=student&"+gettimestamp();
+		url = "<?php echo APP_ROOT; ?>rdf/student.rdf.php?studiengang_kz="+stg_kz+"&semester="+sem+"&verband="+ver+"&gruppe="+grp+"&gruppe_kurzbz="+gruppe+"&studiensemester_kurzbz="+stsem+"&typ=student&orgform="+orgform+"&"+gettimestamp();
 		var treeStudent=document.getElementById('student-tree');
 
 		//Alte DS entfernen
@@ -137,16 +158,16 @@ function onVerbandSelect()
 		treeStudent.builder.addListener(StudentTreeListener);
 
 		//Detailfelder Deaktivieren
-		StudentDetailReset();
-		StudentDetailDisableFields(true);
-		StudentPrestudentDisableFields(true);
-		StudentKontoDisableFields(true);
-		StudentAkteDisableFields(true);
-		StudentIODisableFields(true);
-		StudentNoteDisableFields(true);
-		document.getElementById('student-kontakt').setAttribute('src','');
-		document.getElementById('student-betriebsmittel').setAttribute('src','');
-		StudentAbschlusspruefungDisableFields(true);
+		//StudentDetailReset();
+		//StudentDetailDisableFields(true);
+		//StudentPrestudentDisableFields(true);
+		//StudentKontoDisableFields(true);
+		//StudentAkteDisableFields(true);
+		//StudentIODisableFields(true);
+		//StudentNoteDisableFields(true);
+		//document.getElementById('student-kontakt').setAttribute('src','');
+		//document.getElementById('student-betriebsmittel').setAttribute('src','');
+		//StudentAbschlusspruefungDisableFields(true);
 	}
 	catch(e){}
 
@@ -154,9 +175,14 @@ function onVerbandSelect()
 	// Lehrveranstaltung
 	try
 	{
-		url = '<?php echo APP_ROOT; ?>rdf/lehrveranstaltung_einheiten.rdf.php?stg_kz='+encodeURIComponent(stg_kz)+'&sem='+encodeURIComponent(sem)+'&ver='+encodeURIComponent(ver)+'&grp='+encodeURIComponent(grp)+'&gruppe='+encodeURIComponent(gruppe)+'&orgform='+encodeURIComponent(orgform)+'&'+gettimestamp();
+		url = '<?php echo APP_ROOT_STPCORE; ?>rdf/lehrveranstaltung_einheiten.rdf.php?stg_kz='+encodeURIComponent(stg_kz)+'&sem='+encodeURIComponent(sem)+'&ver='+encodeURIComponent(ver)+'&grp='+encodeURIComponent(grp)+'&gruppe='+encodeURIComponent(gruppe)+'&orgform='+encodeURIComponent(orgform)+'&'+gettimestamp();
 		var treeLV=document.getElementById('lehrveranstaltung-tree');
 
+		try {
+			LvTreeDatasource.removeXMLSinkObserver(LvTreeSinkObserver);
+			treeLV.builder.removeListener(LvTreeListener);
+		} catch(e) {}
+		
 		//Alte DS entfernen
 		var oldDatasources = treeLV.database.GetDataSources();
 		while(oldDatasources.hasMoreElements())
@@ -176,6 +202,10 @@ function onVerbandSelect()
 	{
 		debug(e);
 	}
+	// Selektierungsfunktion der Addons aufrufen
+	for(i in addon) {
+		if(typeof addon[i].selectVerband == 'function') addon[i].selectVerband(event);
+	}
 }
 
 function onOrtSelect()
@@ -186,7 +216,11 @@ function onOrtSelect()
 	var col=treeOrt.columns ? treeOrt.columns["ort_kurzbz"] : "ort_kurzbz";
 	var ort=treeOrt.view.getCellText(treeOrt.currentIndex,col);
 	var daten=window.TimeTableWeek.document.getElementById('TimeTableWeekData');
-	var datum=parseInt(daten.getAttribute("datum"));
+	if (daten != null) var datum=parseInt(daten.getAttribute("datum"));
+	else {
+		x = new Date(datum*1000);
+		var datum = x.getUTCDate()+'.'+(x.getUTCMonth()+1)+'.'+x.getUTCFullYear();
+	}
 
 	if(ort=='')
 		return false;
@@ -213,6 +247,8 @@ function onOrtSelect()
 
 function onLektorSelect(event)
 {
+	if (event !== undefined && event.keyCode !== undefined && event.keyCode != '13') return;        // Tastatureingabe, aber kein Enter!
+
 	document.getElementById('tempus-lva-filter').value='';
 	netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
 	var contentFrame=document.getElementById('iframeTimeTableWeek');
@@ -228,10 +264,18 @@ function onLektorSelect(event)
 	}
 	if(uid=='')
 		return;
+	
+	LvSelectLehreinheit_id=null;   // STP-Hack Reset der markierten LE wegen Performance-Problemen
+	$('lehrveranstaltung-tree').currentIndex = '';
+	
 	//var treeVerband=document.getElementById('tree-verband');
 	//var stg_kz=treeVerband.view.getCellText(treeVerband.currentIndex,"stg_kz");
 	var daten=window.TimeTableWeek.document.getElementById('TimeTableWeekData');
-	var datum=parseInt(daten.getAttribute("datum"));
+	if (daten != null) var datum=parseInt(daten.getAttribute("datum"));
+	else {
+		x = new Date(datum*1000);
+		var datum = x.getUTCDate()+'.'+(x.getUTCMonth()+1)+'.'+x.getUTCFullYear();
+	}
 
 	var attributes="?type=lektor&pers_uid="+uid+"&datum="+datum;
 	var url = "<?php echo APP_ROOT; ?>content/lvplanung/timetable-week.xul.php";
@@ -262,20 +306,23 @@ function onLektorSelect(event)
 	if(tree.currentIndex==-1)
 		return;
 
-	var row = { };
-    var col = { };
-    var child = { };
-
-    tree.treeBoxObject.getCellAt(event.pageX, event.pageY, row, col, child)
-
-    //Wenn es keine Row ist sondern ein Header oder Scrollbar dann abbrechen
-    if (!col.value)
-       	return false;
-
-    //Wenn eine andere row markiert ist als angeklickt wurde -> beenden.
-	//Dies kommt vor wenn ein Subtree geoeffnet wird
-	if(row.value!=tree.currentIndex)
-		return;
+	// !keypress dann ueber mouseevent checken - erscheint redundant weils oben schon gecheckt wurde, aber ich hab jetzt keine Zeit das aufzuräumen
+	if (event !== undefined && event.keyCode === undefined) {
+		var row = { };
+	    var col = { };
+	    var child = { };
+	
+	    tree.treeBoxObject.getCellAt(event.pageX, event.pageY, row, col, child)
+	
+	    //Wenn es keine Row ist sondern ein Header oder Scrollbar dann abbrechen
+	    if (!col.value)
+	       	return false;
+	
+	    //Wenn eine andere row markiert ist als angeklickt wurde -> beenden.
+		//Dies kommt vor wenn ein Subtree geoeffnet wird
+		if(row.value!=tree.currentIndex)
+			return;
+    }
 
 	col = tree.columns ? tree.columns["uid"] : "uid";
 	var uid=tree.view.getCellText(tree.currentIndex,col);
@@ -377,7 +424,11 @@ function onFachbereichSelect(event)
 	var contentFrame=document.getElementById('iframeTimeTableWeek');
 
 	var daten=window.TimeTableWeek.document.getElementById('TimeTableWeekData');
-	var datum=parseInt(daten.getAttribute("datum"));
+	if (daten != null) var datum=parseInt(daten.getAttribute("datum"));
+	else {
+		x = new Date(datum*1000);
+		var datum = x.getUTCDate()+'.'+(x.getUTCMonth()+1)+'.'+x.getUTCFullYear();
+	}
 
 	var attributes="?type=fachbereich&fachbereich_kurzbz="+kurzbz+"&datum="+datum;
 	var url = "<?php echo APP_ROOT; ?>content/lvplanung/timetable-week.xul.php";

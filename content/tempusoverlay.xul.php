@@ -23,8 +23,8 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/lvplanung/stpl-semester-overlay.xu
 <script type="application/x-javascript" src="<?php echo APP_ROOT; ?>content/DragAndDrop.js"/>
 <script type="application/x-javascript" src="<?php echo APP_ROOT; ?>content/dragboard.js.php"/>
 
-<tree id="tree-verband" onmouseup="onVerbandSelect();"
-	seltype="single" hidecolumnpicker="false" flex="1"
+<tree id="tree-verband" onmouseup="onVerbandSelect(event);"
+	seltype="single" hidecolumnpicker="false" flex="1" flags="dont-build-content"
 	enableColumnDrag="true"
     ondraggesture="nsDragAndDrop.startDrag(event,lvbgrpDDObserver);"
 	datasources="rdf:null" ref="http://www.technikum-wien.at/lehrverbandsgruppe/alle-verbaende"
@@ -59,7 +59,9 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/lvplanung/stpl-semester-overlay.xu
 	      <treechildren>
 	       <treeitem uri="rdf:*">
 	         <treerow>
-	           <treecell label="rdf:http://www.technikum-wien.at/lehrverbandsgruppe/rdf#name"/>
+	           <treecell
+	           		properties="rdf:http://www.technikum-wien.at/lehrverbandsgruppe/rdf#stpstyle"
+	           		label="rdf:http://www.technikum-wien.at/lehrverbandsgruppe/rdf#name"/>
 	           <treecell label="rdf:http://www.technikum-wien.at/lehrverbandsgruppe/rdf#stg"/>
 	           <treecell label="rdf:http://www.technikum-wien.at/lehrverbandsgruppe/rdf#stg_kz"/>
 	           <treecell label="rdf:http://www.technikum-wien.at/lehrverbandsgruppe/rdf#sem"/>
@@ -88,7 +90,7 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/lvplanung/stpl-semester-overlay.xu
 	    <splitter class="tree-splitter"/>
 	     <treecol id="ort_bezeichnung" label="Bezeichnung" flex="3" hidden="true" persist="hidden, width, ordinal"/>
 	    <splitter class="tree-splitter"/>
-	    <treecol id="max_person" label="MaxP" flex="1" hidden="true" persist="hidden, width, ordinal"/>
+	    <treecol id="max_person" label="MaxP" flex="1" hidden="false" persist="hidden, width, ordinal"/>
 	    <splitter class="tree-splitter"/>
 	    <treecol id="raumtypen" label="Raumtypen" flex="1" hidden="true" persist="hidden, width, ordinal"/>
 	    <splitter class="tree-splitter"/>
@@ -151,7 +153,7 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/lvplanung/stpl-semester-overlay.xu
   	</template>
 </tree>
 -->
-<tree id="tree-lektor" onmouseup="onLektorSelect(event);"
+<tree id="tree-lektor" onmouseup="onLektorSelect(event);" onkeyup="onLektorSelect(event);"
 	seltype="multi" hidecolumnpicker="false" flex="1"
 	enableColumnDrag="true"
     ondraggesture="nsDragAndDrop.startDrag(event,mitarbeiterDDObserver);"
@@ -172,9 +174,11 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/lvplanung/stpl-semester-overlay.xu
 	    <splitter class="tree-splitter"/>
 	    <treecol id="titel" label="Titel" flex="1" hidden="true"/>
 	    <splitter class="tree-splitter"/>
-	    <treecol id="uid" label="UID" flex="1" hidden="true"/>
+	    <treecol id="uid" label="UID" flex="1" hidden="false"/>
 	    <splitter class="tree-splitter"/>
 	    <treecol id="studiengang_kz" label="Studiengangkz" flex="1" hidden="true"/>
+		<splitter class="tree-splitter"/>
+		<treecol id="aktiv" label="aktiv" flex="1" hidden="true"/>
 	</treecols>
 
 	<template>
@@ -182,12 +186,15 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/lvplanung/stpl-semester-overlay.xu
 		<treechildren>
 	       	<treeitem uri="rdf:*">
 	         	<treerow>
-	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#kurzbz"/>
+	           		<treecell
+	           			properties="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#aktiv , lektoraktiv"
+	           			label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#kurzbz"/>
 	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#nachname"/>
 	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#vorname"/>
 	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#titelpre"/>
 	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#uid"/>
 	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#studiengang_kz"/>
+	           		<treecell label="rdf:http://www.technikum-wien.at/mitarbeiter/rdf#aktiv"/>
 	         	</treerow>
 	    	</treeitem>
 	    </treechildren>

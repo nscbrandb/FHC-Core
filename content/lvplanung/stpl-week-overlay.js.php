@@ -133,13 +133,14 @@ function onJumpNow()
 	var ort=daten.getAttribute("ort");
 	var fachbereich_kurzbz=daten.getAttribute("fachbereich_kurzbz");
 	var pers_uid=daten.getAttribute("pers_uid");
+	var orgform=daten.getAttribute("orgform");
 
 	var d = new Date();
     var datum=0;
     //Sekunden seit 1.1.1970
     datum = d.getTime()/1000;
 	//alert(datum);
-	var attributes="?type="+type+"&datum="+datum+"&ort="+encodeURIComponent(ort)+"&pers_uid="+encodeURIComponent(pers_uid)+"&stg_kz="+encodeURIComponent(stg_kz)+"&sem="+encodeURIComponent(sem)+"&ver="+encodeURIComponent(ver)+"&grp="+encodeURIComponent(grp)+"&gruppe="+encodeURIComponent(gruppe)+"&fachbereich_kurzbz="+encodeURIComponent(fachbereich_kurzbz);
+	var attributes="?type="+type+"&datum="+datum+"&ort="+encodeURIComponent(ort)+"&pers_uid="+encodeURIComponent(pers_uid)+"&stg_kz="+encodeURIComponent(stg_kz)+"&sem="+encodeURIComponent(sem)+"&ver="+encodeURIComponent(ver)+"&grp="+encodeURIComponent(grp)+"&gruppe="+encodeURIComponent(gruppe)+"&fachbereich_kurzbz="+encodeURIComponent(fachbereich_kurzbz)+"&orgform="+encodeURIComponent(orgform);
 	var url = "<?php echo APP_ROOT; ?>content/lvplanung/timetable-week.xul.php";
 	url+=attributes;
 	if (url)
@@ -160,11 +161,19 @@ function onJumpDate(wochen)
 	var ort=daten.getAttribute("ort");
 	var pers_uid=daten.getAttribute("pers_uid");
 	var fachbereich_kurzbz=daten.getAttribute("fachbereich_kurzbz");
+	var orgform=daten.getAttribute("orgform");
 
 	// neues Datum berechnen. Eine Woche sind 604800 Sekunden.
 	datum+=(604800*wochen)+1;
 
-	var attributes="?type="+type+"&datum="+datum+"&ort="+encodeURIComponent(ort)+"&pers_uid="+encodeURIComponent(pers_uid)+"&stg_kz="+encodeURIComponent(stg_kz)+"&sem="+encodeURIComponent(sem)+"&ver="+encodeURIComponent(ver)+"&grp="+encodeURIComponent(grp)+"&gruppe="+encodeURIComponent(gruppe)+"&fachbereich_kurzbz="+encodeURIComponent(fachbereich_kurzbz);
+	// STP-HACK Datepicker fuers jumpWeek
+	try {
+		x = new Date(datum*1000);
+		$('addon-stpcore-tempus-jumpdate').value = x.getUTCDate()+'.'+(x.getUTCMonth()+1)+'.'+x.getUTCFullYear();
+	} catch(e) { }
+
+	
+	var attributes="?type="+type+"&datum="+datum+"&ort="+encodeURIComponent(ort)+"&pers_uid="+encodeURIComponent(pers_uid)+"&stg_kz="+encodeURIComponent(stg_kz)+"&sem="+encodeURIComponent(sem)+"&ver="+encodeURIComponent(ver)+"&grp="+encodeURIComponent(grp)+"&gruppe="+encodeURIComponent(gruppe)+"&fachbereich_kurzbz="+encodeURIComponent(fachbereich_kurzbz)+"&orgform="+encodeURIComponent(orgform);
 	var url = "<?php echo APP_ROOT; ?>content/lvplanung/timetable-week.xul.php";
 	url+=attributes;
 	if (url)
@@ -188,11 +197,12 @@ function onJumpDateRel(evt)
 	var kw=daten.getAttribute("kw");
 	var KWZiel=evt.target.getAttribute("kw");
 	var wochen=KWZiel-kw;
+	var orgform=daten.getAttribute("orgform");
 
 	// neues Datum berechnen. Eine Woche sind 604800 Sekunden.
 	datum+=(604800*wochen)+1;
 
-	var attributes="?type="+type+"&datum="+datum+"&ort="+encodeURIComponent(ort)+"&pers_uid="+encodeURIComponent(pers_uid)+"&stg_kz="+encodeURIComponent(stg_kz)+"&sem="+encodeURIComponent(sem)+"&ver="+encodeURIComponent(ver)+"&grp="+encodeURIComponent(grp)+"&gruppe="+encodeURIComponent(gruppe)+"&fachbereich_kurzbz="+encodeURIComponent(fachbereich_kurzbz);
+	var attributes="?type="+type+"&datum="+datum+"&ort="+encodeURIComponent(ort)+"&pers_uid="+encodeURIComponent(pers_uid)+"&stg_kz="+encodeURIComponent(stg_kz)+"&sem="+encodeURIComponent(sem)+"&ver="+encodeURIComponent(ver)+"&grp="+encodeURIComponent(grp)+"&gruppe="+encodeURIComponent(gruppe)+"&fachbereich_kurzbz="+encodeURIComponent(fachbereich_kurzbz)+"&orgform="+encodeURIComponent(orgform);
 	var url = "<?php echo APP_ROOT; ?>content/lvplanung/timetable-week.xul.php";
 	url+=attributes;
 	if (url)
@@ -224,8 +234,9 @@ function onLVAdoStpl(evt)
 		else
 			aktion+="_search";
 	var idList=evt.target.getAttribute("idList");
+	var orgform=daten.getAttribute("orgform");
 
-	var attributes="?type="+type+"&datum="+datum+"&ort="+encodeURIComponent(ort)+"&pers_uid="+pers_uid+"&stg_kz="+stg_kz+"&sem="+sem+"&ver="+ver+"&grp="+grp+"&gruppe="+gruppe;
+	var attributes="?type="+type+"&datum="+datum+"&ort="+encodeURIComponent(ort)+"&pers_uid="+pers_uid+"&stg_kz="+stg_kz+"&sem="+sem+"&ver="+ver+"&grp="+grp+"&gruppe="+gruppe+"&orgform="+orgform;
 	attributes+=idList+"&aktion="+aktion+"&time="+oneDate.getTime();
 	var url = "<?php echo APP_ROOT; ?>content/lvplanung/timetable-week.xul.php";
 	url+=attributes+"&bla=";
@@ -263,8 +274,9 @@ function StplSearchRoom(target)
 	var aktion=target.getAttribute("aktion");
 	aktion+="_single_search";
 	var idList=target.getAttribute("idList");
+	var orgform=daten.getAttribute("orgform");
 	
-	var attributes="\n?type="+type+"&datum="+datum+"&ort="+ort+"&pers_uid="+pers_uid+"\n&stg_kz="+stg_kz+"&sem="+sem+"&ver="+ver+"&grp="+grp+"\n&gruppe="+gruppe;
+	var attributes="\n?type="+type+"&datum="+datum+"&ort="+ort+"&pers_uid="+pers_uid+"\n&stg_kz="+stg_kz+"&sem="+sem+"&ver="+ver+"&grp="+grp+"\n&gruppe="+gruppe+"&orgform="+orgform;
 	attributes+=idList+"&aktion="+aktion;
 	var url = "<?php echo APP_ROOT; ?>content/lvplanung/timetable-week.xul.php";
 	url+=attributes;
@@ -483,8 +495,9 @@ function onStplDetail(event)
 	var pers_uid=event.target.getAttribute("pers_uid");
 	var ort_kurzbz=event.target.getAttribute("ort_kurzbz");
 	var fachbereich_kurzbz=event.target.getAttribute("fachbereich_kurzbz");
+	var orgform=event.target.getAttribute("orgform");
 
-	var attributes="?type="+type+"&datum="+datum+"&stunde="+stunde+"&ort_kurzbz="+encodeURIComponent(ort_kurzbz)+"&pers_uid="+pers_uid+"&stg_kz="+stg_kz+"&sem="+sem+"&ver="+ver+"&grp="+grp+"&gruppe="+gruppe+"&ort_kurzbz="+encodeURIComponent(ort_kurzbz)+"&fachbereich_kurzbz="+encodeURIComponent(fachbereich_kurzbz);
+	var attributes="?type="+type+"&datum="+datum+"&stunde="+stunde+"&ort_kurzbz="+encodeURIComponent(ort_kurzbz)+"&pers_uid="+pers_uid+"&stg_kz="+stg_kz+"&sem="+sem+"&ver="+ver+"&grp="+grp+"&gruppe="+gruppe+"&ort_kurzbz="+encodeURIComponent(ort_kurzbz)+"&fachbereich_kurzbz="+encodeURIComponent(fachbereich_kurzbz)+"&orgform="+encodeURIComponent(orgform);
 	//alert(attributes);
 	//debug('stpl-week-overlay onStplDetail Attribute:'+attributes);
 	attributes+=idList;
@@ -705,10 +718,11 @@ function TimetableDeleteEntries()
 	var pers_uid=daten.getAttribute("pers_uid");
 	var doIt=true;
 	var aktion='stpl_delete_single';
+	var orgform=daten.getAttribute("orgform");
 	
 	doIt=confirm('Es werden die gewaehlten Eintraege aus dem LV-Plan geloescht!\nSind Sie sicher?')
 
-	var attributes="\n?type="+type+"&datum="+datum+"&ort="+encodeURIComponent(ort)+"&pers_uid="+pers_uid+"\n&stg_kz="+stg_kz+"&sem="+sem+"&ver="+ver+"&grp="+grp+"\n&gruppe="+gruppe;
+	var attributes="\n?type="+type+"&datum="+datum+"&ort="+encodeURIComponent(ort)+"&pers_uid="+pers_uid+"\n&stg_kz="+stg_kz+"&sem="+sem+"&ver="+ver+"&grp="+grp+"\n&gruppe="+gruppe+"&orgform="+orgform;
 	attributes+="&aktion="+aktion;
 	var url = "<?php echo APP_ROOT; ?>content/lvplanung/timetable-week.xul.php";
 	url+=attributes;

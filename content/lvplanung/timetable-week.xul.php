@@ -40,6 +40,8 @@ $db_stpl_table=null;
 $db = new basis_db();
 
 echo '<?xml-stylesheet href="'.APP_ROOT.'skin/tempus.css" type="text/css"?>';
+echo '<?xml-stylesheet href="'.APP_ROOT_STPCORE.'skin/stp.css.php" type="text/css"?>';
+echo '<?xml-stylesheet href="'.APP_ROOT_STPCORE.'skin/tempus.css.php" type="text/css"?>';
 
 $uid = get_uid();
 
@@ -125,6 +127,7 @@ if (isset($_GET['gruppe']))
 	$gruppe=$_GET['gruppe'];
 else
 	$gruppe=null;
+$orgform = optional_param('orgform',null,PARAM_ALPHA);
 if (isset($_GET['semester_aktuell']))
 	$semester_aktuell=$_GET['semester_aktuell'];
 
