@@ -19,12 +19,11 @@
  *          Andreas Oesterreicher <andreas.oesterreicher@technikum-wien.at> and
  *          Rudolf Hangl <rudolf.hangl@technikum-wien.at>.
  */
-header("Content-type: application/vnd.mozilla.xul+xml");
-echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-
 require_once('../config/vilesci.config.inc.php');
 require_once('../include/functions.inc.php');
 require_once('../include/benutzerberechtigung.class.php');
+header("Content-type: application/vnd.mozilla.xul+xml");
+echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 
 $user = get_uid();
 
