@@ -264,93 +264,6 @@ if ($aktion=='stpl_move' || $aktion=='stpl_set')
 	$sql='';
 	$moved=array();
 	
-	foreach ($stpl_id as $stundenplan_id)
-	{
-		$moved[]=$stundenplan_id;
-		$lehrstunde=new lehrstunde();
-		$lehrstunde->load($stundenplan_id,$db_stpl_table);
-		if($rechte->isBerechtigt('lehre/lvplan',$lehrstunde->studiengang_kz,'ui'))
-		{
-			$undo.=$lehrstunde->getUndo($db_stpl_table);
-			$diffStunde=$new_stunde-$lehrstunde->stunde;
-			$lehrstunde->datum=$new_datum;
-			$lehrstunde->stunde=$new_stunde;
-			if ($ort!=$old_ort)
-				$lehrstunde->ort_kurzbz=$ort;
-			if ($aktion=='stpl_set')
-				$lehrstunde->ort_kurzbz=$new_ort;
-
-			if($new_unr!='')
-				$lehrstunde->unr = $new_unr;
-
-			$kollision=$lehrstunde->kollision($db_stpl_table);
-			if ($kollision && !$ignore_kollision)
-				$kollision_msg.=$lehrstunde->errormsg;
-			if (!$kollision || $ignore_kollision || $kollisionsanzahl>0)
-			{
-				if(!$lehrstunde->save($uid,$db_stpl_table))
-					$error_msg.=$lehrstunde->errormsg;
-				$sql.=$lehrstunde->lastqry;
-			}
-		}
-		else
-		{
-			$error_msg.="Sie haben keine Berechtigung zur Verschiebung von Stunden des Studienganges ".$lehrstunde->studiengang;
-		}
-	}
-	// Mehrfachauswahl
-	if (isset($stpl_idx))
-	{
-		foreach ($stpl_idx as $stundenplan_id)
-		{
-			if(!in_array($stundenplan_id, $moved))
-			{
-				$lehrstunde=new lehrstunde();
-				$lehrstunde->load($stundenplan_id,$db_stpl_table);
-				if($rechte->isBerechtigt('lehre/lvplan',$lehrstunde->studiengang_kz,'ui'))
-				{
-					$undo.=$lehrstunde->getUndo($db_stpl_table);
-					$lehrstunde->datum=$new_datum;
-					$lehrstunde->stunde+=$diffStunde;
-					if ($ort!=$old_ort)
-						$lehrstunde->ort_kurzbz=$ort;
-					if ($aktion=='stpl_set')
-						$lehrstunde->ort_kurzbz=$new_ort;
-					if($new_unr!='')
-						$lehrstunde->unr = $new_unr;
-
-					$kollision=$lehrstunde->kollision($db_stpl_table);
-					if ($kollision && !$ignore_kollision)
-						$kollision_msg.=$lehrstunde->errormsg;
-					if (!$kollision || $ignore_kollision || $kollisionsanzahl>0)
-					{
-						if(!$lehrstunde->save($uid,$db_stpl_table))
-							$error_msg.=$lehrstunde->errormsg;
-						$sql.=$lehrstunde->lastqry;
-					}
-				}
-				else
-				{
-					$error_msg.="Sie haben keine Berechtigung zur Verschiebung von Stunden des Studienganges ".$lehrstunde->studiengang;
-				}
-			}
-		}
-	}
-	
-	//UNDO Befehl schreiben
-	if($undo!='' && $error_msg=='' && $sql!='')
-	{
-		$log = new log();
-		$log->executetime = date('Y-m-d H:i:s');
-		$log->sqlundo = $undo;
-		$log->sql = $sql;
-		$log->beschreibung = 'Stundenverschiebung '.$new_datum.'('.$new_stunde.') '.$ort;
-		$log->mitarbeiter_uid = $uid;
-		if(!$log->save(true))
-			$error_msg.='Fehler: '.$log->errormsg;
-		
-	}
-
 	// Reservierungs-Hack
 	if (isset($res_idx)) {
 		if ($S->rechte->isBerechtigt('stp/moveres')) {
@@ -391,6 +304,93 @@ if ($aktion=='stpl_move' || $aktion=='stpl_set')
 				}
 			}
 		} else $error_msg .= 'Reservierungen können nicht verschoben werden';
+	} else {
+		foreach ($stpl_id as $stundenplan_id)
+		{
+			$moved[]=$stundenplan_id;
+			$lehrstunde=new lehrstunde();
+			$lehrstunde->load($stundenplan_id,$db_stpl_table);
+			if($rechte->isBerechtigt('lehre/lvplan',$lehrstunde->studiengang_kz,'ui'))
+			{
+				$undo.=$lehrstunde->getUndo($db_stpl_table);
+				$diffStunde=$new_stunde-$lehrstunde->stunde;
+				$lehrstunde->datum=$new_datum;
+				$lehrstunde->stunde=$new_stunde;
+				if ($ort!=$old_ort)
+					$lehrstunde->ort_kurzbz=$ort;
+				if ($aktion=='stpl_set')
+					$lehrstunde->ort_kurzbz=$new_ort;
+	
+				if($new_unr!='')
+					$lehrstunde->unr = $new_unr;
+	
+				$kollision=$lehrstunde->kollision($db_stpl_table);
+				if ($kollision && !$ignore_kollision)
+					$kollision_msg.=$lehrstunde->errormsg;
+				if (!$kollision || $ignore_kollision || $kollisionsanzahl>0)
+				{
+					if(!$lehrstunde->save($uid,$db_stpl_table))
+						$error_msg.=$lehrstunde->errormsg;
+					$sql.=$lehrstunde->lastqry;
+				}
+			}
+			else
+			{
+				$error_msg.="Sie haben keine Berechtigung zur Verschiebung von Stunden des Studienganges ".$lehrstunde->studiengang;
+			}
+		}
+		// Mehrfachauswahl
+		if (isset($stpl_idx))
+		{
+			foreach ($stpl_idx as $stundenplan_id)
+			{
+				if(!in_array($stundenplan_id, $moved))
+				{
+					$lehrstunde=new lehrstunde();
+					$lehrstunde->load($stundenplan_id,$db_stpl_table);
+					if($rechte->isBerechtigt('lehre/lvplan',$lehrstunde->studiengang_kz,'ui'))
+					{
+						$undo.=$lehrstunde->getUndo($db_stpl_table);
+						$lehrstunde->datum=$new_datum;
+						$lehrstunde->stunde+=$diffStunde;
+						if ($ort!=$old_ort)
+							$lehrstunde->ort_kurzbz=$ort;
+						if ($aktion=='stpl_set')
+							$lehrstunde->ort_kurzbz=$new_ort;
+						if($new_unr!='')
+							$lehrstunde->unr = $new_unr;
+	
+						$kollision=$lehrstunde->kollision($db_stpl_table);
+						if ($kollision && !$ignore_kollision)
+							$kollision_msg.=$lehrstunde->errormsg;
+						if (!$kollision || $ignore_kollision || $kollisionsanzahl>0)
+						{
+							if(!$lehrstunde->save($uid,$db_stpl_table))
+								$error_msg.=$lehrstunde->errormsg;
+							$sql.=$lehrstunde->lastqry;
+						}
+					}
+					else
+					{
+						$error_msg.="Sie haben keine Berechtigung zur Verschiebung von Stunden des Studienganges ".$lehrstunde->studiengang;
+					}
+				}
+			}
+		}
+		
+		//UNDO Befehl schreiben
+		if($undo!='' && $error_msg=='' && $sql!='')
+		{
+			$log = new log();
+			$log->executetime = date('Y-m-d H:i:s');
+			$log->sqlundo = $undo;
+			$log->sql = $sql;
+			$log->beschreibung = 'Stundenverschiebung '.$new_datum.'('.$new_stunde.') '.$ort;
+			$log->mitarbeiter_uid = $uid;
+			if(!$log->save(true))
+				$error_msg.='Fehler: '.$log->errormsg;
+			
+		}
 	}
 }
 // ****************** STPL Delete *******************************

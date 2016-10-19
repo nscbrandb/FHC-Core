@@ -1212,11 +1212,15 @@ class wochenplan extends basis_db
 				align="left">KW:'.$this->kalenderwoche.'</label>
 			</vbox>'.$this->crlf; //<html:br />Beginn<html:br />Ende
 
+		$stunden_arr = array();
+		
 		for ($i=0;$i<$num_rows_stunde; $i++)
 		{
 			$row=$this->db_fetch_object($result_stunde,$i);
 			$beginn=mb_substr($row->beginn,0,5);
 			$ende=mb_substr($row->ende,0,5);
+			$stunden_arr[$row->stunde]['beginn']=$beginn;
+			$stunden_arr[$row->stunde]['ende']=$ende;
 			$stunde=$row->stunde;
 			echo '<vbox><label align="center">'.$stunde.'<html:br />
 						<html:small>'.$beginn.'<html:br />
@@ -1424,7 +1428,7 @@ class wochenplan extends basis_db
 					if (!empty($ferien->bgcol)) $bgcolor = '#'.$ferien->bgcol;
 					if (!empty($ferien->tooltip)) $tooltip = ($tooltip != '' ? ', ':'').preg_replace('/, $/','',$ferien->tooltip);
 				}
-				echo '<vbox style="border:1px solid black; background-color:'.$bgcolor.'"';
+				echo '<vbox class="stplweek_vbox" style="border:1px solid black; background-color:'.$bgcolor.'"';
 				if ($tooltip!='')
 				{
 					echo ' tooltiptext="'.str_replace(array('"','&'),array('&quot;','&amp;'),$tooltip).'"';
@@ -1591,6 +1595,7 @@ class wochenplan extends basis_db
 							}
 							$tooltips["$unr-$i-$j"] .= '</html:table>';
 							$tooltips["$unr-$i-$j"] .= '</html:div></html:div>';
+							$tooltips["$unr-$i-$j"] = preg_replace(array('/<div[^>]*>/','/<\/div>/'),array('',''),$tooltips["$unr-$i-$j"]);
 						}
 						if ($reservierung && isset($info)) $bbgcolor = $bgcolor;
 						else $bbgcolor = isset($farbe) && $farbe!=''?'#'.$farbe:$bgcolor;
@@ -1637,22 +1642,23 @@ class wochenplan extends basis_db
 							$out .= $picadd;
 							if (isset($info->title)) {
 								if (is_array($info->title)) {
-									foreach ($info->title as $tline) $out .= str_replace('&nbsp;','',$tline)."<html:br />"."\n";
-								} else $out .= "$info->title<html:br />"."\n";
+									foreach ($info->title as $tline) $out .= "<html:div>".str_replace('&nbsp;','',$tline)."</html:div>"."\n";
+								} else $out .= "<html:div>$info->title</html:div>"."\n";
 							} else $out .= $lf;
-							if ($info->typ == 'PR') $out .= $info->kurzbz."<html:br />"."\n";
+							if ($info->typ == 'PR') $out .= "<html:div>$info->kurzbz</html:div>"."\n";
 							// wenns eine Resevierung mit Verband / Gruppe gibt => immer zuletzt auswerfen
 							if (isset($info->lines)) {
-								$out .= isset($info->lines['Gruppe'])?$info->lines['Gruppe']."<html:br />"."\n":'';
-								$out .= isset($info->lines['Verband'])?$info->lines['Verband']."<html:br />"."\n":'';
-								$out .= isset($info->lines['Gruppe / Verband'])?$info->lines['Gruppe / Verband']."<html:br />"."\n":'';
+								$out .= isset($info->lines['Gruppe'])?"<html:div>".$info->lines['Gruppe']."</html:div>"."\n":'';
+								$out .= isset($info->lines['Verband'])?"<html:div>".$info->lines['Verband']."</html:div>"."\n":'';
+								$out .= isset($info->lines['Gruppe / Verband'])?"<html:div>".$info->lines['Gruppe / Verband']."</html:div>"."\n":'';
 							}
 							if ($this->type!='lektor') $out .= $lkt;
 							if ($this->type!='ort') $out .= $orte;
 							echo '<label align="center">';
 							$out .= $blink_aus;
 							$out .= '</html:div>';
-							echo $out;
+							//echo $out;
+							echo preg_replace(array('/<div([^>]*)>/','/<\/div>/','/<b>/','/<\/b>/'),array('<html:div\1>','</html:div>','<html:b>','</html:b>'),$out);
 							echo '</label>';
 						} else {
 							echo '<label align="center">'.$blink_ein;
@@ -1664,7 +1670,7 @@ class wochenplan extends basis_db
 							if ($this->type != 'lektor') echo $lkt;
 							if ($this->type != 'ort') echo $orte;
 								
-							if(LVPLAN_ANMERKUNG_ANZEIGEN) echo $anmerkung;
+							//if(LVPLAN_ANMERKUNG_ANZEIGEN) echo $anmerkung;
 								
 							echo $blink_aus;
 							echo '</label>';
@@ -1699,6 +1705,13 @@ class wochenplan extends basis_db
 						}
 					}
 				}
+				if(defined('TEMPUS_TAGESINFO_FORMAT')) $tagesinfo = TEMPUS_TAGESINFO_FORMAT;
+				else $tagesinfo = '%t %s';
+				$tagesinfo = str_replace('%t',substr(strftime('%a',$datum),0,2),$tagesinfo);
+				$tagesinfo = str_replace('%b',$stunden_arr[$j]['beginn'],$tagesinfo);
+				$tagesinfo = str_replace('%e',$stunden_arr[$j]['ende'],$tagesinfo);
+				$tagesinfo = str_replace('%s',$j,$tagesinfo);
+				echo '<description class="stplweek_tagesinfo">'.$tagesinfo.'</description>';
 				echo '</vbox>'.$this->crlf;
 			}
 			echo "</row>";
