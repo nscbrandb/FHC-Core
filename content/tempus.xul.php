@@ -114,8 +114,8 @@ foreach($addon_obj->result as $addon)
            accesskey = "&menu-file-close.accesskey;"/>
       </menupopup>
     </menu>
-    <menu id="menu-edit" label="&menu-edit.label;" accesskey="&menu-edit.accesskey;" onclick="">
-      <menupopup id="menu-edit-popup" onpopupshowing="loadUndoList();">
+    <menu id="menu-edit" label="&menu-edit.label;" accesskey="&menu-edit.accesskey;" onclick="loadUndoList();">
+      <menupopup id="menu-edit-popup">
         <menu id="menu-edit-undo" label="&menu-edit-undo.label;"
            datasources="rdf:null"
            ref="http://www.technikum-wien.at/undo/liste"

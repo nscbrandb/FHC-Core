@@ -50,12 +50,12 @@ $rdf_url='http://www.technikum-wien.at/undo';
 foreach ($log->logs as $row)
 {
 	?>
-      <RDF:li>
-         <RDF:Description  id="<?php echo $row->log_id; ?>"  about="<?php echo $rdf_url.'/'.$row->log_id; ?>" >
-            <UNDO:log_id><![CDATA[<?php echo $row->log_id  ?>]]></UNDO:log_id>
-            <UNDO:beschreibung><![CDATA[<?php echo $row->beschreibung ?>]]></UNDO:beschreibung>
-         </RDF:Description>
-      </RDF:li>
+	<RDF:li>
+		<RDF:Description id="<?php echo $row->log_id; ?>" about="<?php echo $rdf_url.'/'.$row->log_id; ?>" >
+			<UNDO:log_id><![CDATA[<?php echo $row->log_id; ?>]]></UNDO:log_id>
+			<UNDO:beschreibung><![CDATA[<?php echo strftime('am %d.%m.%y um %H:%M',strtotime($row->executetime)).'    '.$row->beschreibung ?>]]></UNDO:beschreibung>
+		</RDF:Description>
+	</RDF:li>
 <?php
 }
 ?>
