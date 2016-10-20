@@ -32,7 +32,6 @@
 require_once(dirname(__FILE__).'/../config/global.config.inc.php');
 require_once(dirname(__FILE__).'/basis_db.class.php');
 require_once(dirname(__FILE__).'/lehrstunde.class.php');
-require_once(dirname(__FILE__).'/stp/lib/ferien_stp.class.php');
 require_once(dirname(__FILE__).'/benutzerberechtigung.class.php');
 require_once(dirname(__FILE__).'/studiengang.class.php');
 require_once(dirname(__FILE__).'/mitarbeiter.class.php');
