@@ -390,6 +390,7 @@ function getStudiensemesterFromDatum($datum, $naechstes=true)
 // ****************************************************************
 function checkalias($alias)
 {
+	return true;
 	if(preg_match("/^[-a-z0-9\_\.]*[a-z0-9]{1,}\.[-a-z0-9\_]{1,}$/",$alias))
 		return true;
 	else
