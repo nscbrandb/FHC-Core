@@ -96,8 +96,8 @@ if (!$db = new basis_db())
 		echo 'Studiengang: <SELECT name="studiengang_kz"  onchange="document.frm_studiengang.submit()">';
 
 		foreach ($stud->result as $row) {
-			if ($rechte->isBerechtigt('admin', $row->studiengang_kz, 'suid') ||
-					$rechte->isBerechtigt('assistenz', $row->studiengang_kz, 'suid')) {
+			if ($rechte->isBerechtigt('stp/vilesci/gruppenverwaltung', $row->studiengang_kz, 'suid') ||
+					$rechte->isBerechtigt('stp/vilesci/gruppenverwaltung', $row->studiengang_kz, 'suid')) {
 				if ($studiengang_kz == '')
 					$studiengang_kz = $row->studiengang_kz;
 
@@ -108,12 +108,12 @@ if (!$db = new basis_db())
 		echo '</SELECT>';
 		echo '</form>';
 
-		if ($rechte->isBerechtigt('admin', $studiengang_kz, 'suid'))
+		if ($rechte->isBerechtigt('stp/vilesci/gruppenverwaltung', $studiengang_kz, 'suid'))
 			$admin = true;
 		else
 			$admin = false;
 
-		if ($rechte->isBerechtigt('assistenz', $studiengang_kz, 'suid'))
+		if ($rechte->isBerechtigt('stp/vilesci/gruppenverwaltung', $studiengang_kz, 'suid'))
 			$assistenz = true;
 		else
 			$assistenz = false;

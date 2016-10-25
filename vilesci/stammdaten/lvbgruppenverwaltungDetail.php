@@ -44,12 +44,12 @@ $studiengang_kz = (isset($_POST['studiengang_kz']) ? $_POST['studiengang_kz'] : 
 $rechte = new benutzerberechtigung();
 $rechte->getBerechtigungen($user);
 
-if ($rechte->isBerechtigt('admin', $studiengang_kz, 'suid'))
+if ($rechte->isBerechtigt('stp/vilesci/gruppenverwaltung', $studiengang_kz, 'suid'))
 	$admin = true;
 else
 	$admin = false;
 
-if ($rechte->isBerechtigt('assistenz', $studiengang_kz, 'suid'))
+if ($rechte->isBerechtigt('stp/vilesci/gruppenverwaltung', $studiengang_kz, 'suid'))
 	$assistenz = true;
 else
 	$assistenz = false;
