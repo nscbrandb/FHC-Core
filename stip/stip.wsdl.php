@@ -1,0 +1,1 @@
+../soap/stip.wsdl.php
