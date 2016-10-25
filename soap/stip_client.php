@@ -97,7 +97,7 @@ $db = new basis_db();
 
 if(isset($_REQUEST['submit']))
 {
-	$client = new SoapClient(APP_ROOT."/soap/stip.wsdl.php?".microtime());
+	$client = new SoapClient(APP_ROOT."/stip/stip.wsdl.php?".microtime());
 	
 	$username = $_REQUEST['username'];
 	$passwort = $_REQUEST['password'];

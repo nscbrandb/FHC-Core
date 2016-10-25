@@ -17,7 +17,8 @@
  *
  * Authors:		Karl Burkhart <burkhart@technikum-wien.at>.
  */
- 
+
+$LOGIN_REQUIRED = false;
 require_once('../config/vilesci.config.inc.php');
 require_once('../config/global.config.inc.php');  
 require_once('../include/basis_db.class.php');
@@ -34,7 +35,7 @@ require_once('stip.class.php');
 
 ini_set("soap.wsdl_cache_enabled", "0");
 
-$SOAPServer = new SoapServer(APP_ROOT."/soap/stip.wsdl.php?".microtime());
+$SOAPServer = new SoapServer(APP_ROOT."stip/stip.wsdl.php?".microtime());
 $SOAPServer->addFunction("GetStipendienbezieherStip");
 $SOAPServer->addFunction("SendStipendienbezieherStipError");
 $SOAPServer->handle();
@@ -62,7 +63,6 @@ function GetStipendienbezieherStip($parameters)
 
 	$username = $parameters->userName;
 	$passwort = $parameters->passWord;
-
 	if(!($username==STIP_USER_NAME && $passwort==STIP_USER_PASSWORD))
 	{
 		// Eintrag in der LogTabelle anlegen
