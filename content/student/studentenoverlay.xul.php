@@ -143,7 +143,7 @@ else
 						<?php echo ($xulapp!='tempus'?'onselect="StudentAuswahl();"':'') ?>
 						flags="dont-build-content"
 						enableColumnDrag="true"
-						style="margin:0px; height:150px"
+						style="margin:0px; height:<?php echo ($xulapp!='tempus'?'150"':'500') ?>px"
 						persist="hidden, height"
 						ondraggesture="nsDragAndDrop.startDrag(event,studentDDObserver);"
 						context="student-tree-popup"
