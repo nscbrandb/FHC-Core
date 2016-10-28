@@ -29,6 +29,8 @@ require_once(dirname(__FILE__).'/betriebsmittelperson.class.php');
  */
 function get_uid()
 {
+	global $S;
+	if (isset($S->uid)) return $S->uid;
 	$auth = new authentication();
 	return $auth->getUser();
 }
