@@ -104,6 +104,7 @@ if(!$rechte->isBerechtigt('admin') && !$rechte->isBerechtigt('assistenz') && !$r
 // * 0254 = Studiengangskennzahl vierstellig
 // * 001 = Laufende Nummer
 // ****
+/** STPCore hat seine eigene Function
 function generateMatrikelnummer($studiengang_kz, $studiensemester_kurzbz)
 {
 	$db = new basis_db();
@@ -155,6 +156,7 @@ function generateMatrikelnummer($studiengang_kz, $studiensemester_kurzbz)
 		return false;
 	}
 }
+*/
 
 /**
  * Wenn die Anwesenheit und einen bestimmten Prozentsatz faellt, wird ein Pruefungstermin abgezogen
