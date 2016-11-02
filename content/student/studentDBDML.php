@@ -971,11 +971,15 @@ if(!$error)
 								{
 								    $student = new student();
 								    $temp_uid = $student->getUid($rolle->prestudent_id);
-								    if(!$student->delete_studentLehrverband($temp_uid, $_POST['studiengang_kz'], $rolle->studiensemester_kurzbz, $rolle->ausbildungssemester))
-								    {
-									$return = false;
-									$errormsg = "Fehler beim Löschen der Lehrverbandszuordnung.";
+								    // schauen ob's der letzte Status war, wenn ja dann studentLehrverband löschen
+									$qry = "SELECT * FROM public.tbl_prestudentstatus WHERE studiensemester_kurzbz=".$db->db_add_param($rolle->studiensemester_kurzbz)." AND prestudent_id=".$db->db_add_param($rolle->prestudent_id,FHC_INTEGER);
+									if ($db->db_query($qry) && $db->db_num_rows()==0) {
+									    if(!$student->delete_studentLehrverband($temp_uid, $_POST['studiengang_kz'], $rolle->studiensemester_kurzbz, $rolle->ausbildungssemester))
+									    {
+										$return = false;
+										$errormsg = "Fehler beim Löschen der Lehrverbandszuordnung.";
 								    }
+									}
 								}
 							}
 							else
