@@ -87,7 +87,16 @@ class firma extends basis_db
 			return false;
 		}
 
-		$qry = "SElECT * FROM public.tbl_firma WHERE firma_id=".$this->db_add_param($firma_id, FHC_INTEGER).';';
+		$qry = "SElECT  fa.*,
+						adr.strasse,
+						adr.plz,
+						adr.ort,
+						adr.gemeinde,
+						adr.nation
+				  FROM public.tbl_firma AS fa
+			 LEFT JOIN public.tbl_standort USING(firma_id)
+			 LEFT JOIN public.tbl_adresse AS adr ON adr.adresse_id=tbl_standort.adresse_id
+				 WHERE fa.firma_id=".$this->db_add_param($firma_id, FHC_INTEGER).';';
 
 		if($this->db_query($qry))
 		{
@@ -108,6 +117,11 @@ class firma extends basis_db
 				$this->gesperrt = $this->db_parse_bool($row->gesperrt);
 				$this->aktiv = $this->db_parse_bool($row->aktiv);
 				$this->finanzamt = $row->finanzamt;
+				$this->strasse = $row->strasse;
+				$this->plz = $row->plz;
+				$this->ort = $row->ort;
+				$this->gemeinde = $row->gemeinde;
+				$this->nation = $row->nation;				
 
 				$qry = "SELECT tag FROM public.tbl_firmatag WHERE firma_id=".$this->db_add_param($firma_id,FHC_INTEGER).';';
 				if($resulttag = $this->db_query($qry))
