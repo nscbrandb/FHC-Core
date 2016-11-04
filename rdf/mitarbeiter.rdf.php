@@ -132,7 +132,7 @@
 			if($bb->getBerechtigungen(get_uid())) {
 				$stge = $bb->getStgKz('admin');
 				$stge = array_merge($stge, $bb->getStgKz('assistenz'));
-				$ma = $mitarbeiter->getMitarbeiterStg($lektor,$fixangestellt,$stge, 'lkt',true);
+				$ma = $mitarbeiter->getMitarbeiterStg($lektor,$fixangestellt,$stge, 'lkt','oe_kurzbz, nachname, vorname, kurzbz');
 				$laststg = -1;
 				foreach ($ma as $mitarbeiter) {
 					if ($aktiv && !$mitarbeiter->aktiv) continue;

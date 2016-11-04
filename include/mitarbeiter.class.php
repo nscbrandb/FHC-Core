@@ -406,7 +406,7 @@ class mitarbeiter extends benutzer
 	 */
 	public function getMitarbeiterStg($lektor=true,$fixangestellt, $stge, $fkt_kurzbz, $order='studiengang_kz, nachname, vorname, kurzbz', $datum_von='', $datum_bis='')
 	{
-		$sql_query='SELECT DISTINCT campus.vw_mitarbeiter.*, studiengang_kz FROM campus.vw_mitarbeiter
+		$sql_query='SELECT DISTINCT campus.vw_mitarbeiter.*, studiengang_kz, oe_kurzbz FROM campus.vw_mitarbeiter
 					JOIN public.tbl_benutzerfunktion USING (uid) JOIN public.tbl_studiengang USING(oe_kurzbz)
 					WHERE true';
 		if(!is_null($lektor))
