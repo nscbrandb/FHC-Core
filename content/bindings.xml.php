@@ -430,7 +430,7 @@ echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 				<xul:template>
 					<xul:menupopup>
 						<xul:menuitem value="rdf:http://www.technikum-wien.at/firma/rdf#firma_id"
-			        		      label="rdf:http://www.technikum-wien.at/firma/rdf#name"
+			        		      label="rdf:http://www.technikum-wien.at/firma/rdf#namelang"
 						  		  uri="rdf:*"/>
 					</xul:menupopup>
 				</xul:template>
