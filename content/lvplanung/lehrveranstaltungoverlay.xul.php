@@ -169,15 +169,15 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/lvplanung/lehrveranstaltungnotenov
 					class="sortDirectionIndicator"
 					sort="rdf:http://www.technikum-wien.at/lehrveranstaltung_einheiten/rdf#fachbereich"/>
 				<splitter class="tree-splitter"/>
-				<treecol id="lehrveranstaltung-treecol-studiengang" label="Studiengang" flex="1" hidden="true" persist="hidden, width, ordinal"
+				<treecol id="lehrveranstaltung-treecol-studiengang" label="Studiengang" flex="1" hidden="false" persist="hidden, width, ordinal"
 					class="sortDirectionIndicator"
 					sort="rdf:http://www.technikum-wien.at/lehrveranstaltung_einheiten/rdf#studiengang"/>
 				<splitter class="tree-splitter"/>
-				<treecol id="lehrveranstaltung-treecol-semester" label="Semester" flex="1" hidden="true" persist="hidden, width, ordinal"
+				<treecol id="lehrveranstaltung-treecol-semester" label="Semester" flex="1" hidden="false" persist="hidden, width, ordinal"
 					class="sortDirectionIndicator"
 					sort="rdf:http://www.technikum-wien.at/lehrveranstaltung_einheiten/rdf#semester"/>
 				<splitter class="tree-splitter"/>
-				<treecol id="lehrveranstaltung-treecol-orgform_kurzbz" label="Organisationsform" flex="1" hidden="true" persist="hidden, width, ordinal"
+				<treecol id="lehrveranstaltung-treecol-orgform_kurzbz" label="Organisationsform" flex="1" hidden="false" persist="hidden, width, ordinal"
 					class="sortDirectionIndicator"
 					sort="rdf:http://www.technikum-wien.at/lehrveranstaltung_einheiten/rdf#orgform_kurzbz"	/>
 				<splitter class="tree-splitter"/>
@@ -193,7 +193,7 @@ echo '<?xul-overlay href="'.APP_ROOT.'content/lvplanung/lehrveranstaltungnotenov
 					class="sortDirectionIndicator"
 					sort="rdf:http://www.technikum-wien.at/lehrveranstaltung_einheiten/rdf#studienplan_id"/>
 				<splitter class="tree-splitter"/>
-				<treecol id="lehrveranstaltung-treecol-studienplan_bezeichnung" label="Studienplan" flex="1" hidden="true" persist="hidden, width, ordinal"
+				<treecol id="lehrveranstaltung-treecol-studienplan_bezeichnung" label="Studienplan" flex="1" hidden="false" persist="hidden, width, ordinal"
 					class="sortDirectionIndicator"
 					sort="rdf:http://www.technikum-wien.at/lehrveranstaltung_einheiten/rdf#studienplan_bezeichnung"/>
 				<splitter class="tree-splitter"/>
