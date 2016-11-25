@@ -12,7 +12,7 @@
 	url = https://github.com/FH-Complete/FHC-AddOn-LDAP.git
 [submodule "addons/studiengangsverwaltung"]
 	path = addons/studiengangsverwaltung
-	url = https://github.com/FH-Complete/FHC-AddOn-Studiengangsverwaltung.git
+	url = https://github.com/nscbrandb/FHC-AddOn-Studiengangsverwaltung.git
 [submodule "addons/aufnahme"]
 	path = addons/aufnahme
 	url = https://github.com/FH-Complete/FHC-AddOn-Aufnahme.git
