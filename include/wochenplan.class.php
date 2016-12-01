@@ -1268,14 +1268,14 @@ class wochenplan extends basis_db
 			// Verband 
 			if ($this->type == 'verband' || $this->type == 'gruppe') {
 				$qry = "SELECT datum,stunde,array_to_string(array_agg(unr),',') AS unr FROM (
-							SELECT DISTINCT lvp.unr||'@LVP: '||lvp.lehrfach||'@'||lvp.verband||'§'||lvp.gruppe||'§'||(CASE WHEN lvp.gruppe_kurzbz IS NULL THEN '' ELSE lvp.gruppe_kurzbz END) AS unr,lvp.datum,lvp.stunde
+							SELECT DISTINCT lvp.unr||'@LVP: '||lvp.lehrfach||'@'||lvp.semester||'§'||lvp.verband||'§'||lvp.gruppe||'§'||(CASE WHEN lvp.gruppe_kurzbz IS NULL THEN '' ELSE lvp.gruppe_kurzbz END) AS unr,lvp.datum,lvp.stunde
 							  FROM lehre.vw_stundenplandev AS lvp
 							 WHERE datum BETWEEN to_timestamp($datum)::timestamp::date AND (to_timestamp($datum) + interval '1 week')::timestamp::date
 							   AND lvp.studiengang_kz=$this->stg_kz
 							   ".($this->sem!=null && $this->sem!=''?" AND lvp.semester=$this->sem":'')."
 					".($check_koll_res?"
 						UNION
-							SELECT DISTINCT (r.reservierung_id*1000)||'@RES: '||r.titel||'@'||(CASE WHEN r.verband IS NULL THEN '' ELSE r.verband END)||'§'||(CASE WHEN r.gruppe IS NULL THEN '' ELSE r.gruppe END)||'§'||(CASE WHEN r.gruppe_kurzbz IS NULL THEN '' ELSE r.gruppe_kurzbz END) AS unr,r.datum,r.stunde
+							SELECT DISTINCT (r.reservierung_id*1000)||'@RES: '||r.titel||'@'||r.semester||'§'||(CASE WHEN r.verband IS NULL THEN '' ELSE r.verband END)||'§'||(CASE WHEN r.gruppe IS NULL THEN '' ELSE r.gruppe END)||'§'||(CASE WHEN r.gruppe_kurzbz IS NULL THEN '' ELSE r.gruppe_kurzbz END) AS unr,r.datum,r.stunde
 							  FROM campus.tbl_reservierung AS r
 							 WHERE datum BETWEEN to_timestamp($datum)::timestamp::date AND (to_timestamp($datum) + interval '1 week')::timestamp::date
 							   AND r.studiengang_kz=$this->stg_kz
@@ -1285,7 +1285,7 @@ class wochenplan extends basis_db
 					GROUP BY datum, stunde
 				   HAVING count(*)>1
 				 ORDER BY datum,stunde";
-
+//stpdebug($qry,true,0,'nscbrandb');
 				if ($this->db_query($qry)) {
 					// globales Kollisionsarray befüllen
 					while ($row = $this->db_fetch_object()) {
@@ -1298,17 +1298,24 @@ class wochenplan extends basis_db
 							$ve = explode('§',$helpy[2]);
 							$kunrs[$helpy[0]]->ver = $ve;
 						}
-//stpdebug($kunrs);
-						// koll-info für unr mit allen anderen unrs wenns eine ist ;)
+//stpdebug($kunrs,true,0,'nscbrandb');
+						/**
+						 * koll-info für unr mit allen anderen unrs wenns eine ist ;)
+						 * ver[0] Semester
+						 * ver[1] Verband
+						 * ver[2] Gruppe
+						 * ver[3] Spezial-Gruppe
+						 */
 						foreach ($kunrs as $kunr=>$v) {
 							foreach ($kunrs as $kunrsother=>$kval) {
 								if ($kunrsother != $kunr
+									&& $v->ver[0] == $kval->ver[0]						// gleiches Semester
 									&& (
-										(empty($v->ver[0]) && empty($v->ver[2]))		// bin der ganze Jahrgang ==> muss Kollision sein!
-									 || (empty($kval->ver[0]) && empty($kval->ver[2]))	// Vergleich ist der ganze Jahrgang ==> muss auch Kollision sein!
-									 || (empty($v->ver[2]) && (empty($v->ver[1]) || empty($kval->ver[1])) && $v->ver[0] == $kval->ver[0])	// gleicher Verband und eine der Gruppen ist leer
-									 || (empty($v->ver[2]) && $v->ver[0] == $kval->ver[0] && $v->ver[1] == $kval->ver[1])	// gleicher Verband und Gruppe
-									 || (!empty($v->ver[2]) && $v->ver[2] == $kval->ver[2])	// gleiche Spezialgruppe
+										(empty($v->ver[1]) && empty($v->ver[3]))		// Verband und Spez.Grp leer => bin der ganze Jahrgang ==> muss Kollision sein!
+									 || (empty($kval->ver[1]) && empty($kval->ver[3]))	// Vergleich ist der ganze Jahrgang ==> muss auch Kollision sein!
+									 || (empty($v->ver[3]) && (empty($v->ver[2]) || empty($kval->ver[2])) && $v->ver[1] == $kval->ver[1])	// gleicher Verband und eine der Gruppen ist leer
+									 || (empty($v->ver[3]) && $v->ver[1] == $kval->ver[1] && $v->ver[2] == $kval->ver[2])	// gleicher Verband und Gruppe
+									 || (!empty($v->ver[3]) && $v->ver[3] == $kval->ver[3])	// gleiche Spezialgruppe
 									)
 								) {
 									if (!isset($this->kollisionen[$row->datum][$row->stunde][$kunr]['ver'])) $this->kollisionen[$row->datum][$row->stunde][$kunr]['ver'] = '';
@@ -1319,7 +1326,7 @@ class wochenplan extends basis_db
 					}
 				}
 			}
-		
+//stpdebug($this->kollisionen,true,0,'nscbrandb');
 			// Studi - global prüfen? nämlich nur die, die gerade angezeigt werde? dann muss ma die Abfrage umschreiben!
 			// studsem holen, brauchen wir für die Studi-Checks!
 			if ($check_koll_stud && ($this->type == 'verband' || $this->type == 'gruppe')) {
