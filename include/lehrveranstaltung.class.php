@@ -739,7 +739,7 @@ class lehrveranstaltung extends basis_db
 			//Neuen Datensatz anlegen
 			$qry = 'BEGIN; INSERT INTO lehre.tbl_lehrveranstaltung (studiengang_kz, bezeichnung, kurzbz, lehrform_kurzbz,
 				semester, ects, semesterstunden,  anmerkung, lehre, lehreverzeichnis, aktiv, insertamum,
-				insertvon, planfaktor, planlektoren, planpersonalkosten, plankostenprolektor, updateamum, updatevon, sort,
+				insertvon, planfaktor, planlektoren, planpersonalkosten, plankostenprolektor, updateamum, updatevon, sort, ext_id,
 				zeugnis, projektarbeit, sprache, koordinator, bezeichnung_english, orgform_kurzbz, incoming, lehrtyp_kurzbz, oe_kurzbz,
 				raumtyp_kurzbz, anzahlsemester, semesterwochen, lvnr, semester_alternativ, farbe,sws,lvs,alvs,lvps,las,benotung,lvinfo, lehrauftrag) VALUES (' .
 					$this->db_add_param($this->studiengang_kz) . ', ' .
@@ -762,6 +762,7 @@ class lehrveranstaltung extends basis_db
 					$this->db_add_param($this->updateamum) . ', ' .
 					$this->db_add_param($this->updatevon) . ',' .
 					$this->db_add_param($this->sort) . ',' .
+					$this->db_add_param($this->ext_id) . ',' .
 					$this->db_add_param($this->zeugnis, FHC_BOOLEAN) . ',' .
 					$this->db_add_param($this->projektarbeit, FHC_BOOLEAN) . ',' .
 					$this->db_add_param($this->sprache) . ',' .
@@ -816,6 +817,7 @@ class lehrveranstaltung extends basis_db
 					'updateamum=' . $this->db_add_param($this->updateamum) . ',' .
 					'updatevon=' . $this->db_add_param($this->updatevon) . ',' .
 					'sort=' . $this->db_add_param($this->sort) . ',' .
+					'ext_id=' . $this->db_add_param($this->ext_id) . ',' .
 					'incoming=' . $this->db_add_param($this->incoming, FHC_INTEGER) . ',' .
 					'zeugnis=' . $this->db_add_param($this->zeugnis, FHC_BOOLEAN) . ',' .
 					'projektarbeit=' . $this->db_add_param($this->projektarbeit, FHC_BOOLEAN) . ',' .
@@ -841,7 +843,7 @@ class lehrveranstaltung extends basis_db
 					'lehrauftrag = '.$this->db_add_param($this->lehrauftrag, FHC_BOOLEAN).' '.
 					'WHERE lehrveranstaltung_id = ' . $this->db_add_param($this->lehrveranstaltung_id, FHC_INTEGER, false) . ';';
 		}
-
+stpdebug($qry);
 		if ($this->db_query($qry))
 		{
 			if ($new)

@@ -226,9 +226,6 @@ class lehreinheitmitarbeiter extends basis_db
 						(
 							ve.studiengang_kz=(SELECT studiengang_kz FROM lehre.tbl_lehreinheit INNER JOIN lehre.tbl_lehrveranstaltung USING(lehrveranstaltung_id) WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER).")
 							AND ve.status<".VEL_STAT_IP_STG."
-						) OR (
-							ve.studiengang_kz<>(SELECT studiengang_kz FROM lehre.tbl_lehreinheit INNER JOIN lehre.tbl_lehrveranstaltung USING(lehrveranstaltung_id) WHERE lehreinheit_id=".$this->db_add_param($this->lehreinheit_id,FHC_INTEGER).")
-							AND ve.status<".VEL_STAT_IP_GF."
 						)
 					)";
 		} else {	// ohne Berechtigung global auf Bearbeitung LOVE checken
