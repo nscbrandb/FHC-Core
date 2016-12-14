@@ -661,34 +661,42 @@ class lehrstunde extends basis_db
 		$stpl_table='lehre.'.VIEW_BEGIN.$stpl_table;
 
 		// Datenbank abfragen
-		$sql_query="SELECT $stpl_id AS id, lektor, stg_kurzbz, ort_kurzbz, semester, verband, gruppe, gruppe_kurzbz, datum, stunde FROM $stpl_table
-				WHERE datum=".$this->db_add_param($this->datum)." AND stunde=".$this->db_add_param($this->stunde)." AND (ort_kurzbz=".$this->db_add_param($this->ort_kurzbz)." ";
-		if (!in_array($this->lektor_uid,unserialize(KOLLISIONSFREIE_USER)))
-			$sql_query.=" OR (uid=".$this->db_add_param($this->lektor_uid)." AND uid not in (".$this->db_implode4SQL(unserialize(KOLLISIONSFREIE_USER))."))";
-
-		//Wenn eine Kollisionspruefung auf Studentenebene durchgefuehrt wird, werden die LVB nicht gecheckt
-		//if($kollision_student=='false')
-		//{
-			$sql_query.=" OR (studiengang_kz=".$this->db_add_param($this->studiengang_kz)." AND semester=".$this->db_add_param($this->sem);
-			if($this->gruppe_kurzbz!=null && $this->gruppe_kurzbz!='' && $this->gruppe_kurzbz!=' ')
-			{
-				$sql_query.=" OR (gruppe_kurzbz=".$this->db_add_param($this->gruppe_kurzbz).")";
-			}
-			else
-			{
-				if ($this->ver!=null && $this->ver!='' && $this->ver!=' ')
-					$sql_query.=" AND (verband=".$this->db_add_param($this->ver)." OR verband IS NULL OR verband='' OR verband=' ')";
-				if ($this->grp!=null && $this->grp!='' && $this->grp!=' ')
-					$sql_query.=" AND (gruppe=".$this->db_add_param($this->grp)." OR gruppe IS NULL OR gruppe='' OR gruppe=' ')";
-			}
-
-			$sql_query.=")";
-		//}
-		$sql_query.=") AND unr!=".$this->db_add_param($this->unr);
-
-		if (!$erg_stpl = $this->db_query($sql_query))
+		$qry="SELECT $stpl_id AS id, lektor, upper(stg_typ||stg_kurzbz) AS stg_kurzbz, ort_kurzbz, semester, verband, gruppe, gruppe_kurzbz, datum, stunde,lehrfach
+				FROM $stpl_table
+			   WHERE datum=".$this->db_add_param($this->datum)."
+				 AND stunde=".$this->db_add_param($this->stunde)."
+				 AND (
+				 	ort_kurzbz=".$this->db_add_param($this->ort_kurzbz)."
+				 	-- Kollision Lektor
+				 	".(!in_array($this->lektor_uid,unserialize(KOLLISIONSFREIE_USER))?"
+				 	OR (uid=".$this->db_add_param($this->lektor_uid)." AND uid not in (".$this->db_implode4SQL(unserialize(KOLLISIONSFREIE_USER))."))":'')."
+				 	-- Kollision Studiengang-Semester
+				 	OR (
+				 		-- SpzGrp?
+				 	".(!empty(trim($this->gruppe_kurzbz))?"
+				 		gruppe_kurzbz=".$this->db_add_param($this->gruppe_kurzbz)."
+					 	OR (
+						 	studiengang_kz=".$this->db_add_param($this->studiengang_kz)."
+					 		AND semester=".$this->db_add_param($this->sem)."
+					 		AND (verband IS NULL OR verband='' OR verband=' ')
+					 		AND gruppe_kurzbz IS NULL
+				 	 	)
+				 	":"
+				 		-- STG/LVB/GRP
+					 	studiengang_kz=".$this->db_add_param($this->studiengang_kz)."
+					 	AND semester=".$this->db_add_param($this->sem)."
+					 	AND gruppe_kurzbz IS NULL
+				 		-- Verband?
+				 		".(!empty(trim($this->ver))?" AND (verband=".$this->db_add_param($this->ver)." OR verband IS NULL OR verband='' OR verband=' ')":'')."
+				 		-- Gruppe?
+				 		".(!empty(trim($this->grp))?" AND (gruppe=".$this->db_add_param($this->grp)." OR gruppe IS NULL OR gruppe='' OR gruppe=' ')":'')."
+				 	")."
+				 	)
+				 )
+				 AND unr!=".$this->db_add_param($this->unr);
+		if (!$erg_stpl = $this->db_query($qry))
 		{
-			$this->errormsg=$sql_query.$this->db_last_error();
+			$this->errormsg=$qry.$this->db_last_error();
 			return true;
 		}
 
@@ -710,7 +718,7 @@ class lehrstunde extends basis_db
 		else
 		{
 			$row = $this->db_fetch_object($erg_stpl);
-			$this->errormsg="Kollision ($stpl_table): $row->id|$row->lektor|$row->ort_kurzbz|$row->stg_kurzbz-$row->semester$row->verband$row->gruppe$row->gruppe_kurzbz - $row->datum/$row->stunde"; //\n".$sql_query
+			$this->errormsg="Kollision: $row->lehrfach | $row->lektor | $row->ort_kurzbz | $row->stg_kurzbz-$row->semester$row->verband$row->gruppe$row->gruppe_kurzbz - $row->datum/$row->stunde\n"; //\n".$sql_query
 			return true;
 		}
 	}
