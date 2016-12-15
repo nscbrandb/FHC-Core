@@ -685,9 +685,8 @@ class lehrstunde extends basis_db
 				 		-- STG/LVB/GRP
 					 	studiengang_kz=".$this->db_add_param($this->studiengang_kz)."
 					 	AND semester=".$this->db_add_param($this->sem)."
-					 	AND gruppe_kurzbz IS NULL
 				 		-- Verband?
-				 		".(!empty(trim($this->ver))?" AND (verband=".$this->db_add_param($this->ver)." OR verband IS NULL OR verband='' OR verband=' ')":'')."
+				 		".(!empty(trim($this->ver))?" AND gruppe_kurzbz IS NULL AND (verband=".$this->db_add_param($this->ver)." OR verband IS NULL OR verband='' OR verband=' ')":'')."
 				 		-- Gruppe?
 				 		".(!empty(trim($this->grp))?" AND (gruppe=".$this->db_add_param($this->grp)." OR gruppe IS NULL OR gruppe='' OR gruppe=' ')":'')."
 				 	")."
@@ -718,7 +717,7 @@ class lehrstunde extends basis_db
 		else
 		{
 			$row = $this->db_fetch_object($erg_stpl);
-			$this->errormsg="Kollision: $row->lehrfach | $row->lektor | $row->ort_kurzbz | $row->stg_kurzbz-$row->semester$row->verband$row->gruppe$row->gruppe_kurzbz - $row->datum/$row->stunde\n"; //\n".$sql_query
+			$this->errormsg="\nKollision von [$this->lektor_uid / $row->stg_kurzbz-$this->sem$this->ver$this->grp$this->gruppe_kurzbz] mit:\nLektor $row->lektor | Ort $row->ort_kurzbz | Gruppe $row->stg_kurzbz-$row->semester$row->verband$row->gruppe$row->gruppe_kurzbz | $row->datum ($row->stunde)\n";
 			return true;
 		}
 	}
@@ -746,7 +745,7 @@ class lehrstunde extends basis_db
 		{
 			if($row = $this->db_fetch_object($result))
 			{
-				$this->errormsg='Kollision (Ressource)'.$row->beschreibung.'|'.$row->ort_kurzbz;
+				$this->errormsg="\nKollision (Ressource) ".$row->beschreibung.' | '.$row->ort_kurzbz;
 				return true;
 			}
 			return false;
@@ -778,7 +777,7 @@ class lehrstunde extends basis_db
 		if ($anz_zs!=0)
 		{
 			$row = $this->db_fetch_object($erg_zs);
-			$this->errormsg="Kollision (Zeitsperre): $row->zeitsperre_id|$row->lektor|$row->zeitsperretyp_kurzbz - $row->vondatum/$row->vonstunde|$row->bisdatum/$row->bisstunde";
+			$this->errormsg="\nKollision Zeitsperre:\nLektor $row->lektor | $row->zeitsperretyp_kurzbz - $row->vondatum/$row->vonstunde|$row->bisdatum/$row->bisstunde\n";
 			return true;
 		}
 		return false;
@@ -825,7 +824,7 @@ class lehrstunde extends basis_db
 		if ($anz_res!=0)
 		{
 			$row = $this->db_fetch_object($erg_res);
-			$this->errormsg="Kollision (Reservierung): $row->id|$row->lektor|$row->ort_kurzbz|$row->stg_kurzbz-$row->semester$row->verband$row->gruppe$row->gruppe_kurzbz - $row->datum/$row->stunde";
+			$this->errormsg="\nKollision Reservierung:\nLektor $row->lektor | Ort $row->ort_kurzbz | Gruppe $row->stg_kurzbz-$row->semester$row->verband$row->gruppe$row->gruppe_kurzbz | $row->datum ($row->stunde)\n";
 			return true;
 		}
 		return false;
@@ -885,9 +884,9 @@ class lehrstunde extends basis_db
 		$anz=$this->db_num_rows($erg_stpl);
 
 		if ($anz>0)
-		{
-			$row = $this->db_fetch_object($erg_stpl);
-			$this->errormsg="Kollision Student ($stpl_table): $row->student_uid $row->datum/$row->stunde ";
+		{	
+			$this->errormsg = "\nKollision Student $this->datum ($this->stunde):\n";
+			while ($row = $this->db_fetch_object($erg_stpl)) $this->errormsg .= "$row->student_uid, ";
 			return true;
 		}
 		else
