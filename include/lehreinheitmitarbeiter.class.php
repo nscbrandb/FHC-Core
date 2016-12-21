@@ -286,11 +286,14 @@ class lehreinheitmitarbeiter extends basis_db
 		else
 		{
 			if ($locked) {
-				$this->errormsg="Für ".($this->mitarbeiter_uid_old=='' || $this->mitarbeiter_uid_old==$this->mitarbeiter_uid?$this->mitarbeiter_uid:"$this->mitarbeiter_uid und/oder $this->mitarbeiter_uid_old")." ist bereits ein Vertrag in Bearbeitung!\n\nEs werden nur mehr Planstunden gespeichert!.\nWenn sich auch die Semesterstunden ändern sollen dann muss die Personalabteilung informiert werden!\n\n";
+				if ($this->mitarbeiter_uid_old!='' && $this->mitarbeiter_uid_old != $this->mitarbeiter_uid) {
+					$this->errormsg = "Für ".($this->mitarbeiter_uid_old=='' || $this->mitarbeiter_uid_old==$this->mitarbeiter_uid?$this->mitarbeiter_uid:"$this->mitarbeiter_uid und/oder $this->mitarbeiter_uid_old")." ist bereits ein Vertrag in Bearbeitung!\n\nDer Lektorentausch konnte nicht gespeichert werden.\n\n";
+					return false;
+				}
+				$this->errormsg = "Für ".$this->mitarbeiter_uid." ist bereits ein Vertrag in Bearbeitung!\n\nEs werden nur mehr Planstunden gespeichert!.\nWenn sich auch die Semesterstunden ändern sollen dann muss die Personalabteilung informiert werden!\n\n";
 				$this->semesterstunden = $this->semesterstunden_old;
 			}
-			if($this->mitarbeiter_uid_old=='')
-				$this->mitarbeiter_uid_old = $this->mitarbeiter_uid;
+			if($this->mitarbeiter_uid_old=='') $this->mitarbeiter_uid_old = $this->mitarbeiter_uid;
 
 			//Wenn der Lektor geaendert wird, dann wird insertamum und insertvon neu gesetzt
 			//damit in den Cronjobs erkannt wird welche Lektoren an diesem Tag geaendert wurden.
