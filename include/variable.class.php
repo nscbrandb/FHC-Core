@@ -89,12 +89,13 @@ class variable extends basis_db
 			$this->errormsg = 'Name darf nicht laenger als 64 Zeichen sein';
 			return false;
 		}
+		/*
 		if(mb_strlen($this->wert)>64)
 		{
 			$this->errormsg = 'Wert darf nicht laenger als 64 Zeichen sein';
 			return false;
 		}
-
+		*/
 		return true;
 	}
 
@@ -120,7 +121,6 @@ class variable extends basis_db
 					$new=false;
 			}
 		}
-
 		//Variablen auf Gueltigkeit pruefen
 		if(!$this->validate())
 			return false;
@@ -138,7 +138,6 @@ class variable extends basis_db
 			       ' wert='.$this->db_add_param($this->wert).
 			       " WHERE uid=".$this->db_add_param($this->uid)." AND name=".$this->db_add_param($this->name).";";
 		}
-
 		if($this->db_query($qry))
 		{
 			//Log schreiben
