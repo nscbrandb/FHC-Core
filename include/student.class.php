@@ -241,37 +241,42 @@ class student extends benutzer
 	 * @param integer stg_kz    Kennzahl des Studiengangs
 	 * @return integer Anzahl der gefundenen Einträge; <b>negativ</b> bei Fehler
 	 */
-	public function getStudents($stg_kz,$sem=null,$ver=null,$grp=null,$gruppe=null, $stsem=null)
+	public function getStudents($stg_kz,$sem=null,$ver=null,$grp=null,$gruppe=null, $stsem=null, $orgform=null)
 	{
-		$where = '';
-		if ($gruppe!=null)
-		{
-			$where=" gruppe_kurzbz=".$this->db_add_param($gruppe)." AND tbl_benutzer.uid=tbl_benutzergruppe.uid";
-			if($stsem!=null)
-				$where.=" AND tbl_benutzergruppe.studiensemester_kurzbz=".$this->db_add_param($stsem);
-		}
-		else
-		{
-			$where.=" tbl_studentlehrverband.studiengang_kz=".$this->db_add_param($stg_kz);
-			if ($sem!=null)
-				$where.=" AND tbl_studentlehrverband.semester=".$this->db_add_param($sem);
-			if ($ver!=null)
-				$where.=" AND tbl_studentlehrverband.verband=".$this->db_add_param($ver);
-			if ($grp!=null)
-				$where.=" AND tbl_studentlehrverband.gruppe=".$this->db_add_param($grp);
-		}
-
-		if($stsem!=null)
-				$where.=" AND tbl_studentlehrverband.studiensemester_kurzbz=".$this->db_add_param($stsem);
-
-		$sql_query = "SELECT *, tbl_student.semester as std_semester, tbl_student.verband as std_verband, tbl_student.gruppe as std_gruppe, tbl_student.studiengang_kz as std_studiengang_kz,
-					  tbl_studentlehrverband.studiengang_kz as lvb_studiengang_kz, tbl_studentlehrverband.semester as lvb_semester, tbl_studentlehrverband.verband as lvb_verband, tbl_studentlehrverband.gruppe as lvb_gruppe
-					  FROM public.tbl_person, public.tbl_student, public.tbl_benutzer, public.tbl_studentlehrverband, public.tbl_prestudent";
-		if($gruppe!=null)
-			$sql_query.= ",public.tbl_benutzergruppe";
-		$sql_query.= " WHERE tbl_prestudent.prestudent_id=tbl_student.prestudent_id AND tbl_person.person_id=tbl_benutzer.person_id AND tbl_benutzer.uid = tbl_student.student_uid AND tbl_studentlehrverband.student_uid=tbl_student.student_uid AND $where ORDER BY nachname, vorname";
+		//$sql_query="SELECT * FROM campus.vw_student WHERE $where ORDER by nachname,vorname";
+		$qry = "SELECT DISTINCT
+						vs.*,
+						slv.gruppe AS lvb_gruppe,
+						slv.verband AS lvb_verband,
+						slv.semester AS lvb_semester,
+						slv.studiengang_kz AS lvb_studiengang_kz,
+						p.staatsbuergerschaft,
+						ps.zgv_code,
+						ps.zgvort,
+						ps.zgvdatum,
+						ps.zgvmas_code,
+						ps.zgvmaort,
+						ps.zgvmadatum
+				  FROM campus.vw_student AS vs
+			INNER JOIN public.tbl_prestudent AS ps ON vs.prestudent_id=ps.prestudent_id
+			INNER JOIN public.tbl_studentlehrverband AS slv ON vs.uid=slv.student_uid
+			INNER JOIN public.tbl_person AS p ON vs.person_id=p.person_id
+			INNER JOIN public.tbl_prestudentstatus AS pss ON vs.prestudent_id=pss.prestudent_id AND slv.studiensemester_kurzbz=pss.studiensemester_kurzbz
+			".(!empty($gruppe)?"INNER JOIN public.tbl_benutzergruppe AS bg
+										ON bg.gruppe_kurzbz='".addslashes($gruppe)."'
+									   AND bg.studiensemester_kurzbz='".addslashes($stsem)."'
+									   AND slv.studiensemester_kurzbz='".addslashes($stsem)."'
+									   AND bg.uid=vs.uid":"
+				WHERE slv.studiensemester_kurzbz='".addslashes($stsem)."'
+				  AND slv.studiengang_kz=".addslashes($stg_kz)."
+				".(!is_null($sem)?"AND slv.semester='".addslashes($sem)."'":'')."
+				".(!empty($ver)?"AND slv.verband='".addslashes($ver)."'":'')."
+				".(!empty($grp)?"AND slv.gruppe='".addslashes($grp)."'":'')."
+				".(!empty($orgform)?"AND pss.orgform_kurzbz='".addslashes($orgform)."'":'')."
+			")."
+			ORDER BY nachname, vorname";
 	    //echo $sql_query;
-		if(!$this->db_query($sql_query))
+		if(!$this->db_query($qry))
 		{
 			$this->errormsg=$this->db_last_error();
 			return false;
