@@ -227,19 +227,19 @@ else
 	    					class="sortDirectionIndicator"
 	    					sort="rdf:http://www.technikum-wien.at/student/rdf#status" onclick="StudentTreeSort()"/>
 	    				<splitter class="tree-splitter"/>
-						<treecol id="student-treecol-status" label="Status Datum" flex="1" hidden="true" persist="hidden, width, ordinal"
+						<treecol id="student-treecol-statusdatum" label="Status Datum" flex="1" hidden="true" persist="hidden, width, ordinal"
 	    					class="sortDirectionIndicator"
 	    					sort="rdf:http://www.technikum-wien.at/student/rdf#status_datum_iso" onclick="StudentTreeSort()"/>
 	    				<splitter class="tree-splitter"/>
-						<treecol id="student-treecol-status" label="Status Bestaetigung" flex="1" hidden="true" persist="hidden, width, ordinal"
+						<treecol id="student-treecol-statusbest" label="Status Bestaetigung" flex="1" hidden="true" persist="hidden, width, ordinal"
 	    					class="sortDirectionIndicator"
 	    					sort="rdf:http://www.technikum-wien.at/student/rdf#status_bestaetigung_iso" onclick="StudentTreeSort()"/>
 	    				<splitter class="tree-splitter"/>
-						<treecol id="student-treecol-status" label="Status Datum ISO" flex="1" hidden="true" persist="hidden, width, ordinal"
+						<treecol id="student-treecol-statusdatumiso" label="Status Datum ISO" flex="1" hidden="true" persist="hidden, width, ordinal"
 	    					class="sortDirectionIndicator"
 	    					sort="rdf:http://www.technikum-wien.at/student/rdf#status_datum_iso" onclick="StudentTreeSort()"/>
 	    				<splitter class="tree-splitter"/>
-						<treecol id="student-treecol-status" label="Status Bestaetigung ISO" flex="1" hidden="true" persist="hidden, width, ordinal"
+						<treecol id="student-treecol-statusbestido" label="Status Bestaetigung ISO" flex="1" hidden="true" persist="hidden, width, ordinal"
 	    					class="sortDirectionIndicator"
 	    					sort="rdf:http://www.technikum-wien.at/student/rdf#status_bestaetigung_iso" onclick="StudentTreeSort()"/>
 	    				<splitter class="tree-splitter"/>
